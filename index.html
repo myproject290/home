@@ -49,6 +49,16 @@
   .btn { padding:8px 14px; border:none; border-radius:8px; background:var(--primary); color:#fff; font-size:15px; cursor:pointer; margin:4px; transition:background .2s; }
   .btn:hover { background:var(--accent); }
   .btn.active { background:var(--repeat); }
+  
+  /* UPDATED: Better styling for disabled/faded buttons */
+  .btn:disabled { 
+    background: #e0e0e0 !important; 
+    color: #999 !important; 
+    cursor: not-allowed; 
+    box-shadow: none;
+    pointer-events: none; /* Prevents clicking */
+  }
+  
   .nav { padding:12px 20px; border-bottom:1px solid #eee; background:#fafbff; }
   .link-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(50px,1fr)); gap:8px; }
   .link-grid a { display:block; padding:8px 0; text-align:center; border:1px solid #ddd; border-radius:8px; font-weight:600; text-decoration:none; color:var(--primary); background:#fff; transition:all .2s ease; }
@@ -73,8 +83,8 @@
     background:#fafbff;
     position: relative;
   }
-  .btn:disabled { background: #ccc; cursor: not-allowed; }
-  .btn.clear-btn { background: #fff; color: var(--primary); }
+  .btn.clear-btn { background: #fff; color: var(--primary); border:1px solid #ddd; }
+  .btn.clear-btn:hover { background: #f0f0f0; }
 
   #bottomPauseBtn {
     padding: 10px 20px;
@@ -123,8 +133,9 @@
       <div class="input-area">
         <input type="text" id="tableInput" class="input-box" placeholder="e.g., 2,3,4 or 2-7" />
         <button class="btn clear-btn" onclick="clearInput()">❌ Clear</button>
-        <button class="btn" onclick="readMultipleTables()">▶ Play</button>
-        <button class="btn" onclick="pauseReading()">⏸ Pause</button>
+        
+        <button id="multiPlayBtn" class="btn" onclick="readMultipleTables()">▶ Play</button>
+        <button id="multiPauseBtn" class="btn" onclick="pauseReading()">⏸ Pause</button>
         <button id="repeatBtn" class="btn" onclick="toggleRepeat()">🔁 Repeat</button>
       </div>
       <div id="errorMsg" class="error">Table not found! Use numbers 2–25.</div>
@@ -155,8 +166,14 @@
   const linkGrid=document.getElementById('link-grid');
   const speedLabel=document.getElementById('speedLabel');
   const errorMsg=document.getElementById('errorMsg');
-  const repeatBtn=document.getElementById('repeatBtn');
+  
+  // Input elements
   const tableInput=document.getElementById('tableInput');
+  const repeatBtn=document.getElementById('repeatBtn');
+  // New References
+  const multiPlayBtn=document.getElementById('multiPlayBtn');
+  const multiPauseBtn=document.getElementById('multiPauseBtn');
+  
   const repeatSingleBtn=document.getElementById('repeatSingleBtn');
   const normalBtn = document.getElementById('normalBtn');
   const delayedBtn = document.getElementById('delayedBtn');
@@ -284,7 +301,11 @@
     speechSynthesis.speak(initialUtterance);
   }
 
-  function toggleRepeat(){ repeatMode=!repeatMode; repeatBtn.classList.toggle("active",repeatMode); }
+  function toggleRepeat(){ 
+    if(repeatBtn.disabled) return; 
+    repeatMode=!repeatMode; 
+    repeatBtn.classList.toggle("active",repeatMode); 
+  }
   
   function toggleRepeatSingle(){
     repeatSingleMode = !repeatSingleMode;
@@ -292,6 +313,9 @@
   }
 
   function readMultipleTables(customTables){
+    // Logic check: if disabled, do nothing
+    if(multiPlayBtn.disabled && !customTables) return;
+
     stopSpeaking();
 
     errorMsg.style.display="none";
@@ -299,14 +323,12 @@
     if(customTables){ tables=customTables; }
     else{
       const input=tableInput.value;
-      if(!input){ alert("Input box is empty!"); return; }
+      if(!input){ return; } // Should be covered by disabled state, but extra safety
       tables=getTablesFromInput(input);
       if(tables.length===0){ errorMsg.style.display="block"; return; }
       lastTables=tables;
     }
 
-    // New logic to ensure the button shows after a brief delay
-    // This allows the stopSpeaking() call in render() to complete first.
     isReadingActive = true; 
     updateBottomPauseButton();
 
@@ -328,7 +350,6 @@
       }
       let n=tables[tIndex];
       if(rIndex===1){
-        // Do NOT call render() here as it calls stopSpeaking()
         currentTableNumber=n; titleEl.textContent=`Table of ${n}`;
         const rows=[];
         for(let i=1;i<=ROWS;i++){
@@ -381,7 +402,24 @@
     return tables;
   }
 
-  function clearInput(){ tableInput.value=''; errorMsg.style.display='none'; }
+  // --- NEW FUNCTION: Update Button States ---
+  function updateInputButtonsState() {
+    const isEmpty = tableInput.value.trim() === '';
+    
+    // Set disabled property (triggers CSS)
+    multiPlayBtn.disabled = isEmpty;
+    multiPauseBtn.disabled = isEmpty;
+    repeatBtn.disabled = isEmpty;
+  }
+
+  // Listen for typing
+  tableInput.addEventListener('input', updateInputButtonsState);
+
+  function clearInput(){ 
+    tableInput.value=''; 
+    errorMsg.style.display='none'; 
+    updateInputButtonsState(); // Update buttons immediately after clearing
+  }
 
   for(let n=MIN;n<=MAX;n++){
     const a=document.createElement('a');
@@ -410,6 +448,7 @@
 
   render(MIN);
   updateBottomPauseButton();
+  updateInputButtonsState(); // Run once on load to set initial state
 
   window.speak=speak; window.changeSpeed=changeSpeed; window.readFullTable=readFullTable;
   window.readMultipleTables=readMultipleTables; window.pauseReading=pauseReading;
