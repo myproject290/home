@@ -48,7 +48,7 @@
         .sheet {
             background-color: white;
             width: 210mm;
-            min-height: 297mm; /* Full A4 Height */
+            min-height: 297mm;
             padding: 12mm 12mm; 
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -70,19 +70,9 @@
             table-layout: fixed;
         }
 
-        /* Separate formatting for top info table to keep spacing */
-        .info-table {
-            margin-bottom: 15px;
-        }
-
-        /* Formatting for calculation tables */
-        .calc-table {
-            margin-bottom: 0; /* Removed bottom margin */
-        }
-        
-        .summary-table {
-            margin-top: -1px; /* Negative margin to merge borders */
-        }
+        .info-table { margin-bottom: 15px; }
+        .calc-table { margin-bottom: 0; }
+        .summary-table { margin-top: -1px; }
 
         th, td {
             border: 1px solid black;
@@ -90,7 +80,7 @@
             vertical-align: middle;
             line-height: 1.5; 
             overflow: hidden;
-            white-space: nowrap;
+            white-space: nowrap; /* Ensures no wrapping globally */
         }
         
         td.wrap-text {
@@ -98,7 +88,12 @@
         }
 
         .center { text-align: center; }
-        .right { text-align: right; }
+        
+        .right { 
+            text-align: right; 
+            white-space: nowrap; /* Explicitly no wrapping for numbers */
+        }
+
         .bold { font-weight: bold; }
 
         /* General Input Style */
@@ -114,6 +109,7 @@
             color: #000;
             line-height: 1.5;
             font-weight: bold;
+            transition: font-size 0.1s;
         }
 
         /* Textarea Style */
@@ -141,28 +137,12 @@
             -webkit-appearance: none; 
             margin: 0; 
         }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        input[type=number] { -moz-appearance: textfield; }
 
-        /* Uppercase class (For PAN, Code) */
-        .upper {
-            text-transform: uppercase;
-        }
-
-        /* Capitalize class (For Name, Address) */
-        .capitalize {
-            text-transform: capitalize;
-        }
-
-        /* Background only for screen - LIGHTER YELLOW */
-        .input-bg {
-            background-color: #ffffe6;
-        }
-        
-        input.input-bg, textarea.input-bg {
-            background-color: #ffffe6;
-        }
+        .upper { text-transform: uppercase; }
+        .capitalize { text-transform: capitalize; }
+        .input-bg { background-color: #ffffe6; }
+        input.input-bg, textarea.input-bg { background-color: #ffffe6; }
 
         .col-idx { text-align: center; font-weight: bold; width: 5%; }
         
@@ -182,32 +162,12 @@
         }
 
         @media print {
-            @page {
-                size: A4;
-                margin: 0; 
-            }
-            body { 
-                background: none; 
-                padding: 0; 
-                margin: 0;
-            }
+            @page { size: A4; margin: 0; }
+            body { background: none; padding: 0; margin: 0; }
             .no-print { display: none; }
-            .sheet { 
-                box-shadow: none; 
-                width: 100%; 
-                min-height: 297mm;
-                margin: 0; 
-                padding: 10mm 15mm; 
-                border: none;
-            }
-            
-            .input-bg { 
-                background-color: transparent !important; 
-            }
-            input, textarea {
-                background-color: transparent !important;
-                font-weight: bold; 
-            }
+            .sheet { box-shadow: none; width: 100%; min-height: 297mm; margin: 0; padding: 10mm 15mm; border: none; }
+            .input-bg { background-color: transparent !important; }
+            input, textarea { background-color: transparent !important; font-weight: bold; }
         }
     </style>
 </head>
@@ -224,32 +184,23 @@
 
     <table class="info-table">
         <colgroup>
-            <col style="width: 20%;">
-            <col style="width: 35%;">
-            <col style="width: 15%;">
-            <col style="width: 30%;">
+            <col style="width: 20%;"> <col style="width: 35%;"> <col style="width: 15%;"> <col style="width: 30%;">
         </colgroup>
         <tr>
             <td>Name and Desig.</td>
-            <td>
-                <textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea>
-            </td>
+            <td><textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
             <td>PAN</td>
             <td><input type="text" class="upper"></td>
         </tr>
         <tr>
             <td>e-Salary Code</td>
-            <td>
-                <textarea class="upper" rows="1" oninput="autoResize(this)"></textarea>
-            </td>
+            <td><textarea class="upper" rows="1" oninput="autoResize(this)"></textarea></td>
             <td>Mobile No.</td>
             <td><input type="number"></td>
         </tr>
         <tr>
             <td>Office Address</td>
-            <td>
-                <textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea>
-            </td>
+            <td><textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
             <td>Category</td>
             <td>Gen. Public</td>
         </tr>
@@ -257,7 +208,8 @@
 
     <table class="calc-table">
         <colgroup>
-            <col style="width: 5%;">   <col style="width: 30%;">  <col style="width: 13%;">  <col style="width: 13%;">  <col style="width: 13%;">  <col style="width: 11%;">  <col style="width: 15%;">  </colgroup>
+            <col style="width: 5%;"> <col style="width: 30%;"> <col style="width: 13%;"> <col style="width: 13%;"> <col style="width: 13%;"> <col style="width: 11%;"> <col style="width: 15%;">
+        </colgroup>
 
         <tr>
             <td class="col-idx">1.</td>
@@ -395,11 +347,7 @@
 
     <table class="summary-table">
         <colgroup>
-            <col style="width: 5%;">
-            <col style="width: 50%;"> 
-            <col style="width: 15%;">
-            <col style="width: 15%;">
-            <col style="width: 15%;">
+            <col style="width: 5%;"> <col style="width: 50%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;">
         </colgroup>
         <tr>
             <td colspan="2" style="border-left: none;"></td> 
@@ -446,48 +394,68 @@
                 if (input.tagName === "TEXTAREA") {
                     input.style.height = "auto";
                 }
+                if(input.style.fontSize) input.style.fontSize = "inherit";
+            });
+            document.querySelectorAll("td[id]").forEach(td => {
+                td.style.fontSize = "inherit";
             });
             calculateTax();
         }
     }
 
-    // --- Auto Resize ---
     function autoResize(elem) {
         elem.style.height = 'auto'; 
         elem.style.height = elem.scrollHeight + 'px';
     }
 
-    // --- Input Formatter (Indian Commas) ---
+    // --- Universal Font Resizer ---
+    function adjustFontSize(idOrElem) {
+        let elem = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
+        if (!elem) return;
+
+        let text = (elem.tagName === 'INPUT') ? elem.value : elem.innerText;
+        let len = text.length;
+
+        // Base size 12.5pt. Threshold around 11 chars.
+        if (len > 11) {
+            let newSize = 12.5 * (11 / len); 
+            if (newSize < 6.5) newSize = 6.5; // Slightly lower min limit to fit large nums
+            elem.style.fontSize = newSize + "pt";
+        } else {
+            elem.style.fontSize = "inherit";
+        }
+    }
+
     function formatInput(elem) {
         let rawVal = elem.value.replace(/,/g, '');
-        
         if (!rawVal || isNaN(rawVal)) {
              calculateTax();
+             if(rawVal === "") elem.style.fontSize = "inherit";
              return;
         }
-
         let formatted = Math.round(rawVal).toLocaleString('en-IN');
-        
-        if (elem.value !== formatted) {
-            elem.value = formatted;
-        }
-        
+        if (elem.value !== formatted) elem.value = formatted;
+        adjustFontSize(elem);
         calculateTax();
     }
 
-    // --- Date ---
+    // --- Only Update & Resize (No Wrap Logic) ---
+    function updateAndResize(id, value) {
+        let elem = document.getElementById(id);
+        if(!elem) return;
+
+        elem.innerText = value;
+        adjustFontSize(elem);
+    }
+
     const d = new Date();
-    const day = String(d.getDate()).padStart(2, '0');
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const year = d.getFullYear();
-    document.getElementById('currentDate').innerText = `${day}/${month}/${year}`;
+    document.getElementById('currentDate').innerText = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
 
     function format(num) {
         return Math.round(num).toLocaleString('en-IN');
     }
 
     function calculateTax() {
-        // --- Helper to get Clean Number ---
         function getVal(id) {
             let elem = document.getElementById(id);
             if(!elem) return 0;
@@ -504,44 +472,9 @@
         let taxable = gross - stdDed;
         if(taxable < 0) taxable = 0;
 
-        document.getElementById('headSalaries').innerText = format(taxable);
-        document.getElementById('taxableIncome').innerText = format(taxable);
+        updateAndResize('headSalaries', format(taxable));
+        updateAndResize('taxableIncome', format(taxable));
 
-        // --- Core Slab Function ---
-        function calculateSlabTaxForValue(incomeVal) {
-             if (incomeVal <= 400000) return 0; 
-             
-             let totalTax = 0;
-             let tempInc = incomeVal;
-             
-             if (tempInc > 400000) {
-                 let taxableSlab = Math.min(tempInc, 800000) - 400000;
-                 totalTax += taxableSlab * 0.05;
-             }
-             if (tempInc > 800000) {
-                 let taxableSlab = Math.min(tempInc, 1200000) - 800000;
-                 totalTax += taxableSlab * 0.10;
-             }
-             if (tempInc > 1200000) {
-                 let taxableSlab = Math.min(tempInc, 1600000) - 1200000;
-                 totalTax += taxableSlab * 0.15;
-             }
-             if (tempInc > 1600000) {
-                 let taxableSlab = Math.min(tempInc, 2000000) - 1600000;
-                 totalTax += taxableSlab * 0.20;
-             }
-             if (tempInc > 2000000) {
-                 let taxableSlab = Math.min(tempInc, 2400000) - 2000000;
-                 totalTax += taxableSlab * 0.25;
-             }
-             if (tempInc > 2400000) {
-                 let taxableSlab = tempInc - 2400000;
-                 totalTax += taxableSlab * 0.30;
-             }
-             return totalTax;
-        }
-
-        // --- UI Slab Rendering ---
         let slabs = [
             { start: 0, limit: 400000, rate: 0, id: 1 },
             { start: 400000, limit: 800000, rate: 0.05, id: 2 },
@@ -558,8 +491,6 @@
         for(let i=0; i<slabs.length; i++) {
             let slab = slabs[i];
             let row = document.getElementById(`row-slab-${slab.id}`);
-            let toCell = document.getElementById(`to-slab-${slab.id}`);
-            
             let isRelevant = (taxable > slab.start) || (i === 0 && taxable >= 0);
 
             if (isRelevant) {
@@ -567,23 +498,20 @@
                 visibleRowsCount++;
 
                 let incomeInSlab = 0;
-                
                 if (slab.limit !== Infinity && taxable > slab.limit) {
                     incomeInSlab = slab.limit - slab.start;
-                    toCell.innerText = format(slab.limit);
+                    updateAndResize(`to-slab-${slab.id}`, format(slab.limit));
                 } else {
                     incomeInSlab = taxable - slab.start;
-                    toCell.innerText = format(taxable);
+                    updateAndResize(`to-slab-${slab.id}`, format(taxable));
                 }
                 
                 if (incomeInSlab < 0) incomeInSlab = 0;
-
                 let taxInSlab = incomeInSlab * slab.rate;
                 slabTaxTotal += taxInSlab;
 
-                document.getElementById(`inc-slab-${slab.id}`).innerText = format(incomeInSlab);
-                document.getElementById(`tax-slab-${slab.id}`).innerText = format(taxInSlab);
-
+                updateAndResize(`inc-slab-${slab.id}`, format(incomeInSlab));
+                updateAndResize(`tax-slab-${slab.id}`, format(taxInSlab));
             } else {
                 row.style.display = 'none';
             }
@@ -593,9 +521,9 @@
         document.getElementById('slab-idx-cell').rowSpan = newRowSpan;
         document.getElementById('slab-title-cell').rowSpan = newRowSpan;
 
-        document.getElementById('totalSlabTax').innerText = format(slabTaxTotal);
+        updateAndResize('totalSlabTax', format(slabTaxTotal));
 
-        // --- 87A Relief Logic ---
+        // --- 87A Relief ---
         let rebate87A = 0;
         let marginalRelief87A = 0;
         let taxAfterRelief = slabTaxTotal;
@@ -611,110 +539,87 @@
             }
         }
 
-        document.getElementById('rebate87A').innerText = format(rebate87A);
-        document.getElementById('marginalRelief87A').innerText = format(marginalRelief87A);
-        document.getElementById('taxAfterRelief').innerText = format(taxAfterRelief);
+        updateAndResize('rebate87A', format(rebate87A));
+        updateAndResize('marginalRelief87A', format(marginalRelief87A));
+        updateAndResize('taxAfterRelief', format(taxAfterRelief));
 
-        // --- SURCHARGE LOGIC ---
+        // --- Surcharge & Relief ---
         let surchargeAmount = 0;
         let surchargeRate = 0;
-
-        // New Regime Surcharge Rates
-        if (taxable > 20000000) { // > 2 Cr
-            surchargeRate = 0.25; 
-        } else if (taxable > 10000000) { // > 1 Cr
-            surchargeRate = 0.15;
-        } else if (taxable > 5000000) { // > 50 L
-            surchargeRate = 0.10;
-        }
+        if (taxable > 20000000) surchargeRate = 0.25; 
+        else if (taxable > 10000000) surchargeRate = 0.15;
+        else if (taxable > 5000000) surchargeRate = 0.10;
 
         surchargeAmount = taxAfterRelief * surchargeRate;
 
-        // --- SURCHARGE MARGINAL RELIEF ---
         let surchargeRelief = 0;
-        
         if (taxable > 5000000) {
             let limitIncome = 0;
             let limitSurchargeRate = 0;
+            if (taxable > 20000000) { limitIncome = 20000000; limitSurchargeRate = 0.15; } 
+            else if (taxable > 10000000) { limitIncome = 10000000; limitSurchargeRate = 0.10; } 
+            else { limitIncome = 5000000; limitSurchargeRate = 0; }
+
+            // Calculate tax on limit manually
+            let totalTaxOnLimit = 0;
+            if (limitIncome > 400000) totalTaxOnLimit += (Math.min(limitIncome, 800000) - 400000) * 0.05;
+            if (limitIncome > 800000) totalTaxOnLimit += (Math.min(limitIncome, 1200000) - 800000) * 0.10;
+            if (limitIncome > 1200000) totalTaxOnLimit += (Math.min(limitIncome, 1600000) - 1200000) * 0.15;
+            if (limitIncome > 1600000) totalTaxOnLimit += (Math.min(limitIncome, 2000000) - 1600000) * 0.20;
+            if (limitIncome > 2000000) totalTaxOnLimit += (Math.min(limitIncome, 2400000) - 2000000) * 0.25;
+            if (limitIncome > 2400000) totalTaxOnLimit += (limitIncome - 2400000) * 0.30;
             
-            if (taxable > 20000000) {
-                limitIncome = 20000000; 
-                limitSurchargeRate = 0.15; 
-            } else if (taxable > 10000000) {
-                limitIncome = 10000000; 
-                limitSurchargeRate = 0.10; 
-            } else {
-                limitIncome = 5000000; 
-                limitSurchargeRate = 0; 
-            }
-
-            let totalActualTax = taxAfterRelief + surchargeAmount;
-
-            let taxOnLimit = calculateSlabTaxForValue(limitIncome);
-            let surchargeOnLimit = taxOnLimit * limitSurchargeRate;
-            let totalTaxOnLimit = taxOnLimit + surchargeOnLimit;
-
+            let surchargeOnLimit = totalTaxOnLimit * limitSurchargeRate;
+            let totalLimitLiab = totalTaxOnLimit + surchargeOnLimit;
             let incomeExcess = taxable - limitIncome;
-            let maxTaxPayable = totalTaxOnLimit + incomeExcess;
-
+            let maxTaxPayable = totalLimitLiab + incomeExcess;
+            
+            let totalActualTax = taxAfterRelief + surchargeAmount;
             if (totalActualTax > maxTaxPayable) {
                 surchargeRelief = totalActualTax - maxTaxPayable;
             }
         }
 
-        document.getElementById('surcharge').innerText = format(surchargeAmount);
-        document.getElementById('marginalReliefSurcharge').innerText = format(surchargeRelief);
+        updateAndResize('surcharge', format(surchargeAmount));
+        updateAndResize('marginalReliefSurcharge', format(surchargeRelief));
 
-        // --- Final Tax Before Cess ---
         let taxBeforeCess = taxAfterRelief + surchargeAmount - surchargeRelief;
-
-        // --- Cess ---
         let cess = Math.round(taxBeforeCess * 0.04);
-        document.getElementById('cess').innerText = format(cess);
+        updateAndResize('cess', format(cess));
 
         let totalLiab = taxBeforeCess + cess;
-        document.getElementById('totalTaxLiability').innerText = format(totalLiab);
+        updateAndResize('totalTaxLiability', format(totalLiab));
 
-        // --- Balance Payable ---
+        // --- Balance ---
         let finalTaxComp = taxBeforeCess;
         let finalCessComp = cess;
-        
         if (relief89 > 0) {
             let remainRelief = relief89;
-            if (remainRelief <= finalTaxComp) {
-                finalTaxComp -= remainRelief;
-                remainRelief = 0;
-            } else {
-                remainRelief -= finalTaxComp;
-                finalTaxComp = 0;
-                if (remainRelief <= finalCessComp) {
-                    finalCessComp -= remainRelief;
-                } else {
-                    finalCessComp = 0;
-                }
+            if (remainRelief <= finalTaxComp) { finalTaxComp -= remainRelief; remainRelief = 0; } 
+            else { remainRelief -= finalTaxComp; finalTaxComp = 0; 
+                if (remainRelief <= finalCessComp) { finalCessComp -= remainRelief; } else { finalCessComp = 0; }
             }
         }
         
         let totalPayable = finalTaxComp + finalCessComp;
+        updateAndResize('balanceTaxComp', format(finalTaxComp));
+        updateAndResize('balanceCessComp', format(finalCessComp));
+        updateAndResize('balanceTotalComp', format(totalPayable));
 
-        document.getElementById('balanceTaxComp').innerText = format(finalTaxComp);
-        document.getElementById('balanceCessComp').innerText = format(finalCessComp);
-        document.getElementById('balanceTotalComp').innerText = format(totalPayable);
-
-        // --- Net Payable ---
         let paidTotal = paidTaxVal + paidCessVal;
-        document.getElementById('paidTotal').innerText = format(paidTotal);
+        updateAndResize('paidTotal', format(paidTotal));
 
         let netTax = finalTaxComp - paidTaxVal;
         let netCess = finalCessComp - paidCessVal;
         let netTotal = totalPayable - paidTotal;
 
-        document.getElementById('netTax').innerText = format(netTax);
-        document.getElementById('netCess').innerText = format(netCess);
-        document.getElementById('netTotal').innerText = format(netTotal);
+        updateAndResize('netTax', format(netTax));
+        updateAndResize('netCess', format(netCess));
+        updateAndResize('netTotal', format(netTotal));
     }
     
     calculateTax();
+    adjustFontSize('grossIncome');
 </script>
 
 </body>
