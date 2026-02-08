@@ -80,7 +80,7 @@
             vertical-align: middle;
             line-height: 1.5; 
             overflow: hidden;
-            white-space: nowrap; /* Ensures no wrapping globally */
+            white-space: nowrap; 
         }
         
         td.wrap-text {
@@ -91,7 +91,7 @@
         
         .right { 
             text-align: right; 
-            white-space: nowrap; /* Explicitly no wrapping for numbers */
+            white-space: nowrap; 
         }
 
         .bold { font-weight: bold; }
@@ -347,24 +347,23 @@
 
     <table class="summary-table">
         <colgroup>
-            <col style="width: 5%;"> <col style="width: 50%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;">
-        </colgroup>
+            <col style="width: 5%;">  <col style="width: 35%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> </colgroup>
         <tr>
-            <td colspan="2" style="border-left: none;"></td> 
+            <td colspan="3" style="border-left: none;"></td> 
             <td class="center bold" style="background-color: #f0fff0;">Tax</td>
             <td class="center bold" style="background-color: #f0fff0;">Cess</td>
             <td class="center bold" style="background-color: #f0fff0;">Total</td>
         </tr>
         <tr>
             <td class="col-idx">14.</td>
-            <td class="wrap-text">Balance Income Tax payable after relief</td>
+            <td colspan="2" class="wrap-text">Balance Income Tax payable after relief</td>
             <td class="right" id="balanceTaxComp">0</td>
             <td class="right" id="balanceCessComp">0</td>
             <td class="right" id="balanceTotalComp">0</td>
         </tr>
         <tr>
             <td class="col-idx">15.</td>
-            <td class="wrap-text">Income Tax already paid</td>
+            <td colspan="2" class="wrap-text">Income Tax already paid</td>
             <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
             <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
             <td class="right" id="paidTotal">0</td>
@@ -372,6 +371,9 @@
         <tr>
             <td class="col-idx">16.</td>
             <td class="bold wrap-text">Net Income Tax</td>
+            <td style="background-color: #fafafa;">
+                <input type="text" id="taxStatus" class="bold center" readonly value="Nil" style="width: 100%;">
+            </td>
             <td class="right bold" id="netTax">0</td>
             <td class="right bold" id="netCess">0</td>
             <td class="right bold" id="netTotal">0</td>
@@ -416,10 +418,9 @@
         let text = (elem.tagName === 'INPUT') ? elem.value : elem.innerText;
         let len = text.length;
 
-        // Base size 12.5pt. Threshold around 11 chars.
         if (len > 11) {
             let newSize = 12.5 * (11 / len); 
-            if (newSize < 6.5) newSize = 6.5; // Slightly lower min limit to fit large nums
+            if (newSize < 6.5) newSize = 6.5; 
             elem.style.fontSize = newSize + "pt";
         } else {
             elem.style.fontSize = "inherit";
@@ -560,7 +561,6 @@
             else if (taxable > 10000000) { limitIncome = 10000000; limitSurchargeRate = 0.10; } 
             else { limitIncome = 5000000; limitSurchargeRate = 0; }
 
-            // Calculate tax on limit manually
             let totalTaxOnLimit = 0;
             if (limitIncome > 400000) totalTaxOnLimit += (Math.min(limitIncome, 800000) - 400000) * 0.05;
             if (limitIncome > 800000) totalTaxOnLimit += (Math.min(limitIncome, 1200000) - 800000) * 0.10;
@@ -616,6 +616,19 @@
         updateAndResize('netTax', format(netTax));
         updateAndResize('netCess', format(netCess));
         updateAndResize('netTotal', format(netTotal));
+
+        // --- NEW STATUS BOX LOGIC ---
+        let statusBox = document.getElementById('taxStatus');
+        if (netTotal > 0) {
+            statusBox.value = "Payable";
+            statusBox.style.color = "#dc3545"; // Red
+        } else if (netTotal < 0) {
+            statusBox.value = "Refundable";
+            statusBox.style.color = "#28a745"; // Green
+        } else {
+            statusBox.value = "Nil";
+            statusBox.style.color = "black";
+        }
     }
     
     calculateTax();
