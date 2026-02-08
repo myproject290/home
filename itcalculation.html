@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Income Tax Calculation AY 2026-27</title>
+    <style>
+        body {
+            font-family: "Calibri", "Arial", sans-serif;
+            background-color: #525659;
+            margin: 0;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            display: block; 
+            text-align: center;
+        }
+
+        .no-print {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #333;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            z-index: 10000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+        }
+
+        button {
+            padding: 8px 20px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            margin: 0 5px; 
+        }
+
+        .btn-print { background-color: #28a745; }
+        .btn-print:hover { background-color: #218838; }
+
+        .btn-reset { background-color: #dc3545; }
+        .btn-reset:hover { background-color: #c82333; }
+
+        .sheet {
+            background-color: white;
+            width: 210mm;
+            min-height: 297mm; /* Full A4 Height */
+            padding: 10mm 12mm; 
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            display: inline-block; 
+            text-align: left;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Typography */
+        h2 { font-size: 16pt; font-weight: bold; text-align: center; margin: 0 0 5px 0; }
+        h3 { font-size: 12pt; font-weight: normal; color: blue; margin: 0 0 15px 0; }
+
+        /* Table Structure */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 12px; 
+            font-size: 12pt; 
+            table-layout: fixed;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 6px 5px; 
+            vertical-align: middle;
+            line-height: 1.2;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        
+        td.wrap-text {
+            white-space: normal;
+        }
+
+        .center { text-align: center; }
+        .right { text-align: right; }
+        .bold { font-weight: bold; }
+
+        /* General Input Style */
+        input {
+            width: 100%;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            background: transparent;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            color: #000;
+        }
+
+        /* Textarea Style */
+        textarea {
+            width: 100%;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            background: transparent;
+            outline: none;
+            padding: 0;
+            margin: 0;
+            color: #000;
+            resize: none; 
+            overflow: hidden; 
+            min-height: 20px;
+            display: block;
+            line-height: 1.2;
+        }
+
+        /* Hide Spinners */
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Uppercase class (For PAN, Code) */
+        .upper {
+            text-transform: uppercase;
+        }
+
+        /* Capitalize class (For Name, Address) */
+        .capitalize {
+            text-transform: capitalize;
+        }
+
+        /* Background only for screen - LIGHTER YELLOW */
+        .input-bg {
+            background-color: #ffffe6;
+        }
+        
+        input.input-bg, textarea.input-bg {
+            background-color: #ffffe6;
+        }
+
+        .col-idx { text-align: center; font-weight: bold; width: 5%; }
+        
+        /* Footer */
+        .footer {
+            margin-top: 40px; 
+            display: flex;
+            justify-content: space-between;
+            font-size: 12pt;
+            width: 100%;
+        }
+        .signature-line {
+            border-top: 1px dashed black;
+            width: 220px;
+            text-align: center;
+            padding-top: 5px;
+        }
+
+        @media print {
+            @page {
+                size: A4;
+                margin: 0; 
+            }
+            body { 
+                background: none; 
+                padding: 0; 
+                margin: 0;
+            }
+            .no-print { display: none; }
+            .sheet { 
+                box-shadow: none; 
+                width: 100%; 
+                min-height: 297mm;
+                margin: 0; 
+                padding: 10mm 15mm; 
+                border: none;
+            }
+            
+            .input-bg { 
+                background-color: transparent !important; 
+            }
+            input, textarea {
+                background-color: transparent !important;
+                font-weight: bold; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="no-print">
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button class="btn-reset" onclick="resetForm()">🔄 Reset</button>
+</div>
+
+<div class="sheet">
+    <h2>Income Tax Calculation for the Financial Year 2025-26 (AY 2026-27)</h2>
+    <h3>Regime opted >>>> New regime</h3>
+
+    <table style="margin-bottom: 15px;">
+        <colgroup>
+            <col style="width: 20%;">
+            <col style="width: 35%;">
+            <col style="width: 15%;">
+            <col style="width: 30%;">
+        </colgroup>
+        <tr>
+            <td>Name and Desig.</td>
+            <td>
+                <textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea>
+            </td>
+            <td>PAN</td>
+            <td><input type="text" class="upper"></td>
+        </tr>
+        <tr>
+            <td>e-Salary Code</td>
+            <td>
+                <textarea class="upper" rows="1" oninput="autoResize(this)"></textarea>
+            </td>
+            <td>Mobile No.</td>
+            <td><input type="number"></td>
+        </tr>
+        <tr>
+            <td>Office Address</td>
+            <td>
+                <textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea>
+            </td>
+            <td>Category</td>
+            <td>Gen. Public</td>
+        </tr>
+    </table>
+
+    <table>
+        <colgroup>
+            <col style="width: 5%;">   <col style="width: 30%;">  <col style="width: 13%;">  <col style="width: 13%;">  <col style="width: 13%;">  <col style="width: 11%;">  <col style="width: 15%;">  </colgroup>
+
+        <tr>
+            <td class="col-idx">1.</td>
+            <td colspan="5" class="wrap-text">Income from salary</td>
+            <td class="right input-bg">
+                <input type="text" inputmode="numeric" id="grossIncome" class="right input-bg" placeholder="0" oninput="formatInput(this)">
+            </td>
+        </tr>
+        <tr>
+            <td class="col-idx">2.</td>
+            <td colspan="5" class="wrap-text">Standard deduction u/s 16(ia)</td>
+            <td class="right">75,000</td>
+        </tr>
+        <tr>
+            <td class="col-idx">3.</td>
+            <td colspan="5" class="wrap-text">Income under the head Salaries</td>
+            <td class="right" id="headSalaries">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">4.</td>
+            <td colspan="5" class="wrap-text">Taxable Income</td>
+            <td class="right bold" id="taxableIncome">0</td>
+        </tr>
+        
+        <tr>
+            <td rowspan="9" class="col-idx" id="slab-idx-cell" style="vertical-align: middle;">5.</td>
+            <td rowspan="9" class="wrap-text" id="slab-title-cell" style="vertical-align: middle; text-align: center; font-weight:bold;">
+                Income Tax Liability
+            </td>
+            <td class="center bold" style="background:#f9f9f9; font-size:10pt;">from Rs.</td>
+            <td class="center bold" style="background:#f9f9f9; font-size:10pt;">to Rs.</td>
+            <td class="center bold" style="background:#f9f9f9; font-size:10pt;">Income</td>
+            <td class="center bold" style="background:#f9f9f9; font-size:10pt;">Rate</td>
+            <td class="center bold" style="background:#f9f9f9; font-size:10pt;">Income Tax</td>
+        </tr>
+
+        <tr id="row-slab-1">
+            <td class="right">0</td>
+            <td class="right" id="to-slab-1">4,00,000</td>
+            <td class="right" id="inc-slab-1">0</td>
+            <td class="center">0 %</td>
+            <td class="right" id="tax-slab-1">0</td>
+        </tr>
+        <tr id="row-slab-2">
+            <td class="right">4,00,001</td>
+            <td class="right" id="to-slab-2">8,00,000</td>
+            <td class="right" id="inc-slab-2">0</td>
+            <td class="center">5 %</td>
+            <td class="right" id="tax-slab-2">0</td>
+        </tr>
+        <tr id="row-slab-3">
+            <td class="right">8,00,001</td>
+            <td class="right" id="to-slab-3">12,00,000</td>
+            <td class="right" id="inc-slab-3">0</td>
+            <td class="center">10 %</td>
+            <td class="right" id="tax-slab-3">0</td>
+        </tr>
+        <tr id="row-slab-4">
+            <td class="right">12,00,001</td>
+            <td class="right" id="to-slab-4">16,00,000</td>
+            <td class="right" id="inc-slab-4">0</td>
+            <td class="center">15 %</td>
+            <td class="right" id="tax-slab-4">0</td>
+        </tr>
+        <tr id="row-slab-5">
+            <td class="right">16,00,001</td>
+            <td class="right" id="to-slab-5">20,00,000</td>
+            <td class="right" id="inc-slab-5">0</td>
+            <td class="center">20 %</td>
+            <td class="right" id="tax-slab-5">0</td>
+        </tr>
+        <tr id="row-slab-6">
+            <td class="right">20,00,001</td>
+            <td class="right" id="to-slab-6">24,00,000</td>
+            <td class="right" id="inc-slab-6">0</td>
+            <td class="center">25 %</td>
+            <td class="right" id="tax-slab-6">0</td>
+        </tr>
+        <tr id="row-slab-7">
+            <td class="right">24,00,001</td>
+            <td class="right" id="to-slab-7">Above</td>
+            <td class="right" id="inc-slab-7">0</td>
+            <td class="center">30 %</td>
+            <td class="right" id="tax-slab-7">0</td>
+        </tr>
+        <tr>
+            <td colspan="4" class="right bold">Total Income Tax</td>
+            <td class="right bold" id="totalSlabTax">0</td>
+        </tr>
+
+        <tr>
+            <td class="col-idx">6.</td>
+            <td colspan="5" class="wrap-text">Relief under section 87A (Subject to maximum Rs.60000 having taxable income up to Rs.12 lacs)</td>
+            <td class="right" id="rebate87A">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">7.</td>
+            <td colspan="5" class="wrap-text">Marginal relief</td>
+            <td class="right" id="marginalRelief">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">8.</td>
+            <td colspan="5" class="wrap-text">Income Tax after relief u/s 87A and marginal relief (5 - 6 - 7)</td>
+            <td class="right" id="taxAfterRelief">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">9.</td>
+            <td colspan="5" class="wrap-text">Education cess and Health cess @ 4%</td>
+            <td class="right" id="cess">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">10.</td>
+            <td colspan="5" class="bold wrap-text">Total Income Tax</td>
+            <td class="right bold" id="totalTaxLiability">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">11.</td>
+            <td colspan="5" class="wrap-text">Relief under section 89(1) if any (attach form 10E)</td>
+            <td class="right input-bg">
+                <input type="text" inputmode="numeric" id="relief89" class="right input-bg" placeholder="0" oninput="formatInput(this)">
+            </td>
+        </tr>
+    </table>
+
+    <table style="margin-top: 15px;">
+        <colgroup>
+            <col style="width: 5%;">
+            <col style="width: 50%;"> 
+            <col style="width: 15%;">
+            <col style="width: 15%;">
+            <col style="width: 15%;">
+        </colgroup>
+        <tr>
+            <td colspan="2" style="border:none;"></td> 
+            <td class="center bold" style="background-color: #f0fff0;">Tax</td>
+            <td class="center bold" style="background-color: #f0fff0;">Cess</td>
+            <td class="center bold" style="background-color: #f0fff0;">Total</td>
+        </tr>
+        <tr>
+            <td class="col-idx">12.</td>
+            <td class="wrap-text">Balance Income Tax payable after relief</td>
+            <td class="right" id="balanceTaxComp">0</td>
+            <td class="right" id="balanceCessComp">0</td>
+            <td class="right" id="balanceTotalComp">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">13.</td>
+            <td class="wrap-text">Income Tax already paid</td>
+            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
+            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
+            <td class="right" id="paidTotal">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">14.</td>
+            <td class="bold wrap-text">Net Income Tax</td>
+            <td class="right bold" id="netTax">0</td>
+            <td class="right bold" id="netCess">0</td>
+            <td class="right bold" id="netTotal">0</td>
+        </tr>
+    </table>
+
+    <div class="footer">
+        <div>Dated: <span id="currentDate"></span></div>
+        <div class="signature-line">Signature</div>
+    </div>
+</div>
+
+<script>
+    // --- Reset Function ---
+    function resetForm() {
+        if(confirm("Are you sure you want to clear all data?")) {
+            let inputs = document.querySelectorAll("input, textarea");
+            inputs.forEach(input => {
+                input.value = "";
+                if (input.tagName === "TEXTAREA") {
+                    input.style.height = "auto";
+                }
+            });
+            calculateTax();
+        }
+    }
+
+    // --- Auto Resize ---
+    function autoResize(elem) {
+        elem.style.height = 'auto'; 
+        elem.style.height = elem.scrollHeight + 'px';
+    }
+
+    // --- Input Formatter (Indian Commas) ---
+    function formatInput(elem) {
+        // 1. Get raw value by removing existing commas
+        let rawVal = elem.value.replace(/,/g, '');
+        
+        // 2. Check if it's a valid number
+        if (!rawVal || isNaN(rawVal)) {
+             // If empty or invalid, just recalculate to clear zeros if needed
+             calculateTax();
+             return;
+        }
+
+        // --- CAPPING LOGIC START ---
+        // Only for Gross Income field
+        if (elem.id === 'grossIncome') {
+            if (parseFloat(rawVal) > 5075000) {
+                 alert("Maximum limit reached!\n\nThis calculator does not support Surcharge.\nGross Income capped at Rs. 50,75,000 (Taxable Income Rs. 50 Lakhs).");
+                 rawVal = 5075000;
+            }
+        }
+        // --- CAPPING LOGIC END ---
+
+        // 3. Format to Indian System
+        let formatted = Math.round(rawVal).toLocaleString('en-IN');
+        
+        // 4. Set Value back to input
+        if (elem.value !== formatted) {
+            elem.value = formatted;
+        }
+        
+        // 5. Trigger Calculation
+        calculateTax();
+    }
+
+    // --- Date ---
+    const d = new Date();
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    document.getElementById('currentDate').innerText = `${day}/${month}/${year}`;
+
+    function format(num) {
+        return Math.round(num).toLocaleString('en-IN');
+    }
+
+    function calculateTax() {
+        // --- Helper to get Clean Number from Text Input ---
+        function getVal(id) {
+            let elem = document.getElementById(id);
+            if(!elem) return 0;
+            // Remove commas before parsing
+            let cleanVal = elem.value.replace(/,/g, '');
+            return parseFloat(cleanVal) || 0;
+        }
+
+        let gross = getVal('grossIncome');
+        let relief89 = getVal('relief89');
+        let paidTaxVal = getVal('paidTax');
+        let paidCessVal = getVal('paidCess');
+        
+        let stdDed = 75000;
+        let taxable = gross - stdDed;
+        if(taxable < 0) taxable = 0;
+
+        document.getElementById('headSalaries').innerText = format(taxable);
+        document.getElementById('taxableIncome').innerText = format(taxable);
+
+        // --- Core Slab Logic ---
+        let slabs = [
+            { start: 0, limit: 400000, rate: 0, id: 1 },
+            { start: 400000, limit: 800000, rate: 0.05, id: 2 },
+            { start: 800000, limit: 1200000, rate: 0.10, id: 3 },
+            { start: 1200000, limit: 1600000, rate: 0.15, id: 4 },
+            { start: 1600000, limit: 2000000, rate: 0.20, id: 5 },
+            { start: 2000000, limit: 2400000, rate: 0.25, id: 6 },
+            { start: 2400000, limit: Infinity, rate: 0.30, id: 7 }
+        ];
+
+        let slabTaxTotal = 0;
+        let visibleRowsCount = 0;
+
+        for(let i=0; i<slabs.length; i++) {
+            let slab = slabs[i];
+            let row = document.getElementById(`row-slab-${slab.id}`);
+            let toCell = document.getElementById(`to-slab-${slab.id}`);
+            
+            let isRelevant = (taxable > slab.start) || (i === 0 && taxable >= 0);
+
+            if (isRelevant) {
+                row.style.display = 'table-row';
+                visibleRowsCount++;
+
+                let incomeInSlab = 0;
+                
+                if (slab.limit !== Infinity && taxable > slab.limit) {
+                    incomeInSlab = slab.limit - slab.start;
+                    toCell.innerText = format(slab.limit);
+                } else {
+                    incomeInSlab = taxable - slab.start;
+                    toCell.innerText = format(taxable);
+                }
+                
+                if (incomeInSlab < 0) incomeInSlab = 0;
+
+                let taxInSlab = incomeInSlab * slab.rate;
+                slabTaxTotal += taxInSlab;
+
+                document.getElementById(`inc-slab-${slab.id}`).innerText = format(incomeInSlab);
+                document.getElementById(`tax-slab-${slab.id}`).innerText = format(taxInSlab);
+
+            } else {
+                row.style.display = 'none';
+            }
+        }
+
+        let newRowSpan = 2 + visibleRowsCount;
+        document.getElementById('slab-idx-cell').rowSpan = newRowSpan;
+        document.getElementById('slab-title-cell').rowSpan = newRowSpan;
+
+        document.getElementById('totalSlabTax').innerText = format(slabTaxTotal);
+
+        // --- Relief Logic ---
+        let rebate87A = 0;
+        let marginalRelief = 0;
+        let taxAfterRelief = slabTaxTotal;
+
+        if (taxable <= 1200000) {
+            rebate87A = slabTaxTotal;
+            taxAfterRelief = 0;
+        } else {
+            let excessIncome = taxable - 1200000;
+            if (slabTaxTotal > excessIncome) {
+                marginalRelief = slabTaxTotal - excessIncome;
+                taxAfterRelief = excessIncome;
+            }
+        }
+
+        document.getElementById('rebate87A').innerText = format(rebate87A);
+        document.getElementById('marginalRelief').innerText = format(marginalRelief);
+        document.getElementById('taxAfterRelief').innerText = format(taxAfterRelief);
+
+        let cess = Math.round(taxAfterRelief * 0.04);
+        document.getElementById('cess').innerText = format(cess);
+
+        let totalLiab = taxAfterRelief + cess;
+        document.getElementById('totalTaxLiability').innerText = format(totalLiab);
+
+        // --- Balance Payable ---
+        let baseTax = taxAfterRelief; 
+        let baseCess = cess;
+        
+        let adjustedTax = baseTax - relief89;
+        let adjustedCess = baseCess;
+
+        if (adjustedTax < 0) {
+            let remainingRelief = Math.abs(adjustedTax);
+            adjustedTax = 0;
+            adjustedCess = baseCess - remainingRelief;
+            if (adjustedCess < 0) adjustedCess = 0;
+        }
+
+        let totalPayableAfter89 = adjustedTax + adjustedCess;
+
+        document.getElementById('balanceTaxComp').innerText = format(adjustedTax);
+        document.getElementById('balanceCessComp').innerText = format(adjustedCess);
+        document.getElementById('balanceTotalComp').innerText = format(totalPayableAfter89);
+
+        // --- Net Payable ---
+        let paidTotal = paidTaxVal + paidCessVal;
+        document.getElementById('paidTotal').innerText = format(paidTotal);
+
+        let netTax = adjustedTax - paidTaxVal;
+        let netCess = adjustedCess - paidCessVal;
+        let netTotal = totalPayableAfter89 - paidTotal;
+
+        document.getElementById('netTax').innerText = format(netTax);
+        document.getElementById('netCess').innerText = format(netCess);
+        document.getElementById('netTotal').innerText = format(netTotal);
+    }
+    
+    calculateTax();
+</script>
+
+</body>
+</html>
