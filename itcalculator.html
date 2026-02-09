@@ -466,11 +466,7 @@
     function getFileName() {
         let nameField = document.getElementById("user_name");
         let nameVal = nameField ? nameField.value.trim() : "";
-        
-        // Use Smart Caps Logic for the Filename
         let smartName = toTitleCase(nameVal);
-        
-        // Clean up: remove illegal chars for filenames
         let cleanName = smartName.replace(/[\\/:"*?<>|]/g, "_");
         
         if (cleanName.length > 0) {
@@ -480,27 +476,53 @@
         }
     }
 
-    // --- HELPER: Bake Inputs for Rendering (Visual Fix for PDF) ---
-    function prepareInputsForCapture() {
-        const inputs = document.querySelectorAll('#printContent input, #printContent textarea');
-        inputs.forEach(input => {
-            if (input.classList.contains('upper')) {
-                input.value = input.value.toUpperCase();
-            } else if (input.classList.contains('capitalize')) {
-                // Apply Smart Caps logic visually before snapshot
-                input.value = toTitleCase(input.value);
-            }
-        });
-    }
-
-    // --- COMMON CANVAS GENERATOR ---
+    // --- UPDATED GENERATE CANVAS (Fixes Wrapping & Caps) ---
     async function generateCanvas() {
-        prepareInputsForCapture(); // Force styles before capture
         const element = document.getElementById('printContent');
+        
         return await html2canvas(element, {
             scale: 2, 
             useCORS: true,
-            backgroundColor: "#ffffff"
+            backgroundColor: "#ffffff",
+            // This 'onclone' function fixes the Textarea Wrapping & Capitalization issue
+            onclone: (clonedDoc) => {
+                // 1. Replace Textareas with Divs to ensure wrapping renders correctly
+                const textareas = clonedDoc.querySelectorAll('textarea');
+                textareas.forEach(ta => {
+                    const div = clonedDoc.createElement('div');
+                    
+                    // Copy exact styles
+                    div.style.width = '100%';
+                    div.style.minHeight = ta.style.height || '25px';
+                    div.style.fontFamily = 'inherit';
+                    div.style.fontSize = 'inherit';
+                    div.style.fontWeight = 'bold';
+                    div.style.lineHeight = '1.5';
+                    div.style.whiteSpace = 'pre-wrap'; // This enables wrapping
+                    div.style.wordBreak = 'break-word';
+                    div.style.color = '#000';
+                    div.style.textAlign = 'left';
+                    
+                    // Apply Smart Caps Logic to content
+                    let val = ta.value;
+                    if (ta.classList.contains('upper')) val = val.toUpperCase();
+                    if (ta.classList.contains('capitalize')) val = toTitleCase(val);
+                    
+                    div.innerText = val;
+                    
+                    if(ta.parentNode) {
+                        ta.parentNode.replaceChild(div, ta);
+                    }
+                });
+
+                // 2. Fix Inputs (ensure values and caps apply)
+                const inputs = clonedDoc.querySelectorAll('input');
+                inputs.forEach(inp => {
+                    let val = inp.value;
+                    if (inp.classList.contains('upper')) val = val.toUpperCase();
+                    inp.setAttribute('value', val);
+                });
+            }
         });
     }
 
@@ -508,7 +530,7 @@
     function printPage() {
         const originalTitle = document.title;
         let fileName = getFileName(); 
-        document.title = fileName.replace(".pdf", ""); // Set Title for Browser Print
+        document.title = fileName.replace(".pdf", ""); 
         
         window.print();
 
@@ -535,7 +557,7 @@
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
             
             const pdfBlob = pdf.output('blob');
-            const fileName = getFileName(); // Dynamic Name
+            const fileName = getFileName(); 
             
             const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
@@ -573,7 +595,7 @@
 
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
 
-            const fileName = getFileName(); // Dynamic Name
+            const fileName = getFileName(); 
             pdf.save(fileName);
 
         } catch (error) {
