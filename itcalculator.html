@@ -214,7 +214,9 @@
         </colgroup>
         <tr>
             <td>Name and Desig.</td>
-            <td><textarea id="user_name" class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
+            <td>
+                <textarea id="user_name" class="capitalize" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
+            </td>
             <td>PAN</td>
             <td><input type="text" class="upper"></td>
         </tr>
@@ -428,41 +430,72 @@
             document.querySelectorAll("td[id]").forEach(td => {
                 td.style.fontSize = "inherit";
             });
+            document.title = "Income Tax Calculator FY 2025-26";
             calculateTax();
+        }
+    }
+
+    // --- SMART Capitalization Logic ---
+    function toTitleCase(str) {
+        // List of Acronyms to ALWAYS keep UPPERCASE
+        const whitelist = new Set([
+            "JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEO", 
+            "VPO", "TEH", "DISTT", "PIN", "PO", "H.NO", "HNO", "WARD", "PH", "MO", "C/O", "S/O", "D/O", "W/O"
+        ]);
+
+        return str.toLowerCase().split(' ').map(function(word) {
+            let cleanWord = word.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+            if (whitelist.has(cleanWord)) {
+                return word.toUpperCase();
+            }
+            return (word.charAt(0).toUpperCase() + word.slice(1));
+        }).join(' ');
+    }
+
+    // --- Dynamic Title Update ---
+    function updateTitle(elem) {
+        let val = elem.value.trim();
+        if(val) {
+            document.title = toTitleCase(val);
+        } else {
+            document.title = "Income Tax Calculator FY 2025-26";
         }
     }
 
     // --- HELPER: Get Dynamic Filename ---
     function getFileName() {
-        // Retrieve name from the textarea with id "user_name"
         let nameField = document.getElementById("user_name");
-        let nameVal = nameField ? nameField.value : "";
+        let nameVal = nameField ? nameField.value.trim() : "";
         
-        // Clean up the name: remove special chars, spaces to underscores
-        let cleanName = nameVal.replace(/[^a-zA-Z0-9 ]/g, "").trim().replace(/\s+/g, "_");
+        // Use Smart Caps Logic for the Filename
+        let smartName = toTitleCase(nameVal);
+        
+        // Clean up: remove illegal chars for filenames
+        let cleanName = smartName.replace(/[\\/:"*?<>|]/g, "_");
         
         if (cleanName.length > 0) {
-            return "TaxCalc_" + cleanName + ".pdf";
+            return cleanName + ".pdf";
         } else {
             return "IncomeTax_Calculation.pdf";
         }
     }
 
-    // --- HELPER: Capitalize Inputs for Rendering ---
+    // --- HELPER: Bake Inputs for Rendering (Visual Fix for PDF) ---
     function prepareInputsForCapture() {
         const inputs = document.querySelectorAll('#printContent input, #printContent textarea');
         inputs.forEach(input => {
             if (input.classList.contains('upper')) {
                 input.value = input.value.toUpperCase();
             } else if (input.classList.contains('capitalize')) {
-                input.value = input.value.replace(/\b\w/g, l => l.toUpperCase());
+                // Apply Smart Caps logic visually before snapshot
+                input.value = toTitleCase(input.value);
             }
         });
     }
 
     // --- COMMON CANVAS GENERATOR ---
     async function generateCanvas() {
-        prepareInputsForCapture();
+        prepareInputsForCapture(); // Force styles before capture
         const element = document.getElementById('printContent');
         return await html2canvas(element, {
             scale: 2, 
@@ -473,15 +506,12 @@
 
     // --- PRINT WITH NAME ---
     function printPage() {
-        // Change document title temporarily for the Print Dialog to pick it up
         const originalTitle = document.title;
         let fileName = getFileName(); 
-        // Remove .pdf extension for the title (browser adds it usually, or just cleaner)
-        document.title = fileName.replace(".pdf", "");
+        document.title = fileName.replace(".pdf", ""); // Set Title for Browser Print
         
         window.print();
 
-        // Reset title after a short delay
         setTimeout(() => {
             document.title = originalTitle;
         }, 1000);
@@ -505,9 +535,7 @@
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
             
             const pdfBlob = pdf.output('blob');
-            
-            // Dynamic Name Here
-            const fileName = getFileName();
+            const fileName = getFileName(); // Dynamic Name
             
             const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
@@ -515,7 +543,7 @@
                 await navigator.share({
                     files: [file],
                     title: 'Income Tax Calculation',
-                    text: 'Attached is the Income Tax sheet for ' + fileName,
+                    text: 'Attached is the Income Tax sheet for ' + fileName.replace(".pdf", ""),
                 });
             } else {
                 pdf.save(fileName);
@@ -545,8 +573,7 @@
 
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
 
-            // Dynamic Name Here
-            const fileName = getFileName();
+            const fileName = getFileName(); // Dynamic Name
             pdf.save(fileName);
 
         } catch (error) {
