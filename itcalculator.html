@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Income Tax Calculator FY 2025-26</title>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
     <style>
         body {
             font-family: "Calibri", "Arial", sans-serif;
@@ -26,21 +30,30 @@
             text-align: center;
             z-index: 10000;
             box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            display: flex;
+            justify-content: center;
+            gap: 10px;
         }
 
         button {
-            padding: 8px 20px;
+            padding: 8px 15px;
             color: white;
             border: none;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 4px;
-            margin: 0 5px; 
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .btn-print { background-color: #28a745; }
         .btn-print:hover { background-color: #218838; }
+
+        /* New Share Button Style */
+        .btn-share { background-color: #007bff; }
+        .btn-share:hover { background-color: #0069d9; }
 
         .btn-reset { background-color: #dc3545; }
         .btn-reset:hover { background-color: #c82333; }
@@ -56,9 +69,10 @@
             text-align: left;
             margin: 0 auto;
             position: relative;
+            margin-top: 40px; /* Added margin for top bar */
         }
 
-        /* Typography - UPDATED FONT SIZE HERE */
+        /* Typography */
         h2 { font-size: 14pt; font-weight: bold; text-align: center; margin: 0 0 5px 0; }
         h3 { font-size: 13pt; font-weight: normal; color: blue; margin: 0 0 15px 0; }
 
@@ -83,17 +97,9 @@
             white-space: nowrap; 
         }
         
-        td.wrap-text {
-            white-space: normal;
-        }
-
+        td.wrap-text { white-space: normal; }
         .center { text-align: center; }
-        
-        .right { 
-            text-align: right; 
-            white-space: nowrap; 
-        }
-
+        .right { text-align: right; white-space: nowrap; }
         .bold { font-weight: bold; }
 
         /* General Input Style */
@@ -112,7 +118,6 @@
             transition: font-size 0.1s;
         }
 
-        /* Textarea Style */
         textarea {
             width: 100%;
             border: none;
@@ -131,11 +136,9 @@
             font-weight: bold;
         }
 
-        /* Hide Spinners */
         input[type=number]::-webkit-inner-spin-button, 
         input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
+            -webkit-appearance: none; margin: 0; 
         }
         input[type=number] { -moz-appearance: textfield; }
 
@@ -161,6 +164,20 @@
             padding-top: 5px;
         }
 
+        /* Loader */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 20000;
+            color: white;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
         @media print {
             @page { size: A4; margin: 0; }
             body { background: none; padding: 0; margin: 0; }
@@ -173,12 +190,18 @@
 </head>
 <body>
 
+<div id="loadingOverlay">
+    <div style="margin-bottom: 10px;">Generating PDF...</div>
+    <div>Please wait</div>
+</div>
+
 <div class="no-print">
     <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button class="btn-share" onclick="sharePDF()">📱 Share as PDF</button>
     <button class="btn-reset" onclick="resetForm()">🔄 Reset</button>
 </div>
 
-<div class="sheet">
+<div class="sheet" id="printContent">
     <h2>Income Tax Calculation for the Financial Year 2025-26 (AY 2026-27)</h2>
     <h3>Regime opted >>>> New regime</h3>
 
@@ -388,7 +411,7 @@
 </div>
 
 <script>
-    // --- Reset Function ---
+    // --- RESET Function ---
     function resetForm() {
         if(confirm("Are you sure you want to clear all data?")) {
             let inputs = document.querySelectorAll("input, textarea");
@@ -406,12 +429,68 @@
         }
     }
 
+    // --- SHARE AS PDF Function ---
+    async function sharePDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+
+        try {
+            const { jsPDF } = window.jspdf;
+            const element = document.getElementById('printContent');
+            
+            // Capture the content as a canvas with high scale for HD quality
+            const canvas = await html2canvas(element, {
+                scale: 2, // 2x scale ensures HD quality without being too heavy
+                useCORS: true,
+                backgroundColor: "#ffffff"
+            });
+
+            // Convert canvas to JPEG (Smaller size than PNG)
+            // Quality 0.75 is the sweet spot for 700kb-1000kb range
+            const imgData = canvas.toDataURL('image/jpeg', 0.75);
+
+            // Create A4 PDF
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            
+            // Calculate ratios to fit image on A4
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+
+            // Add image to PDF
+            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
+
+            // Generate Blob for sharing
+            const pdfBlob = pdf.output('blob');
+            const fileName = "IncomeTax_Calculation_" + new Date().getFullYear() + ".pdf";
+            const file = new File([pdfBlob], fileName, { type: "application/pdf" });
+
+            // Trigger Share (Mobile) or Download (Desktop)
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Income Tax Calculation',
+                    text: 'Here is the Income Tax Calculation sheet.',
+                });
+            } else {
+                // Fallback for Desktop
+                pdf.save(fileName);
+            }
+
+        } catch (error) {
+            alert("Error generating PDF: " + error.message);
+            console.error(error);
+        } finally {
+            overlay.style.display = 'none';
+        }
+    }
+
     function autoResize(elem) {
         elem.style.height = 'auto'; 
         elem.style.height = elem.scrollHeight + 'px';
     }
 
-    // --- Universal Font Resizer ---
     function adjustFontSize(idOrElem) {
         let elem = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
         if (!elem) return;
@@ -441,11 +520,9 @@
         calculateTax();
     }
 
-    // --- Only Update & Resize (No Wrap Logic) ---
     function updateAndResize(id, value) {
         let elem = document.getElementById(id);
         if(!elem) return;
-
         elem.innerText = value;
         adjustFontSize(elem);
     }
@@ -525,7 +602,6 @@
 
         updateAndResize('totalSlabTax', format(slabTaxTotal));
 
-        // --- 87A Relief ---
         let rebate87A = 0;
         let marginalRelief87A = 0;
         let taxAfterRelief = slabTaxTotal;
@@ -545,7 +621,6 @@
         updateAndResize('marginalRelief87A', format(marginalRelief87A));
         updateAndResize('taxAfterRelief', format(taxAfterRelief));
 
-        // --- Surcharge & Relief ---
         let surchargeAmount = 0;
         let surchargeRate = 0;
         if (taxable > 20000000) surchargeRate = 0.25; 
@@ -591,7 +666,6 @@
         let totalLiab = taxBeforeCess + cess;
         updateAndResize('totalTaxLiability', format(totalLiab));
 
-        // --- Balance ---
         let finalTaxComp = taxBeforeCess;
         let finalCessComp = cess;
         if (relief89 > 0) {
@@ -618,14 +692,13 @@
         updateAndResize('netCess', format(netCess));
         updateAndResize('netTotal', format(netTotal));
 
-        // --- NEW STATUS BOX LOGIC ---
         let statusBox = document.getElementById('taxStatus');
         if (netTotal > 0) {
             statusBox.value = "Payable";
-            statusBox.style.color = "#dc3545"; // Red
+            statusBox.style.color = "#dc3545";
         } else if (netTotal < 0) {
             statusBox.value = "Refundable";
-            statusBox.style.color = "#28a745"; // Green
+            statusBox.style.color = "#28a745";
         } else {
             statusBox.value = "Nil";
             statusBox.style.color = "black";
