@@ -434,6 +434,20 @@
         const overlay = document.getElementById('loadingOverlay');
         overlay.style.display = 'flex';
 
+        // --- FIX: Force capitalization logic on the values for Canvas ---
+        // html2canvas reads the actual value, so we must manually capitalize the text
+        // based on the CSS class applied to the input/textarea.
+        const inputs = document.querySelectorAll('#printContent input, #printContent textarea');
+        inputs.forEach(input => {
+            if (input.classList.contains('upper')) {
+                input.value = input.value.toUpperCase();
+            } else if (input.classList.contains('capitalize')) {
+                // Capitalize first letter of each word
+                input.value = input.value.replace(/\b\w/g, l => l.toUpperCase());
+            }
+        });
+        // ---------------------------------------------------------------
+
         try {
             const { jsPDF } = window.jspdf;
             const element = document.getElementById('printContent');
