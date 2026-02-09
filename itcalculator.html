@@ -51,9 +51,11 @@
         .btn-print { background-color: #28a745; }
         .btn-print:hover { background-color: #218838; }
 
-        /* New Share Button Style */
         .btn-share { background-color: #007bff; }
         .btn-share:hover { background-color: #0069d9; }
+
+        .btn-download { background-color: #6f42c1; }
+        .btn-download:hover { background-color: #5a32a3; }
 
         .btn-reset { background-color: #dc3545; }
         .btn-reset:hover { background-color: #c82333; }
@@ -69,7 +71,7 @@
             text-align: left;
             margin: 0 auto;
             position: relative;
-            margin-top: 40px; /* Added margin for top bar */
+            margin-top: 40px; 
         }
 
         /* Typography */
@@ -196,8 +198,9 @@
 </div>
 
 <div class="no-print">
-    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
+    <button class="btn-print" onclick="printPage()">🖨️ Print / Save as PDF</button>
     <button class="btn-share" onclick="sharePDF()">📱 Share as PDF</button>
+    <button class="btn-download" onclick="downloadPDF()">📄 Download PDF</button>
     <button class="btn-reset" onclick="resetForm()">🔄 Reset</button>
 </div>
 
@@ -211,7 +214,7 @@
         </colgroup>
         <tr>
             <td>Name and Desig.</td>
-            <td><textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
+            <td><textarea id="user_name" class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
             <td>PAN</td>
             <td><input type="text" class="upper"></td>
         </tr>
@@ -429,77 +432,131 @@
         }
     }
 
-    // --- SHARE AS PDF Function ---
-    async function sharePDF() {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'flex';
+    // --- HELPER: Get Dynamic Filename ---
+    function getFileName() {
+        // Retrieve name from the textarea with id "user_name"
+        let nameField = document.getElementById("user_name");
+        let nameVal = nameField ? nameField.value : "";
+        
+        // Clean up the name: remove special chars, spaces to underscores
+        let cleanName = nameVal.replace(/[^a-zA-Z0-9 ]/g, "").trim().replace(/\s+/g, "_");
+        
+        if (cleanName.length > 0) {
+            return "TaxCalc_" + cleanName + ".pdf";
+        } else {
+            return "IncomeTax_Calculation.pdf";
+        }
+    }
 
-        // --- FIX: Force capitalization logic on the values for Canvas ---
-        // html2canvas reads the actual value, so we must manually capitalize the text
-        // based on the CSS class applied to the input/textarea.
+    // --- HELPER: Capitalize Inputs for Rendering ---
+    function prepareInputsForCapture() {
         const inputs = document.querySelectorAll('#printContent input, #printContent textarea');
         inputs.forEach(input => {
             if (input.classList.contains('upper')) {
                 input.value = input.value.toUpperCase();
             } else if (input.classList.contains('capitalize')) {
-                // Capitalize first letter of each word
                 input.value = input.value.replace(/\b\w/g, l => l.toUpperCase());
             }
         });
-        // ---------------------------------------------------------------
+    }
+
+    // --- COMMON CANVAS GENERATOR ---
+    async function generateCanvas() {
+        prepareInputsForCapture();
+        const element = document.getElementById('printContent');
+        return await html2canvas(element, {
+            scale: 2, 
+            useCORS: true,
+            backgroundColor: "#ffffff"
+        });
+    }
+
+    // --- PRINT WITH NAME ---
+    function printPage() {
+        // Change document title temporarily for the Print Dialog to pick it up
+        const originalTitle = document.title;
+        let fileName = getFileName(); 
+        // Remove .pdf extension for the title (browser adds it usually, or just cleaner)
+        document.title = fileName.replace(".pdf", "");
+        
+        window.print();
+
+        // Reset title after a short delay
+        setTimeout(() => {
+            document.title = originalTitle;
+        }, 1000);
+    }
+
+    // --- SHARE AS PDF Function ---
+    async function sharePDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
 
         try {
-            const { jsPDF } = window.jspdf;
-            const element = document.getElementById('printContent');
+            const canvas = await generateCanvas();
+            const imgData = canvas.toDataURL('image/jpeg', 0.80);
             
-            // Capture the content as a canvas with high scale for HD quality
-            const canvas = await html2canvas(element, {
-                scale: 2, // 2x scale ensures HD quality without being too heavy
-                useCORS: true,
-                backgroundColor: "#ffffff"
-            });
-
-            // Convert canvas to JPEG (Smaller size than PNG)
-            // Quality 0.75 is the sweet spot for 700kb-1000kb range
-            const imgData = canvas.toDataURL('image/jpeg', 0.75);
-
-            // Create A4 PDF
+            const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-            
-            // Calculate ratios to fit image on A4
             const imgProps = pdf.getImageProperties(imgData);
             const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
 
-            // Add image to PDF
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
-
-            // Generate Blob for sharing
+            
             const pdfBlob = pdf.output('blob');
-            const fileName = "IncomeTax_Calculation_" + new Date().getFullYear() + ".pdf";
+            
+            // Dynamic Name Here
+            const fileName = getFileName();
+            
             const file = new File([pdfBlob], fileName, { type: "application/pdf" });
 
-            // Trigger Share (Mobile) or Download (Desktop)
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
                     title: 'Income Tax Calculation',
-                    text: 'Here is the Income Tax Calculation sheet.',
+                    text: 'Attached is the Income Tax sheet for ' + fileName,
                 });
             } else {
-                // Fallback for Desktop
                 pdf.save(fileName);
             }
 
         } catch (error) {
-            alert("Error generating PDF: " + error.message);
-            console.error(error);
+            alert("Error: " + error.message);
         } finally {
             overlay.style.display = 'none';
         }
     }
 
+    // --- DOWNLOAD PDF Function ---
+    async function downloadPDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+
+        try {
+            const canvas = await generateCanvas();
+            const imgData = canvas.toDataURL('image/jpeg', 0.85);
+            
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
+
+            // Dynamic Name Here
+            const fileName = getFileName();
+            pdf.save(fileName);
+
+        } catch (error) {
+            alert("Error downloading PDF: " + error.message);
+        } finally {
+            overlay.style.display = 'none';
+        }
+    }
+
+    // --- CALCULATION LOGIC (Unchanged) ---
     function autoResize(elem) {
         elem.style.height = 'auto'; 
         elem.style.height = elem.scrollHeight + 'px';
