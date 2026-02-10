@@ -218,11 +218,11 @@
                 <textarea id="user_name" class="capitalize" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
             </td>
             <td>PAN</td>
-            <td><input type="text" class="upper"></td>
+            <td><input type="text" class="upper" oninput="this.value = this.value.toUpperCase()"></td>
         </tr>
         <tr>
             <td>e-Salary Code</td>
-            <td><textarea class="upper" rows="1" oninput="autoResize(this)"></textarea></td>
+            <td><textarea class="upper" rows="1" oninput="autoResize(this); this.value = this.value.toUpperCase()"></textarea></td>
             <td>Mobile No.</td>
             <td><input type="number"></td>
         </tr>
@@ -476,7 +476,7 @@
         }
     }
 
-    // --- UPDATED GENERATE CANVAS (Fixes Wrapping & Caps) ---
+    // --- UPDATED GENERATE CANVAS (Fixed for Vertical Alignment) ---
     async function generateCanvas() {
         const element = document.getElementById('printContent');
         
@@ -484,26 +484,24 @@
             scale: 2, 
             useCORS: true,
             backgroundColor: "#ffffff",
-            // This 'onclone' function fixes the Textarea Wrapping & Capitalization issue
+            // This 'onclone' function fixes the Textarea Wrapping & Input Alignment
             onclone: (clonedDoc) => {
                 // 1. Replace Textareas with Divs to ensure wrapping renders correctly
                 const textareas = clonedDoc.querySelectorAll('textarea');
                 textareas.forEach(ta => {
                     const div = clonedDoc.createElement('div');
                     
-                    // Copy exact styles
                     div.style.width = '100%';
                     div.style.minHeight = ta.style.height || '25px';
                     div.style.fontFamily = 'inherit';
                     div.style.fontSize = 'inherit';
                     div.style.fontWeight = 'bold';
                     div.style.lineHeight = '1.5';
-                    div.style.whiteSpace = 'pre-wrap'; // This enables wrapping
+                    div.style.whiteSpace = 'pre-wrap';
                     div.style.wordBreak = 'break-word';
                     div.style.color = '#000';
                     div.style.textAlign = 'left';
                     
-                    // Apply Smart Caps Logic to content
                     let val = ta.value;
                     if (ta.classList.contains('upper')) val = val.toUpperCase();
                     if (ta.classList.contains('capitalize')) val = toTitleCase(val);
@@ -515,12 +513,40 @@
                     }
                 });
 
-                // 2. Fix Inputs (ensure values and caps apply)
+                // 2. Fix Inputs: Convert to Flexbox Divs for Vertical Centering
                 const inputs = clonedDoc.querySelectorAll('input');
                 inputs.forEach(inp => {
+                    const div = clonedDoc.createElement('div');
+
+                    // Style container for perfect alignment
+                    div.style.width = '100%';
+                    div.style.minHeight = '24px'; // Ensures height for centering
+                    div.style.display = 'flex';
+                    div.style.alignItems = 'center'; // KEY FIX: Vertically center text
+                    div.style.fontFamily = 'inherit';
+                    div.style.fontSize = 'inherit';
+                    div.style.fontWeight = 'bold';
+                    div.style.background = 'transparent';
+                    div.style.overflow = 'hidden';
+                    div.style.color = '#000';
+
+                    // Maintain Horizontal Alignment based on original class
+                    if (inp.classList.contains('right')) {
+                        div.style.justifyContent = 'flex-end';
+                    } else if (inp.classList.contains('center')) {
+                        div.style.justifyContent = 'center';
+                    } else {
+                        div.style.justifyContent = 'flex-start';
+                    }
+
+                    // Value Logic
                     let val = inp.value;
                     if (inp.classList.contains('upper')) val = val.toUpperCase();
-                    inp.setAttribute('value', val);
+                    div.innerText = val;
+
+                    if(inp.parentNode) {
+                        inp.parentNode.replaceChild(div, inp);
+                    }
                 });
             }
         });
@@ -605,7 +631,7 @@
         }
     }
 
-    // --- CALCULATION LOGIC (Unchanged) ---
+    // --- CALCULATION LOGIC ---
     function autoResize(elem) {
         elem.style.height = 'auto'; 
         elem.style.height = elem.scrollHeight + 'px';
@@ -674,6 +700,7 @@
         updateAndResize('headSalaries', format(taxable));
         updateAndResize('taxableIncome', format(taxable));
 
+        // FY 2025-26 New Regime Slabs
         let slabs = [
             { start: 0, limit: 400000, rate: 0, id: 1 },
             { start: 400000, limit: 800000, rate: 0.05, id: 2 },
@@ -825,6 +852,7 @@
         }
     }
     
+    // Initial Call
     calculateTax();
     adjustFontSize('grossIncome');
 </script>
