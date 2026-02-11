@@ -92,7 +92,7 @@
 
         th, td {
             border: 1px solid black;
-            padding: 2px 4px; 
+            padding: 1.7px 4px; 
             vertical-align: middle;
             line-height: 1.5; 
             overflow: hidden;
@@ -153,7 +153,7 @@
         
         /* Footer */
         .footer {
-            margin-top: 45px; 
+            margin-top: 35px; 
             display: flex;
             justify-content: space-between;
             font-size: 12.5pt;
@@ -356,16 +356,21 @@
         </tr>
         <tr>
             <td class="col-idx">11.</td>
+            <td colspan="5" class="wrap-text">Income Tax after Marginal relief on Surcharge (8+9-10)</td>
+            <td class="right bold" id="taxAfterSurchargeRelief">0</td>
+        </tr>
+        <tr>
+            <td class="col-idx">12.</td>
             <td colspan="5" class="wrap-text">Education cess and Health cess @ 4%</td>
             <td class="right" id="cess">0</td>
         </tr>
         <tr>
-            <td class="col-idx">12.</td>
-            <td colspan="5" class="bold wrap-text">Total Income Tax</td>
+            <td class="col-idx">13.</td>
+            <td colspan="5" class="bold wrap-text">Total Income Tax (11+12)</td>
             <td class="right bold" id="totalTaxLiability">0</td>
         </tr>
         <tr>
-            <td class="col-idx">13.</td>
+            <td class="col-idx">14.</td>
             <td colspan="5" class="wrap-text">Relief under section 89(1) if any (attach form 10E)</td>
             <td class="right input-bg">
                 <input type="text" inputmode="numeric" id="relief89" class="right input-bg" placeholder="0" oninput="formatInput(this)">
@@ -384,21 +389,21 @@
             <td class="center bold" style="background-color: #f0fff0;">Total</td>
         </tr>
         <tr>
-            <td class="col-idx">14.</td>
+            <td class="col-idx">15.</td>
             <td colspan="2" class="wrap-text">Balance Income Tax payable after relief</td>
             <td class="right" id="balanceTaxComp">0</td>
             <td class="right" id="balanceCessComp">0</td>
             <td class="right" id="balanceTotalComp">0</td>
         </tr>
         <tr>
-            <td class="col-idx">15.</td>
+            <td class="col-idx">16.</td>
             <td colspan="2" class="wrap-text">Income Tax already paid</td>
             <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
             <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
             <td class="right" id="paidTotal">0</td>
         </tr>
         <tr>
-            <td class="col-idx">16.</td>
+            <td class="col-idx">17.</td>
             <td class="bold wrap-text">Net Income Tax</td>
             <td style="background-color: #fafafa;">
                 <input type="text" id="taxStatus" class="bold center" readonly value="Nil" style="width: 100%;">
@@ -437,7 +442,6 @@
 
     // --- SMART Capitalization Logic ---
     function toTitleCase(str) {
-        // List of Acronyms to ALWAYS keep UPPERCASE
         const whitelist = new Set([
             "JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEO", 
             "VPO", "TEH", "DISTT", "PIN", "PO", "H.NO", "HNO", "WARD", "PH", "MO", "C/O", "S/O", "D/O", "W/O"
@@ -452,7 +456,6 @@
         }).join(' ');
     }
 
-    // --- Dynamic Title Update ---
     function updateTitle(elem) {
         let val = elem.value.trim();
         if(val) {
@@ -462,7 +465,6 @@
         }
     }
 
-    // --- HELPER: Get Dynamic Filename ---
     function getFileName() {
         let nameField = document.getElementById("user_name");
         let nameVal = nameField ? nameField.value.trim() : "";
@@ -476,7 +478,6 @@
         }
     }
 
-    // --- UPDATED GENERATE CANVAS (Fixed for Vertical Alignment) ---
     async function generateCanvas() {
         const element = document.getElementById('printContent');
         
@@ -484,13 +485,10 @@
             scale: 2, 
             useCORS: true,
             backgroundColor: "#ffffff",
-            // This 'onclone' function fixes the Textarea Wrapping & Input Alignment
             onclone: (clonedDoc) => {
-                // 1. Replace Textareas with Divs to ensure wrapping renders correctly
                 const textareas = clonedDoc.querySelectorAll('textarea');
                 textareas.forEach(ta => {
                     const div = clonedDoc.createElement('div');
-                    
                     div.style.width = '100%';
                     div.style.minHeight = ta.style.height || '25px';
                     div.style.fontFamily = 'inherit';
@@ -501,36 +499,28 @@
                     div.style.wordBreak = 'break-word';
                     div.style.color = '#000';
                     div.style.textAlign = 'left';
-                    
                     let val = ta.value;
                     if (ta.classList.contains('upper')) val = val.toUpperCase();
                     if (ta.classList.contains('capitalize')) val = toTitleCase(val);
-                    
                     div.innerText = val;
-                    
                     if(ta.parentNode) {
                         ta.parentNode.replaceChild(div, ta);
                     }
                 });
 
-                // 2. Fix Inputs: Convert to Flexbox Divs for Vertical Centering
                 const inputs = clonedDoc.querySelectorAll('input');
                 inputs.forEach(inp => {
                     const div = clonedDoc.createElement('div');
-
-                    // Style container for perfect alignment
                     div.style.width = '100%';
-                    div.style.minHeight = '24px'; // Ensures height for centering
+                    div.style.minHeight = '24px'; 
                     div.style.display = 'flex';
-                    div.style.alignItems = 'center'; // KEY FIX: Vertically center text
+                    div.style.alignItems = 'center'; 
                     div.style.fontFamily = 'inherit';
                     div.style.fontSize = 'inherit';
                     div.style.fontWeight = 'bold';
                     div.style.background = 'transparent';
                     div.style.overflow = 'hidden';
                     div.style.color = '#000';
-
-                    // Maintain Horizontal Alignment based on original class
                     if (inp.classList.contains('right')) {
                         div.style.justifyContent = 'flex-end';
                     } else if (inp.classList.contains('center')) {
@@ -538,12 +528,9 @@
                     } else {
                         div.style.justifyContent = 'flex-start';
                     }
-
-                    // Value Logic
                     let val = inp.value;
                     if (inp.classList.contains('upper')) val = val.toUpperCase();
                     div.innerText = val;
-
                     if(inp.parentNode) {
                         inp.parentNode.replaceChild(div, inp);
                     }
@@ -552,41 +539,31 @@
         });
     }
 
-    // --- PRINT WITH NAME ---
     function printPage() {
         const originalTitle = document.title;
         let fileName = getFileName(); 
         document.title = fileName.replace(".pdf", ""); 
-        
         window.print();
-
         setTimeout(() => {
             document.title = originalTitle;
         }, 1000);
     }
 
-    // --- SHARE AS PDF Function ---
     async function sharePDF() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.style.display = 'flex';
-
         try {
             const canvas = await generateCanvas();
-            const imgData = canvas.toDataURL('image/jpeg', 0.85);
-            
+            const imgData = canvas.toDataURL('image/jpeg', 0.80);
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const imgProps = pdf.getImageProperties(imgData);
             const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
-            
             const pdfBlob = pdf.output('blob');
             const fileName = getFileName(); 
-            
             const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
@@ -596,7 +573,6 @@
             } else {
                 pdf.save(fileName);
             }
-
         } catch (error) {
             alert("Error: " + error.message);
         } finally {
@@ -604,26 +580,20 @@
         }
     }
 
-    // --- DOWNLOAD PDF Function ---
     async function downloadPDF() {
         const overlay = document.getElementById('loadingOverlay');
         overlay.style.display = 'flex';
-
         try {
             const canvas = await generateCanvas();
             const imgData = canvas.toDataURL('image/jpeg', 0.85);
-            
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pageWidth = pdf.internal.pageSize.getWidth();
             const imgProps = pdf.getImageProperties(imgData);
             const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-
             pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
-
             const fileName = getFileName(); 
             pdf.save(fileName);
-
         } catch (error) {
             alert("Error downloading PDF: " + error.message);
         } finally {
@@ -631,7 +601,6 @@
         }
     }
 
-    // --- CALCULATION LOGIC ---
     function autoResize(elem) {
         elem.style.height = 'auto'; 
         elem.style.height = elem.scrollHeight + 'px';
@@ -640,10 +609,8 @@
     function adjustFontSize(idOrElem) {
         let elem = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
         if (!elem) return;
-
         let text = (elem.tagName === 'INPUT') ? elem.value : elem.innerText;
         let len = text.length;
-
         if (len > 11) {
             let newSize = 12.5 * (11 / len); 
             if (newSize < 6.5) newSize = 6.5; 
@@ -700,7 +667,6 @@
         updateAndResize('headSalaries', format(taxable));
         updateAndResize('taxableIncome', format(taxable));
 
-        // FY 2025-26 New Regime Slabs
         let slabs = [
             { start: 0, limit: 400000, rate: 0, id: 1 },
             { start: 400000, limit: 800000, rate: 0.05, id: 2 },
@@ -722,7 +688,6 @@
             if (isRelevant) {
                 row.style.display = 'table-row';
                 visibleRowsCount++;
-
                 let incomeInSlab = 0;
                 if (slab.limit !== Infinity && taxable > slab.limit) {
                     incomeInSlab = slab.limit - slab.start;
@@ -731,11 +696,9 @@
                     incomeInSlab = taxable - slab.start;
                     updateAndResize(`to-slab-${slab.id}`, format(taxable));
                 }
-                
                 if (incomeInSlab < 0) incomeInSlab = 0;
                 let taxInSlab = incomeInSlab * slab.rate;
                 slabTaxTotal += taxInSlab;
-
                 updateAndResize(`inc-slab-${slab.id}`, format(incomeInSlab));
                 updateAndResize(`tax-slab-${slab.id}`, format(taxInSlab));
             } else {
@@ -806,14 +769,18 @@
         updateAndResize('surcharge', format(surchargeAmount));
         updateAndResize('marginalReliefSurcharge', format(surchargeRelief));
 
-        let taxBeforeCess = taxAfterRelief + surchargeAmount - surchargeRelief;
-        let cess = Math.round(taxBeforeCess * 0.04);
+        // Nayi Line calculation (Sr. No. 11)
+        let taxAfterSurchargeRelief = taxAfterRelief + surchargeAmount - surchargeRelief;
+        updateAndResize('taxAfterSurchargeRelief', format(taxAfterSurchargeRelief));
+
+        // Cess calculated on the new figure
+        let cess = Math.round(taxAfterSurchargeRelief * 0.04);
         updateAndResize('cess', format(cess));
 
-        let totalLiab = taxBeforeCess + cess;
+        let totalLiab = taxAfterSurchargeRelief + cess;
         updateAndResize('totalTaxLiability', format(totalLiab));
 
-        let finalTaxComp = taxBeforeCess;
+        let finalTaxComp = taxAfterSurchargeRelief;
         let finalCessComp = cess;
         if (relief89 > 0) {
             let remainRelief = relief89;
@@ -852,14 +819,9 @@
         }
     }
     
-    // Initial Call
     calculateTax();
     adjustFontSize('grossIncome');
 </script>
 
 </body>
 </html>
-
-
-
-
