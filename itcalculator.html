@@ -435,7 +435,6 @@
 
     // --- RESET Function ---
     function resetForm() {
-        if(confirm("Are you sure you want to clear all data?")) {
             let inputs = document.querySelectorAll("input, textarea");
             inputs.forEach(input => {
                 input.value = "";
@@ -450,7 +449,6 @@
             document.title = "Income Tax Calculator FY 2025-26";
             calculateTax();
             checkInputs(); // Hide button after clearing
-        }
     }
 
     // --- SMART Capitalization Logic ---
@@ -836,3 +834,4 @@
 
 </body>
 </html>
+
