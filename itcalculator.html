@@ -57,7 +57,8 @@
         .btn-download { background-color: #6f42c1; }
         .btn-download:hover { background-color: #5a32a3; }
 
-        .btn-reset { background-color: #dc3545; }
+        /* Initial display hidden for reset button */
+        .btn-reset { background-color: #dc3545; display: none; }
         .btn-reset:hover { background-color: #c82333; }
 
         .sheet {
@@ -104,7 +105,6 @@
         .right { text-align: right; white-space: nowrap; }
         .bold { font-weight: bold; }
 
-        /* General Input Style */
         input {
             width: 100%;
             border: none;
@@ -151,7 +151,6 @@
 
         .col-idx { text-align: center; font-weight: bold; width: 5%; }
         
-        /* Footer */
         .footer {
             margin-top: 35px; 
             display: flex;
@@ -159,13 +158,7 @@
             font-size: 12.5pt;
             width: 100%;
         }
-        .footer {
-    margin-top: 35px;
-}
-
-.footer > div:first-child {
-    margin-top: -15px;
-}
+        .footer > div:first-child { margin-top: -15px; }
         .signature-line {
             border-top: 1px dashed black;
             width: 180px;
@@ -173,7 +166,6 @@
             padding-top: 5px;
         }
 
-        /* Loader */
         #loadingOverlay {
             display: none;
             position: fixed;
@@ -197,7 +189,7 @@
         }
     </style>
 </head>
-<body>
+<body oninput="checkInputs()">
 
 <div id="loadingOverlay">
     <div style="margin-bottom: 10px;">Generating PDF...</div>
@@ -208,7 +200,7 @@
     <button class="btn-print" onclick="printPage()">🖨️ Print / Save as PDF (HD Quality)</button>
     <button class="btn-share" onclick="sharePDF()">📱 Share as PDF</button>
     <button class="btn-download" onclick="downloadPDF()">📄 Download PDF</button>
-    <button class="btn-reset" onclick="resetForm()">🔄 Reset</button>
+    <button id="resetBtn" class="btn-reset" onclick="resetForm()">🔄 Reset</button>
 </div>
 
 <div class="sheet" id="printContent">
@@ -428,6 +420,19 @@
 </div>
 
 <script>
+    // --- Visibility Logic ---
+    function checkInputs() {
+        let inputs = document.querySelectorAll("input, textarea");
+        let hasValue = false;
+        for (let input of inputs) {
+            if (!input.readOnly && input.value.trim() !== "") {
+                hasValue = true;
+                break;
+            }
+        }
+        document.getElementById("resetBtn").style.display = hasValue ? "inline-flex" : "none";
+    }
+
     // --- RESET Function ---
     function resetForm() {
         if(confirm("Are you sure you want to clear all data?")) {
@@ -444,6 +449,7 @@
             });
             document.title = "Income Tax Calculator FY 2025-26";
             calculateTax();
+            checkInputs(); // Hide button after clearing
         }
     }
 
@@ -647,8 +653,8 @@
         adjustFontSize(elem);
     }
 
-    const d = new Date();
-    document.getElementById('currentDate').innerText = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    const d_now = new Date();
+    document.getElementById('currentDate').innerText = `${String(d_now.getDate()).padStart(2,'0')}/${String(d_now.getMonth()+1).padStart(2,'0')}/${d_now.getFullYear()}`;
 
     function format(num) {
         return Math.round(num).toLocaleString('en-IN');
@@ -776,11 +782,9 @@
         updateAndResize('surcharge', format(surchargeAmount));
         updateAndResize('marginalReliefSurcharge', format(surchargeRelief));
 
-        // Nayi Line calculation (Sr. No. 11)
         let taxAfterSurchargeRelief = taxAfterRelief + surchargeAmount - surchargeRelief;
         updateAndResize('taxAfterSurchargeRelief', format(taxAfterSurchargeRelief));
 
-        // Cess calculated on the new figure
         let cess = Math.round(taxAfterSurchargeRelief * 0.04);
         updateAndResize('cess', format(cess));
 
@@ -832,5 +836,3 @@
 
 </body>
 </html>
-
-
