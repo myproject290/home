@@ -273,12 +273,12 @@
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">Income Tax</td>
         </tr>
 
-        <tr id="row-slab-1"><td class="right">0</td><td class="right" id="to-slab-1">4,00,000</td><td class="right" id="inc-slab-1">0</td><td class="center">0 %</td><td class="right" id="tax-slab-1">0</td></tr>
-        <tr id="row-slab-2"><td class="right">4,00,001</td><td class="right" id="to-slab-2">8,00,000</td><td class="right" id="inc-slab-2">0</td><td class="center">5 %</td><td class="right" id="tax-slab-2">0</td></tr>
-        <tr id="row-slab-3"><td class="right">8,00,001</td><td class="right" id="to-slab-3">12,00,000</td><td class="right" id="inc-slab-3">0</td><td class="center">10 %</td><td class="right" id="tax-slab-3">0</td></tr>
-        <tr id="row-slab-4"><td class="right">12,00,001</td><td class="right" id="to-slab-4">16,00,000</td><td class="right" id="inc-slab-4">0</td><td class="center">15 %</td><td class="right" id="tax-slab-4">0</td></tr>
-        <tr id="row-slab-5"><td class="right">16,00,001</td><td class="right" id="to-slab-5">20,00,000</td><td class="right" id="inc-slab-5">0</td><td class="center">20 %</td><td class="right" id="tax-slab-5">0</td></tr>
-        <tr id="row-slab-6"><td class="right">20,00,001</td><td class="right" id="to-slab-6">24,00,000</td><td class="right" id="inc-slab-6">0</td><td class="center">25 %</td><td class="right" id="tax-slab-6">0</td></tr>
+        <tr id="row-slab-1"><td class="right">0</td><td class="right" id="to-slab-1">0</td><td class="right" id="inc-slab-1">0</td><td class="center">0 %</td><td class="right" id="tax-slab-1">0</td></tr>
+        <tr id="row-slab-2"><td class="right">4,00,001</td><td class="right" id="to-slab-2">0</td><td class="right" id="inc-slab-2">0</td><td class="center">5 %</td><td class="right" id="tax-slab-2">0</td></tr>
+        <tr id="row-slab-3"><td class="right">8,00,001</td><td class="right" id="to-slab-3">0</td><td class="right" id="inc-slab-3">0</td><td class="center">10 %</td><td class="right" id="tax-slab-3">0</td></tr>
+        <tr id="row-slab-4"><td class="right">12,00,001</td><td class="right" id="to-slab-4">0</td><td class="right" id="inc-slab-4">0</td><td class="center">15 %</td><td class="right" id="tax-slab-4">0</td></tr>
+        <tr id="row-slab-5"><td class="right">16,00,001</td><td class="right" id="to-slab-5">0</td><td class="right" id="inc-slab-5">0</td><td class="center">20 %</td><td class="right" id="tax-slab-5">0</td></tr>
+        <tr id="row-slab-6"><td class="right">20,00,001</td><td class="right" id="to-slab-6">0</td><td class="right" id="inc-slab-6">0</td><td class="center">25 %</td><td class="right" id="tax-slab-6">0</td></tr>
         <tr id="row-slab-7"><td class="right">24,00,001</td><td class="right" id="to-slab-7">Above</td><td class="right" id="inc-slab-7">0</td><td class="center">30 %</td><td class="right" id="tax-slab-7">0</td></tr>
         <tr><td colspan="4" class="right bold">Total Income Tax</td><td class="right bold" id="totalSlabTax">0</td></tr>
 
@@ -374,7 +374,7 @@
 </div>
 
 <script>
-    // --- PAN VALIDATION (5 Alphabets, 4 Digits, 1 Alphabet) ---
+    // --- PAN VALIDATION ---
     function validatePAN(input) {
         let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
         let result = '';
@@ -386,7 +386,7 @@
         input.value = result;
     }
 
-    // --- MOBILE VALIDATION (10 Digits, No Leading 0) ---
+    // --- MOBILE VALIDATION ---
     function validateMobile(input) {
         let val = input.value.replace(/[^0-9]/g, '');
         if (val.startsWith('0')) val = val.substring(1);
@@ -516,12 +516,14 @@
     const d_now = new Date();
     document.getElementById('currentDate').innerText = `${String(d_now.getDate()).padStart(2,'0')}/${String(d_now.getMonth()+1).padStart(2,'0')}/${d_now.getFullYear()}`;
 
+    function format(num) { return Math.round(num).toLocaleString('en-IN'); }
+
     function calculateTax() {
         const getVal = (id) => parseFloat(document.getElementById(id).value.replace(/,/g, '')) || 0;
         let gross = getVal('grossIncome'), stdDed = 75000, taxable = Math.max(0, gross - stdDed);
         
-        document.getElementById('headSalaries').innerText = Math.round(taxable).toLocaleString('en-IN');
-        document.getElementById('taxableIncome').innerText = Math.round(taxable).toLocaleString('en-IN');
+        document.getElementById('headSalaries').innerText = format(taxable);
+        document.getElementById('taxableIncome').innerText = format(taxable);
 
         let slabs = [
             { start: 0, limit: 400000, rate: 0, id: 1 },
@@ -538,37 +540,46 @@
             let row = document.getElementById(`row-slab-${s.id}`), rel = (taxable > s.start || i === 0);
             if(rel) {
                 row.style.display = 'table-row'; visibleCount++;
+                
+                // --- FIXED "TO RS." LOGIC ---
+                let upperLimitText = "";
+                if (s.limit === Infinity) {
+                    upperLimitText = (taxable > s.start) ? format(taxable) : "Above";
+                } else {
+                    upperLimitText = format(Math.min(taxable, s.limit));
+                }
+                document.getElementById(`to-slab-${s.id}`).innerText = upperLimitText;
+                
                 let inc = Math.max(0, (s.limit !== Infinity ? Math.min(taxable, s.limit) : taxable) - s.start);
                 let tax = inc * s.rate; slabTaxTotal += tax;
-                document.getElementById(`to-slab-${s.id}`).innerText = (s.limit === Infinity ? "Above" : s.limit.toLocaleString('en-IN'));
-                document.getElementById(`inc-slab-${s.id}`).innerText = Math.round(inc).toLocaleString('en-IN');
-                document.getElementById(`tax-slab-${s.id}`).innerText = Math.round(tax).toLocaleString('en-IN');
+                document.getElementById(`inc-slab-${s.id}`).innerText = format(inc);
+                document.getElementById(`tax-slab-${s.id}`).innerText = format(tax);
             } else row.style.display = 'none';
         });
 
         document.getElementById('slab-idx-cell').rowSpan = visibleCount + 2;
         document.getElementById('slab-title-cell').rowSpan = visibleCount + 2;
-        document.getElementById('totalSlabTax').innerText = Math.round(slabTaxTotal).toLocaleString('en-IN');
+        document.getElementById('totalSlabTax').innerText = format(slabTaxTotal);
 
         let reb87 = (taxable <= 1200000) ? slabTaxTotal : 0;
         let marg87 = (taxable > 1200000 && slabTaxTotal > (taxable - 1200000)) ? (slabTaxTotal - (taxable - 1200000)) : 0;
         let taxRel = Math.max(0, slabTaxTotal - reb87 - marg87);
 
-        document.getElementById('rebate87A').innerText = Math.round(reb87).toLocaleString('en-IN');
-        document.getElementById('marginalRelief87A').innerText = Math.round(marg87).toLocaleString('en-IN');
-        document.getElementById('taxAfterRelief').innerText = Math.round(taxRel).toLocaleString('en-IN');
+        document.getElementById('rebate87A').innerText = format(reb87);
+        document.getElementById('marginalRelief87A').innerText = format(marg87);
+        document.getElementById('taxAfterRelief').innerText = format(taxRel);
 
         let cess = Math.round(taxRel * 0.04), totalLiab = taxRel + cess;
-        document.getElementById('cess').innerText = cess.toLocaleString('en-IN');
-        document.getElementById('totalTaxLiability').innerText = Math.round(totalLiab).toLocaleString('en-IN');
+        document.getElementById('cess').innerText = format(cess);
+        document.getElementById('totalTaxLiability').innerText = format(totalLiab);
 
         let relief89 = getVal('relief89'), balTotal = Math.max(0, totalLiab - relief89);
-        document.getElementById('balanceTotalComp').innerText = Math.round(balTotal).toLocaleString('en-IN');
+        document.getElementById('balanceTotalComp').innerText = format(balTotal);
 
         let paidTax = getVal('paidTax'), paidCess = getVal('paidCess'), paidTotal = paidTax + paidCess;
         let netTotal = balTotal - paidTotal;
-        document.getElementById('paidTotal').innerText = Math.round(paidTotal).toLocaleString('en-IN');
-        document.getElementById('netTotal').innerText = Math.round(netTotal).toLocaleString('en-IN');
+        document.getElementById('paidTotal').innerText = format(paidTotal);
+        document.getElementById('netTotal').innerText = format(netTotal);
 
         let status = document.getElementById('taxStatus');
         status.value = netTotal > 0 ? "Payable" : (netTotal < 0 ? "Refundable" : "Nil");
