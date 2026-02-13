@@ -540,16 +540,8 @@
             let row = document.getElementById(`row-slab-${s.id}`), rel = (taxable > s.start || i === 0);
             if(rel) {
                 row.style.display = 'table-row'; visibleCount++;
-                
-                // --- FIXED "TO RS." LOGIC ---
-                let upperLimitText = "";
-                if (s.limit === Infinity) {
-                    upperLimitText = (taxable > s.start) ? format(taxable) : "Above";
-                } else {
-                    upperLimitText = format(Math.min(taxable, s.limit));
-                }
+                let upperLimitText = (s.limit === Infinity) ? ((taxable > s.start) ? format(taxable) : "Above") : format(Math.min(taxable, s.limit));
                 document.getElementById(`to-slab-${s.id}`).innerText = upperLimitText;
-                
                 let inc = Math.max(0, (s.limit !== Infinity ? Math.min(taxable, s.limit) : taxable) - s.start);
                 let tax = inc * s.rate; slabTaxTotal += tax;
                 document.getElementById(`inc-slab-${s.id}`).innerText = format(inc);
@@ -569,16 +561,60 @@
         document.getElementById('marginalRelief87A').innerText = format(marg87);
         document.getElementById('taxAfterRelief').innerText = format(taxRel);
 
-        let cess = Math.round(taxRel * 0.04), totalLiab = taxRel + cess;
+        let surchargeAmount = 0, surchargeRate = 0;
+        if (taxable > 20000000) surchargeRate = 0.25; 
+        else if (taxable > 10000000) surchargeRate = 0.15;
+        else if (taxable > 5000000) surchargeRate = 0.10;
+        surchargeAmount = taxRel * surchargeRate;
+
+        let surchargeRelief = 0;
+        if (taxable > 5000000) {
+            let limitIncome = 0, limitSurchargeRate = 0;
+            if (taxable > 20000000) { limitIncome = 20000000; limitSurchargeRate = 0.15; } 
+            else if (taxable > 10000000) { limitIncome = 10000000; limitSurchargeRate = 0.10; } 
+            else { limitIncome = 5000000; limitSurchargeRate = 0; }
+            let totalTaxOnLimit = 0;
+            if (limitIncome > 400000) totalTaxOnLimit += (Math.min(limitIncome, 800000) - 400000) * 0.05;
+            if (limitIncome > 800000) totalTaxOnLimit += (Math.min(limitIncome, 1200000) - 800000) * 0.10;
+            if (limitIncome > 1200000) totalTaxOnLimit += (Math.min(limitIncome, 1600000) - 1200000) * 0.15;
+            if (limitIncome > 1600000) totalTaxOnLimit += (Math.min(limitIncome, 2000000) - 1600000) * 0.20;
+            if (limitIncome > 2000000) totalTaxOnLimit += (Math.min(limitIncome, 2400000) - 2000000) * 0.25;
+            if (limitIncome > 2400000) totalTaxOnLimit += (limitIncome - 2400000) * 0.30;
+            let surchargeOnLimit = totalTaxOnLimit * limitSurchargeRate;
+            let totalActualTax = taxRel + surchargeAmount;
+            if (totalActualTax > (totalTaxOnLimit + surchargeOnLimit + (taxable - limitIncome))) {
+                surchargeRelief = totalActualTax - (totalTaxOnLimit + surchargeOnLimit + (taxable - limitIncome));
+            }
+        }
+
+        document.getElementById('surcharge').innerText = format(surchargeAmount);
+        document.getElementById('marginalReliefSurcharge').innerText = format(surchargeRelief);
+        let taxAfterSurchargeRelief = taxRel + surchargeAmount - surchargeRelief;
+        document.getElementById('taxAfterSurchargeRelief').innerText = format(taxAfterSurchargeRelief);
+
+        let cess = Math.round(taxAfterSurchargeRelief * 0.04), totalLiab = taxAfterSurchargeRelief + cess;
         document.getElementById('cess').innerText = format(cess);
         document.getElementById('totalTaxLiability').innerText = format(totalLiab);
 
-        let relief89 = getVal('relief89'), balTotal = Math.max(0, totalLiab - relief89);
+        let relief89 = getVal('relief89');
+        let finalTaxComp = taxAfterSurchargeRelief, finalCessComp = cess;
+        if (relief89 > 0) {
+            if (relief89 <= finalTaxComp) { finalTaxComp -= relief89; } 
+            else { let rem = relief89 - finalTaxComp; finalTaxComp = 0; finalCessComp = Math.max(0, finalCessComp - rem); }
+        }
+        
+        // --- Sr. No. 15 UPDATED ---
+        document.getElementById('balanceTaxComp').innerText = format(finalTaxComp);
+        document.getElementById('balanceCessComp').innerText = format(finalCessComp);
+        let balTotal = finalTaxComp + finalCessComp;
         document.getElementById('balanceTotalComp').innerText = format(balTotal);
 
         let paidTax = getVal('paidTax'), paidCess = getVal('paidCess'), paidTotal = paidTax + paidCess;
-        let netTotal = balTotal - paidTotal;
         document.getElementById('paidTotal').innerText = format(paidTotal);
+        
+        let netTax = finalTaxComp - paidTax, netCess = finalCessComp - paidCess, netTotal = balTotal - paidTotal;
+        document.getElementById('netTax').innerText = format(netTax);
+        document.getElementById('netCess').innerText = format(netCess);
         document.getElementById('netTotal').innerText = format(netTotal);
 
         let status = document.getElementById('taxStatus');
