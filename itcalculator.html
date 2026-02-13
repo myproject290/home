@@ -49,17 +49,9 @@
         }
 
         .btn-print { background-color: #28a745; }
-        .btn-print:hover { background-color: #218838; }
-
         .btn-share { background-color: #007bff; }
-        .btn-share:hover { background-color: #0069d9; }
-
         .btn-download { background-color: #6f42c1; }
-        .btn-download:hover { background-color: #5a32a3; }
-
-        /* Initial display hidden for reset button */
         .btn-reset { background-color: #dc3545; display: none; }
-        .btn-reset:hover { background-color: #c82333; }
 
         .sheet {
             background-color: white;
@@ -70,16 +62,13 @@
             box-sizing: border-box;
             display: inline-block; 
             text-align: left;
-            margin: 0 auto;
+            margin: 40px auto 0 auto;
             position: relative;
-            margin-top: 40px; 
         }
 
-        /* Typography */
         h2 { font-size: 14pt; font-weight: bold; text-align: center; margin: 0 0 5px 0; }
-        h3 { font-size: 13pt; font-weight: normal; color: blue; margin: 0 0 15px 0; }
+        h3 { font-size: 13pt; font-weight: normal; color: blue; margin: 0 0 15px 0; text-align: center; }
 
-        /* Table Structure */
         table {
             width: 100%;
             border-collapse: collapse;
@@ -88,16 +77,12 @@
         }
 
         .info-table { margin-bottom: 15px; }
-        .calc-table { margin-bottom: 0; }
-        .summary-table { margin-top: -1px; }
-
         th, td {
             border: 1px solid black;
             padding: 1.7px 4px; 
             vertical-align: middle;
             line-height: 1.5; 
             overflow: hidden;
-            white-space: nowrap; 
         }
         
         td.wrap-text { white-space: normal; }
@@ -105,7 +90,7 @@
         .right { text-align: right; white-space: nowrap; }
         .bold { font-weight: bold; }
 
-        input {
+        input, textarea {
             width: 100%;
             border: none;
             font-family: inherit;
@@ -115,39 +100,22 @@
             padding: 0;
             margin: 0;
             color: #000;
-            line-height: 1.5;
-            font-weight: bold;
-            transition: font-size 0.1s;
-        }
-
-        textarea {
-            width: 100%;
-            border: none;
-            font-family: inherit;
-            font-size: inherit;
-            background: transparent;
-            outline: none;
-            padding: 0;
-            margin: 0;
-            color: #000;
-            resize: none; 
-            overflow: hidden; 
-            min-height: 25px;
-            display: block;
             line-height: 1.5;
             font-weight: bold;
         }
+
+        textarea { resize: none; overflow: hidden; min-height: 25px; display: block; }
+        
+        /* eSalary no-wrap */
+        #eSalaryCode { white-space: nowrap !important; }
 
         input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; margin: 0; 
-        }
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
         input[type=number] { -moz-appearance: textfield; }
 
         .upper { text-transform: uppercase; }
         .capitalize { text-transform: capitalize; }
         .input-bg { background-color: #ffffe6; }
-        input.input-bg, textarea.input-bg { background-color: #ffffe6; }
 
         .col-idx { text-align: center; font-weight: bold; width: 5%; }
         
@@ -158,7 +126,6 @@
             font-size: 12.5pt;
             width: 100%;
         }
-        .footer > div:first-child { margin-top: -15px; }
         .signature-line {
             border-top: 1px dashed black;
             width: 180px;
@@ -185,7 +152,6 @@
             .no-print { display: none; }
             .sheet { box-shadow: none; width: 100%; min-height: 297mm; margin: 0; padding: 10mm 15mm 0 15mm; border: none; }
             .input-bg { background-color: transparent !important; }
-            input, textarea { background-color: transparent !important; font-weight: bold; }
         }
     </style>
 </head>
@@ -197,7 +163,7 @@
 </div>
 
 <div class="no-print">
-    <button class="btn-print" onclick="printPage()">🖨️ Print / Save as PDF (HD Quality)</button>
+    <button class="btn-print" onclick="window.print()">🖨️ Print / Save as PDF</button>
     <button class="btn-share" onclick="sharePDF()">📱 Share as PDF</button>
     <button class="btn-download" onclick="downloadPDF()">📄 Download PDF</button>
     <button id="resetBtn" class="btn-reset" onclick="resetForm()">🔄 Reset</button>
@@ -214,20 +180,28 @@
         <tr>
             <td>Name and Desig.</td>
             <td>
-                <textarea id="user_name" class="capitalize" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
+                <textarea id="user_name" tabindex="1" class="capitalize nav-input" data-next="eSalaryCode" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
             </td>
             <td>PAN</td>
-            <td><input type="text" class="upper" oninput="this.value = this.value.toUpperCase()"></td>
+            <td>
+                <input type="text" id="pan_no" tabindex="4" class="upper nav-input" data-next="mobile_no" maxlength="10" oninput="validatePAN(this)">
+            </td>
         </tr>
         <tr>
             <td>e-Salary Code</td>
-            <td><textarea class="upper" rows="1" oninput="autoResize(this); this.value = this.value.toUpperCase()"></textarea></td>
+            <td>
+                <textarea id="eSalaryCode" tabindex="2" class="upper nav-input" data-next="office_addr" rows="1" oninput="this.value = this.value.toUpperCase(); autoResize(this);"></textarea>
+            </td>
             <td>Mobile No.</td>
-            <td><input type="number"></td>
+            <td>
+                <input type="text" id="mobile_no" tabindex="5" class="nav-input" data-next="grossIncome" maxlength="10" oninput="validateMobile(this)">
+            </td>
         </tr>
         <tr>
             <td>Office Address</td>
-            <td><textarea class="capitalize" rows="1" oninput="autoResize(this)"></textarea></td>
+            <td>
+                <textarea id="office_addr" tabindex="3" class="capitalize nav-input" data-next="pan_no" rows="1" oninput="autoResize(this)"></textarea>
+            </td>
             <td>Category</td>
             <td>Gen. Public</td>
         </tr>
@@ -242,174 +216,64 @@
             <td class="col-idx">1.</td>
             <td colspan="5" class="wrap-text">Income from salary</td>
             <td class="right input-bg">
-                <input type="text" inputmode="numeric" id="grossIncome" class="right input-bg" placeholder="0" oninput="formatInput(this)">
+                <input type="text" inputmode="numeric" id="grossIncome" tabindex="6" class="right input-bg nav-input" data-next="relief89" oninput="formatInput(this)">
             </td>
         </tr>
-        <tr>
-            <td class="col-idx">2.</td>
-            <td colspan="5" class="wrap-text">Standard deduction u/s 16(ia)</td>
-            <td class="right">75,000</td>
-        </tr>
-        <tr>
-            <td class="col-idx">3.</td>
-            <td colspan="5" class="wrap-text">Income under the head Salaries</td>
-            <td class="right" id="headSalaries">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">4.</td>
-            <td colspan="5" class="wrap-text">Taxable Income</td>
-            <td class="right bold" id="taxableIncome">0</td>
-        </tr>
+        <tr><td class="col-idx">2.</td><td colspan="5" class="wrap-text">Standard deduction u/s 16(ia)</td><td class="right">75,000</td></tr>
+        <tr><td class="col-idx">3.</td><td colspan="5" class="wrap-text">Income under the head Salaries</td><td class="right" id="headSalaries">0</td></tr>
+        <tr><td class="col-idx">4.</td><td colspan="5" class="wrap-text">Taxable Income</td><td class="right bold" id="taxableIncome">0</td></tr>
         
         <tr>
-            <td rowspan="9" class="col-idx" id="slab-idx-cell" style="vertical-align: middle;">5.</td>
-            <td rowspan="9" class="wrap-text" id="slab-title-cell" style="vertical-align: middle; text-align: center; font-weight:bold;">
-                Income Tax Liability
-            </td>
+            <td rowspan="9" class="col-idx" id="slab-idx-cell">5.</td>
+            <td rowspan="9" class="wrap-text" id="slab-title-cell" style="text-align: center; font-weight:bold;">Income Tax Liability</td>
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">from Rs.</td>
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">to Rs.</td>
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">Income</td>
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">Rate</td>
             <td class="center bold" style="background:#f9f9f9; font-size:11.5pt;">Income Tax</td>
         </tr>
+        <tr id="row-slab-1"><td class="right">0</td><td class="right" id="to-slab-1">4,00,000</td><td class="right" id="inc-slab-1">0</td><td class="center">0 %</td><td class="right" id="tax-slab-1">0</td></tr>
+        <tr id="row-slab-2"><td class="right">4,00,001</td><td class="right" id="to-slab-2">8,00,000</td><td class="right" id="inc-slab-2">0</td><td class="center">5 %</td><td class="right" id="tax-slab-2">0</td></tr>
+        <tr id="row-slab-3"><td class="right">8,00,001</td><td class="right" id="to-slab-3">12,00,000</td><td class="right" id="inc-slab-3">0</td><td class="center">10 %</td><td class="right" id="tax-slab-3">0</td></tr>
+        <tr id="row-slab-4"><td class="right">12,00,001</td><td class="right" id="to-slab-4">16,00,000</td><td class="right" id="inc-slab-4">0</td><td class="center">15 %</td><td class="right" id="tax-slab-4">0</td></tr>
+        <tr id="row-slab-5"><td class="right">16,00,001</td><td class="right" id="to-slab-5">20,00,000</td><td class="right" id="inc-slab-5">0</td><td class="center">20 %</td><td class="right" id="tax-slab-5">0</td></tr>
+        <tr id="row-slab-6"><td class="right">20,00,001</td><td class="right" id="to-slab-6">24,00,000</td><td class="right" id="inc-slab-6">0</td><td class="center">25 %</td><td class="right" id="tax-slab-6">0</td></tr>
+        <tr id="row-slab-7"><td class="right">24,00,001</td><td class="right" id="to-slab-7">Above</td><td class="right" id="inc-slab-7">0</td><td class="center">30 %</td><td class="right" id="tax-slab-7">0</td></tr>
+        <tr><td colspan="4" class="right bold">Total Income Tax</td><td class="right bold" id="totalSlabTax">0</td></tr>
 
-        <tr id="row-slab-1">
-            <td class="right">0</td>
-            <td class="right" id="to-slab-1">4,00,000</td>
-            <td class="right" id="inc-slab-1">0</td>
-            <td class="center">0 %</td>
-            <td class="right" id="tax-slab-1">0</td>
-        </tr>
-        <tr id="row-slab-2">
-            <td class="right">4,00,001</td>
-            <td class="right" id="to-slab-2">8,00,000</td>
-            <td class="right" id="inc-slab-2">0</td>
-            <td class="center">5 %</td>
-            <td class="right" id="tax-slab-2">0</td>
-        </tr>
-        <tr id="row-slab-3">
-            <td class="right">8,00,001</td>
-            <td class="right" id="to-slab-3">12,00,000</td>
-            <td class="right" id="inc-slab-3">0</td>
-            <td class="center">10 %</td>
-            <td class="right" id="tax-slab-3">0</td>
-        </tr>
-        <tr id="row-slab-4">
-            <td class="right">12,00,001</td>
-            <td class="right" id="to-slab-4">16,00,000</td>
-            <td class="right" id="inc-slab-4">0</td>
-            <td class="center">15 %</td>
-            <td class="right" id="tax-slab-4">0</td>
-        </tr>
-        <tr id="row-slab-5">
-            <td class="right">16,00,001</td>
-            <td class="right" id="to-slab-5">20,00,000</td>
-            <td class="right" id="inc-slab-5">0</td>
-            <td class="center">20 %</td>
-            <td class="right" id="tax-slab-5">0</td>
-        </tr>
-        <tr id="row-slab-6">
-            <td class="right">20,00,001</td>
-            <td class="right" id="to-slab-6">24,00,000</td>
-            <td class="right" id="inc-slab-6">0</td>
-            <td class="center">25 %</td>
-            <td class="right" id="tax-slab-6">0</td>
-        </tr>
-        <tr id="row-slab-7">
-            <td class="right">24,00,001</td>
-            <td class="right" id="to-slab-7">Above</td>
-            <td class="right" id="inc-slab-7">0</td>
-            <td class="center">30 %</td>
-            <td class="right" id="tax-slab-7">0</td>
-        </tr>
-        <tr>
-            <td colspan="4" class="right bold">Total Income Tax</td>
-            <td class="right bold" id="totalSlabTax">0</td>
-        </tr>
-
-        <tr>
-            <td class="col-idx">6.</td>
-            <td colspan="5" class="wrap-text">Relief under section 87A (Subject to maximum Rs.60000)</td>
-            <td class="right" id="rebate87A">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">7.</td>
-            <td colspan="5" class="wrap-text">Marginal relief (u/s 87A for income slightly above 12L)</td>
-            <td class="right" id="marginalRelief87A">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">8.</td>
-            <td colspan="5" class="wrap-text">Income Tax after relief u/s 87A (5 - 6 - 7)</td>
-            <td class="right bold" id="taxAfterRelief">0</td>
-        </tr>
-        
-        <tr>
-            <td class="col-idx">9.</td>
-            <td colspan="5" class="wrap-text">Add: Surcharge (10% > 50L, 15% > 1Cr, 25% > 2Cr)</td>
-            <td class="right" id="surcharge">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">10.</td>
-            <td colspan="5" class="wrap-text">Less: Marginal relief on Surcharge</td>
-            <td class="right" id="marginalReliefSurcharge">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">11.</td>
-            <td colspan="5" class="wrap-text">Income Tax after Marginal relief on Surcharge (8+9-10)</td>
-            <td class="right bold" id="taxAfterSurchargeRelief">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">12.</td>
-            <td colspan="5" class="wrap-text">Education cess and Health cess @ 4%</td>
-            <td class="right" id="cess">0</td>
-        </tr>
-        <tr>
-            <td class="col-idx">13.</td>
-            <td colspan="5" class="bold wrap-text">Total Income Tax (11+12)</td>
-            <td class="right bold" id="totalTaxLiability">0</td>
-        </tr>
+        <tr><td class="col-idx">6.</td><td colspan="5" class="wrap-text">Relief under section 87A</td><td class="right" id="rebate87A">0</td></tr>
+        <tr><td class="col-idx">7.</td><td colspan="5" class="wrap-text">Marginal relief (u/s 87A)</td><td class="right" id="marginalRelief87A">0</td></tr>
+        <tr><td class="col-idx">8.</td><td colspan="5" class="wrap-text">Tax after relief u/s 87A</td><td class="right bold" id="taxAfterRelief">0</td></tr>
+        <tr><td class="col-idx">9.</td><td colspan="5" class="wrap-text">Surcharge</td><td class="right" id="surcharge">0</td></tr>
+        <tr><td class="col-idx">10.</td><td colspan="5" class="wrap-text">Marginal relief on Surcharge</td><td class="right" id="marginalReliefSurcharge">0</td></tr>
+        <tr><td class="col-idx">11.</td><td colspan="5" class="wrap-text">Tax after Marginal relief</td><td class="right bold" id="taxAfterSurchargeRelief">0</td></tr>
+        <tr><td class="col-idx">12.</td><td colspan="5" class="wrap-text">Cess @ 4%</td><td class="right" id="cess">0</td></tr>
+        <tr><td class="col-idx">13.</td><td colspan="5" class="bold wrap-text">Total Income Tax</td><td class="right bold" id="totalTaxLiability">0</td></tr>
         <tr>
             <td class="col-idx">14.</td>
-            <td colspan="5" class="wrap-text">Relief under section 89(1) if any (attach form 10E)</td>
+            <td colspan="5" class="wrap-text">Relief under section 89(1)</td>
             <td class="right input-bg">
-                <input type="text" inputmode="numeric" id="relief89" class="right input-bg" placeholder="0" oninput="formatInput(this)">
+                <input type="text" inputmode="numeric" id="relief89" tabindex="7" class="right input-bg nav-input" data-next="paidTax" oninput="formatInput(this)">
             </td>
         </tr>
     </table>
 
     <table class="summary-table">
-        <colgroup>
-            <col style="width: 5%;"> <col style="width: 35%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;">
-        </colgroup>
-        <tr>
-            <td colspan="3" style="border-left: none;"></td> 
-            <td class="center bold" style="background-color: #f0fff0;">Tax</td>
-            <td class="center bold" style="background-color: #f0fff0;">Cess</td>
-            <td class="center bold" style="background-color: #f0fff0;">Total</td>
-        </tr>
-        <tr>
-            <td class="col-idx">15.</td>
-            <td colspan="2" class="wrap-text">Balance Income Tax payable after relief</td>
-            <td class="right" id="balanceTaxComp">0</td>
-            <td class="right" id="balanceCessComp">0</td>
-            <td class="right" id="balanceTotalComp">0</td>
-        </tr>
+        <colgroup><col style="width: 5%;"><col style="width: 35%;"><col style="width: 15%;"><col style="width: 15%;"><col style="width: 15%;"><col style="width: 15%;"></colgroup>
+        <tr><td colspan="3"></td><td class="center bold">Tax</td><td class="center bold">Cess</td><td class="center bold">Total</td></tr>
+        <tr><td class="col-idx">15.</td><td colspan="2">Balance Payable</td><td class="right" id="balanceTaxComp">0</td><td class="right" id="balanceCessComp">0</td><td class="right" id="balanceTotalComp">0</td></tr>
         <tr>
             <td class="col-idx">16.</td>
-            <td colspan="2" class="wrap-text">Income Tax already paid</td>
-            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
-            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>
+            <td colspan="2">Tax already paid</td>
+            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" tabindex="8" class="right input-bg nav-input" data-next="paidCess" oninput="formatInput(this)"></td>
+            <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" tabindex="9" class="right input-bg" oninput="formatInput(this)"></td>
             <td class="right" id="paidTotal">0</td>
         </tr>
         <tr>
             <td class="col-idx">17.</td>
-            <td class="bold wrap-text">Net Income Tax</td>
-            <td style="background-color: #fafafa;">
-                <input type="text" id="taxStatus" class="bold center" readonly value="Nil" style="width: 100%;">
-            </td>
-            <td class="right bold" id="netTax">0</td>
-            <td class="right bold" id="netCess">0</td>
-            <td class="right bold" id="netTotal">0</td>
+            <td class="bold">Net Income Tax</td>
+            <td style="background-color: #fafafa;"><input type="text" id="taxStatus" class="bold center" readonly value="Nil"></td>
+            <td class="right bold" id="netTax">0</td><td class="right bold" id="netCess">0</td><td class="right bold" id="netTotal">0</td>
         </tr>
     </table>
 
@@ -420,196 +284,54 @@
 </div>
 
 <script>
-    // --- Visibility Logic ---
-    function checkInputs() {
-        let inputs = document.querySelectorAll("input, textarea");
-        let hasValue = false;
-        for (let input of inputs) {
-            if (!input.readOnly && input.value.trim() !== "") {
-                hasValue = true;
-                break;
+    // ENTER KEY NAVIGATION Logic
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            const current = document.activeElement;
+            if (current.classList.contains('nav-input')) {
+                e.preventDefault();
+                const nextId = current.getAttribute('data-next');
+                if (nextId) {
+                    const nextElem = document.getElementById(nextId);
+                    if (nextElem) {
+                        nextElem.focus();
+                    }
+                }
             }
         }
+    });
+
+    // PAN RULES: 4 Alpha -> 4 Digit -> 1 Alpha
+    function validatePAN(input) {
+        let val = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+        let corrected = "";
+        for (let i = 0; i < val.length; i++) {
+            if (i < 5) { // 0-4 Alphabets
+                if (/[A-Z]/.test(val[i])) corrected += val[i];
+            } else if (i >= 5 && i < 9) { // 5-8 Digits
+                if (/[0-9]/.test(val[i])) corrected += val[i];
+            } else if (i === 9) { // 9 Alphabet
+                if (/[A-Z]/.test(val[i])) corrected += val[i];
+            }
+        }
+        input.value = corrected;
+    }
+
+    // MOBILE RULES: No leading 0, 10 digits
+    function validateMobile(input) {
+        let val = input.value.replace(/\D/g, '');
+        if (val.startsWith('0')) val = val.substring(1);
+        input.value = val.substring(0, 10);
+    }
+
+    function checkInputs() {
+        let hasValue = Array.from(document.querySelectorAll("input, textarea")).some(i => !i.readOnly && i.value.trim() !== "");
         document.getElementById("resetBtn").style.display = hasValue ? "inline-flex" : "none";
     }
 
-    // --- RESET Function ---
     function resetForm() {
-            let inputs = document.querySelectorAll("input, textarea");
-            inputs.forEach(input => {
-                input.value = "";
-                if (input.tagName === "TEXTAREA") {
-                    input.style.height = "auto";
-                }
-                if(input.style.fontSize) input.style.fontSize = "inherit";
-            });
-            document.querySelectorAll("td[id]").forEach(td => {
-                td.style.fontSize = "inherit";
-            });
-            document.title = "Income Tax Calculator FY 2025-26";
-            calculateTax();
-            checkInputs(); // Hide button after clearing
-    }
-
-    // --- SMART Capitalization Logic ---
-    function toTitleCase(str) {
-        const whitelist = new Set([
-            "JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEO", 
-            "VPO", "TEH", "DISTT", "PIN", "PO", "H.NO", "HNO", "WARD", "PH", "MO", "C/O", "S/O", "D/O", "W/O"
-        ]);
-
-        return str.toLowerCase().split(' ').map(function(word) {
-            let cleanWord = word.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-            if (whitelist.has(cleanWord)) {
-                return word.toUpperCase();
-            }
-            return (word.charAt(0).toUpperCase() + word.slice(1));
-        }).join(' ');
-    }
-
-    function updateTitle(elem) {
-        let val = elem.value.trim();
-        if(val) {
-            document.title = toTitleCase(val);
-        } else {
-            document.title = "Income Tax Calculator FY 2025-26";
-        }
-    }
-
-    function getFileName() {
-        let nameField = document.getElementById("user_name");
-        let nameVal = nameField ? nameField.value.trim() : "";
-        let smartName = toTitleCase(nameVal);
-        let cleanName = smartName.replace(/[\\/:"*?<>|]/g, "_");
-        
-        if (cleanName.length > 0) {
-            return cleanName + ".pdf";
-        } else {
-            return "IncomeTax_Calculation.pdf";
-        }
-    }
-
-    async function generateCanvas() {
-        const element = document.getElementById('printContent');
-        
-        return await html2canvas(element, {
-            scale: 2, 
-            useCORS: true,
-            backgroundColor: "#ffffff",
-            onclone: (clonedDoc) => {
-                const textareas = clonedDoc.querySelectorAll('textarea');
-                textareas.forEach(ta => {
-                    const div = clonedDoc.createElement('div');
-                    div.style.width = '100%';
-                    div.style.minHeight = ta.style.height || '25px';
-                    div.style.fontFamily = 'inherit';
-                    div.style.fontSize = 'inherit';
-                    div.style.fontWeight = 'bold';
-                    div.style.lineHeight = '1.5';
-                    div.style.whiteSpace = 'pre-wrap';
-                    div.style.wordBreak = 'break-word';
-                    div.style.color = '#000';
-                    div.style.textAlign = 'left';
-                    let val = ta.value;
-                    if (ta.classList.contains('upper')) val = val.toUpperCase();
-                    if (ta.classList.contains('capitalize')) val = toTitleCase(val);
-                    div.innerText = val;
-                    if(ta.parentNode) {
-                        ta.parentNode.replaceChild(div, ta);
-                    }
-                });
-
-                const inputs = clonedDoc.querySelectorAll('input');
-                inputs.forEach(inp => {
-                    const div = clonedDoc.createElement('div');
-                    div.style.width = '100%';
-                    div.style.minHeight = '24px'; 
-                    div.style.display = 'flex';
-                    div.style.alignItems = 'center'; 
-                    div.style.fontFamily = 'inherit';
-                    div.style.fontSize = 'inherit';
-                    div.style.fontWeight = 'bold';
-                    div.style.background = 'transparent';
-                    div.style.overflow = 'hidden';
-                    div.style.color = '#000';
-                    if (inp.classList.contains('right')) {
-                        div.style.justifyContent = 'flex-end';
-                    } else if (inp.classList.contains('center')) {
-                        div.style.justifyContent = 'center';
-                    } else {
-                        div.style.justifyContent = 'flex-start';
-                    }
-                    let val = inp.value;
-                    if (inp.classList.contains('upper')) val = val.toUpperCase();
-                    div.innerText = val;
-                    if(inp.parentNode) {
-                        inp.parentNode.replaceChild(div, inp);
-                    }
-                });
-            }
-        });
-    }
-
-    function printPage() {
-        const originalTitle = document.title;
-        let fileName = getFileName(); 
-        document.title = fileName.replace(".pdf", ""); 
-        window.print();
-        setTimeout(() => {
-            document.title = originalTitle;
-        }, 1000);
-    }
-
-    async function sharePDF() {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'flex';
-        try {
-            const canvas = await generateCanvas();
-            const imgData = canvas.toDataURL('image/jpeg', 0.80);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
-            const pdfBlob = pdf.output('blob');
-            const fileName = getFileName(); 
-            const file = new File([pdfBlob], fileName, { type: "application/pdf" });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: 'Income Tax Calculation',
-                    text: 'Attached is the Income Tax sheet for ' + fileName.replace(".pdf", ""),
-                });
-            } else {
-                pdf.save(fileName);
-            }
-        } catch (error) {
-            alert("Error: " + error.message);
-        } finally {
-            overlay.style.display = 'none';
-        }
-    }
-
-    async function downloadPDF() {
-        const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'flex';
-        try {
-            const canvas = await generateCanvas();
-            const imgData = canvas.toDataURL('image/jpeg', 0.85);
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfHeight = (imgProps.height * pageWidth) / imgProps.width;
-            pdf.addImage(imgData, 'JPEG', 0, 0, pageWidth, pdfHeight);
-            const fileName = getFileName(); 
-            pdf.save(fileName);
-        } catch (error) {
-            alert("Error downloading PDF: " + error.message);
-        } finally {
-            overlay.style.display = 'none';
-        }
+        document.querySelectorAll("input, textarea").forEach(i => { i.value = ""; i.style.height = "auto"; });
+        calculateTax(); checkInputs();
     }
 
     function autoResize(elem) {
@@ -617,63 +339,31 @@
         elem.style.height = elem.scrollHeight + 'px';
     }
 
-    function adjustFontSize(idOrElem) {
-        let elem = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
-        if (!elem) return;
-        let text = (elem.tagName === 'INPUT') ? elem.value : elem.innerText;
-        let len = text.length;
-        if (len > 11) {
-            let newSize = 12.5 * (11 / len); 
-            if (newSize < 6.5) newSize = 6.5; 
-            elem.style.fontSize = newSize + "pt";
-        } else {
-            elem.style.fontSize = "inherit";
-        }
+    function updateTitle(elem) {
+        document.title = elem.value.trim() || "Income Tax Calculator FY 2025-26";
     }
 
     function formatInput(elem) {
         let rawVal = elem.value.replace(/,/g, '');
-        if (!rawVal || isNaN(rawVal)) {
-             calculateTax();
-             if(rawVal === "") elem.style.fontSize = "inherit";
-             return;
-        }
-        let formatted = Math.round(rawVal).toLocaleString('en-IN');
-        if (elem.value !== formatted) elem.value = formatted;
-        adjustFontSize(elem);
+        if (!rawVal || isNaN(rawVal)) { calculateTax(); return; }
+        elem.value = Math.round(rawVal).toLocaleString('en-IN');
         calculateTax();
     }
 
     function updateAndResize(id, value) {
         let elem = document.getElementById(id);
-        if(!elem) return;
-        elem.innerText = value;
-        adjustFontSize(elem);
+        if(elem) elem.innerText = value;
     }
 
     const d_now = new Date();
     document.getElementById('currentDate').innerText = `${String(d_now.getDate()).padStart(2,'0')}/${String(d_now.getMonth()+1).padStart(2,'0')}/${d_now.getFullYear()}`;
 
-    function format(num) {
-        return Math.round(num).toLocaleString('en-IN');
-    }
+    function format(num) { return Math.round(num).toLocaleString('en-IN'); }
 
     function calculateTax() {
-        function getVal(id) {
-            let elem = document.getElementById(id);
-            if(!elem) return 0;
-            let cleanVal = elem.value.replace(/,/g, '');
-            return parseFloat(cleanVal) || 0;
-        }
-
-        let gross = getVal('grossIncome');
-        let relief89 = getVal('relief89');
-        let paidTaxVal = getVal('paidTax');
-        let paidCessVal = getVal('paidCess');
-        
-        let stdDed = 75000;
-        let taxable = gross - stdDed;
-        if(taxable < 0) taxable = 0;
+        const getVal = (id) => parseFloat(document.getElementById(id).value.replace(/,/g, '')) || 0;
+        let gross = getVal('grossIncome'), relief89 = getVal('relief89'), paidTaxVal = getVal('paidTax'), paidCessVal = getVal('paidCess');
+        let stdDed = 75000, taxable = Math.max(0, gross - stdDed);
 
         updateAndResize('headSalaries', format(taxable));
         updateAndResize('taxableIncome', format(taxable));
@@ -688,151 +378,73 @@
             { start: 2400000, limit: Infinity, rate: 0.30, id: 7 }
         ];
 
-        let slabTaxTotal = 0;
-        let visibleRowsCount = 0;
+        let slabTaxTotal = 0, visibleRows = 0;
+        slabs.forEach(s => {
+            let row = document.getElementById(`row-slab-${s.id}`);
+            if (taxable > s.start || s.id === 1) {
+                row.style.display = 'table-row'; visibleRows++;
+                let inc = Math.max(0, (s.limit === Infinity ? taxable : Math.min(taxable, s.limit)) - s.start);
+                let tax = inc * s.rate; slabTaxTotal += tax;
+                updateAndResize(`to-slab-${s.id}`, s.limit === Infinity ? format(taxable) : format(s.limit));
+                updateAndResize(`inc-slab-${s.id}`, format(inc));
+                updateAndResize(`tax-slab-${s.id}`, format(tax));
+            } else row.style.display = 'none';
+        });
 
-        for(let i=0; i<slabs.length; i++) {
-            let slab = slabs[i];
-            let row = document.getElementById(`row-slab-${slab.id}`);
-            let isRelevant = (taxable > slab.start) || (i === 0 && taxable >= 0);
-
-            if (isRelevant) {
-                row.style.display = 'table-row';
-                visibleRowsCount++;
-                let incomeInSlab = 0;
-                if (slab.limit !== Infinity && taxable > slab.limit) {
-                    incomeInSlab = slab.limit - slab.start;
-                    updateAndResize(`to-slab-${slab.id}`, format(slab.limit));
-                } else {
-                    incomeInSlab = taxable - slab.start;
-                    updateAndResize(`to-slab-${slab.id}`, format(taxable));
-                }
-                if (incomeInSlab < 0) incomeInSlab = 0;
-                let taxInSlab = incomeInSlab * slab.rate;
-                slabTaxTotal += taxInSlab;
-                updateAndResize(`inc-slab-${slab.id}`, format(incomeInSlab));
-                updateAndResize(`tax-slab-${slab.id}`, format(taxInSlab));
-            } else {
-                row.style.display = 'none';
-            }
-        }
-
-        let newRowSpan = 2 + visibleRowsCount;
-        document.getElementById('slab-idx-cell').rowSpan = newRowSpan;
-        document.getElementById('slab-title-cell').rowSpan = newRowSpan;
-
+        document.getElementById('slab-idx-cell').rowSpan = visibleRows + 2;
+        document.getElementById('slab-title-cell').rowSpan = visibleRows + 2;
         updateAndResize('totalSlabTax', format(slabTaxTotal));
 
-        let rebate87A = 0;
-        let marginalRelief87A = 0;
-        let taxAfterRelief = slabTaxTotal;
+        let taxAfter87 = (taxable <= 1200000) ? 0 : slabTaxTotal;
+        if (taxable > 1200000 && slabTaxTotal > (taxable - 1200000)) taxAfter87 = taxable - 1200000;
 
-        if (taxable <= 1200000) {
-            rebate87A = slabTaxTotal;
-            taxAfterRelief = 0;
-        } else {
-            let excessIncome = taxable - 1200000;
-            if (slabTaxTotal > excessIncome) {
-                marginalRelief87A = slabTaxTotal - excessIncome;
-                taxAfterRelief = excessIncome;
-            }
-        }
+        updateAndResize('rebate87A', format(taxable <= 1200000 ? slabTaxTotal : 0));
+        updateAndResize('marginalRelief87A', format(taxable > 1200000 ? Math.max(0, slabTaxTotal - taxAfter87) : 0));
+        updateAndResize('taxAfterRelief', format(taxAfter87));
 
-        updateAndResize('rebate87A', format(rebate87A));
-        updateAndResize('marginalRelief87A', format(marginalRelief87A));
-        updateAndResize('taxAfterRelief', format(taxAfterRelief));
-
-        let surchargeAmount = 0;
-        let surchargeRate = 0;
-        if (taxable > 20000000) surchargeRate = 0.25; 
-        else if (taxable > 10000000) surchargeRate = 0.15;
-        else if (taxable > 5000000) surchargeRate = 0.10;
-
-        surchargeAmount = taxAfterRelief * surchargeRate;
-
-        let surchargeRelief = 0;
-        if (taxable > 5000000) {
-            let limitIncome = 0;
-            let limitSurchargeRate = 0;
-            if (taxable > 20000000) { limitIncome = 20000000; limitSurchargeRate = 0.15; } 
-            else if (taxable > 10000000) { limitIncome = 10000000; limitSurchargeRate = 0.10; } 
-            else { limitIncome = 5000000; limitSurchargeRate = 0; }
-
-            let totalTaxOnLimit = 0;
-            if (limitIncome > 400000) totalTaxOnLimit += (Math.min(limitIncome, 800000) - 400000) * 0.05;
-            if (limitIncome > 800000) totalTaxOnLimit += (Math.min(limitIncome, 1200000) - 800000) * 0.10;
-            if (limitIncome > 1200000) totalTaxOnLimit += (Math.min(limitIncome, 1600000) - 1200000) * 0.15;
-            if (limitIncome > 1600000) totalTaxOnLimit += (Math.min(limitIncome, 2000000) - 1600000) * 0.20;
-            if (limitIncome > 2000000) totalTaxOnLimit += (Math.min(limitIncome, 2400000) - 2000000) * 0.25;
-            if (limitIncome > 2400000) totalTaxOnLimit += (limitIncome - 2400000) * 0.30;
-            
-            let surchargeOnLimit = totalTaxOnLimit * limitSurchargeRate;
-            let totalLimitLiab = totalTaxOnLimit + surchargeOnLimit;
-            let incomeExcess = taxable - limitIncome;
-            let maxTaxPayable = totalLimitLiab + incomeExcess;
-            
-            let totalActualTax = taxAfterRelief + surchargeAmount;
-            if (totalActualTax > maxTaxPayable) {
-                surchargeRelief = totalActualTax - maxTaxPayable;
-            }
-        }
-
-        updateAndResize('surcharge', format(surchargeAmount));
-        updateAndResize('marginalReliefSurcharge', format(surchargeRelief));
-
-        let taxAfterSurchargeRelief = taxAfterRelief + surchargeAmount - surchargeRelief;
-        updateAndResize('taxAfterSurchargeRelief', format(taxAfterSurchargeRelief));
-
-        let cess = Math.round(taxAfterSurchargeRelief * 0.04);
+        let cess = Math.round(taxAfter87 * 0.04);
         updateAndResize('cess', format(cess));
+        updateAndResize('totalTaxLiability', format(taxAfter87 + cess));
 
-        let totalLiab = taxAfterSurchargeRelief + cess;
-        updateAndResize('totalTaxLiability', format(totalLiab));
-
-        let finalTaxComp = taxAfterSurchargeRelief;
-        let finalCessComp = cess;
-        if (relief89 > 0) {
-            let remainRelief = relief89;
-            if (remainRelief <= finalTaxComp) { finalTaxComp -= remainRelief; remainRelief = 0; } 
-            else { remainRelief -= finalTaxComp; finalTaxComp = 0; 
-                if (remainRelief <= finalCessComp) { finalCessComp -= remainRelief; } else { finalCessComp = 0; }
-            }
-        }
+        let finalTax = Math.max(0, taxAfter87 - relief89);
+        updateAndResize('balanceTaxComp', format(finalTax));
+        updateAndResize('balanceCessComp', format(cess));
+        updateAndResize('balanceTotalComp', format(finalTax + cess));
         
-        let totalPayable = finalTaxComp + finalCessComp;
-        updateAndResize('balanceTaxComp', format(finalTaxComp));
-        updateAndResize('balanceCessComp', format(finalCessComp));
-        updateAndResize('balanceTotalComp', format(totalPayable));
-
-        let paidTotal = paidTaxVal + paidCessVal;
-        updateAndResize('paidTotal', format(paidTotal));
-
-        let netTax = finalTaxComp - paidTaxVal;
-        let netCess = finalCessComp - paidCessVal;
-        let netTotal = totalPayable - paidTotal;
-
-        updateAndResize('netTax', format(netTax));
-        updateAndResize('netCess', format(netCess));
+        let netTotal = (finalTax + cess) - (paidTaxVal + paidCessVal);
         updateAndResize('netTotal', format(netTotal));
-
-        let statusBox = document.getElementById('taxStatus');
-        if (netTotal > 0) {
-            statusBox.value = "Payable";
-            statusBox.style.color = "#dc3545";
-        } else if (netTotal < 0) {
-            statusBox.value = "Refundable";
-            statusBox.style.color = "#28a745";
-        } else {
-            statusBox.value = "Nil";
-            statusBox.style.color = "black";
-        }
+        
+        let status = document.getElementById('taxStatus');
+        status.value = netTotal > 0 ? "Payable" : (netTotal < 0 ? "Refundable" : "Nil");
+        status.style.color = netTotal > 0 ? "red" : (netTotal < 0 ? "green" : "black");
     }
-    
-    calculateTax();
-    adjustFontSize('grossIncome');
-</script>
 
+    async function downloadPDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+        const canvas = await html2canvas(document.getElementById('printContent'), { scale: 2 });
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+        pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+        pdf.save("IncomeTax.pdf");
+        overlay.style.display = 'none';
+    }
+
+    async function sharePDF() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex';
+        try {
+            const canvas = await html2canvas(document.getElementById('printContent'), { scale: 2 });
+            const imgData = canvas.toDataURL('image/jpeg', 0.85);
+            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
+            pdf.addImage(imgData, 'JPEG', 0, 0, 210, 297);
+            const pdfBlob = pdf.output('blob');
+            const file = new File([pdfBlob], "IncomeTax.pdf", { type: "application/pdf" });
+            if (navigator.share) await navigator.share({ files: [file], title: 'Income Tax Sheet' });
+        } catch (e) {} finally { overlay.style.display = 'none'; }
+    }
+
+    calculateTax();
+</script>
 </body>
 </html>
-
-
