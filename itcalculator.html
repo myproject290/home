@@ -459,8 +459,12 @@
                     ta.parentNode.replaceChild(div, ta);
                 });
                 clonedDoc.querySelectorAll('input').forEach(inp => {
+                    // Get font size from original screen element
+                    const originalInp = document.getElementById(inp.id);
+                    const currentFS = originalInp ? window.getComputedStyle(originalInp).fontSize : "inherit";
+
                     const div = clonedDoc.createElement('div');
-                    div.style = `width:100%; min-height:24px; display:flex; align-items:center; font-weight:bold; color:#000; justify-content:${inp.classList.contains('right')?'flex-end':(inp.classList.contains('center')?'center':'flex-start')}`;
+                    div.style = `width:100%; min-height:24px; display:flex; align-items:center; font-weight:bold; color:#000; font-size:${currentFS}; justify-content:${inp.classList.contains('right')?'flex-end':(inp.classList.contains('center')?'center':'flex-start')}`;
                     div.innerText = inp.value;
                     inp.parentNode.replaceChild(div, inp);
                 });
@@ -627,7 +631,7 @@
 
         // Apply Font Adjustment to all numeric calculation fields
         const fieldsToAdjust = [
-            'headSalaries', 'taxableIncome', 'totalSlabTax', 'rebate87A', 'marginalRelief87A', 
+            'grossIncome', 'headSalaries', 'taxableIncome', 'totalSlabTax', 'rebate87A', 'marginalRelief87A', 
             'taxAfterRelief', 'surcharge', 'marginalReliefSurcharge', 'taxAfterSurchargeRelief', 
             'cess', 'totalTaxLiability', 'relief89', 'balanceTaxComp', 'balanceCessComp', 
             'balanceTotalComp', 'paidTax', 'paidCess', 'paidTotal', 'netTax', 'netCess', 'netTotal', 'taxStatus'
