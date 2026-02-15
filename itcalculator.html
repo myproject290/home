@@ -546,6 +546,11 @@
                 let tax = inc * s.rate; slabTaxTotal += tax;
                 document.getElementById(`inc-slab-${s.id}`).innerText = format(inc);
                 document.getElementById(`tax-slab-${s.id}`).innerText = format(tax);
+                
+                // Adjustment for slab results
+                adjustFontSize(`to-slab-${s.id}`);
+                adjustFontSize(`inc-slab-${s.id}`);
+                adjustFontSize(`tax-slab-${s.id}`);
             } else row.style.display = 'none';
         });
 
@@ -603,7 +608,6 @@
             else { let rem = relief89 - finalTaxComp; finalTaxComp = 0; finalCessComp = Math.max(0, finalCessComp - rem); }
         }
         
-        // --- Sr. No. 15 UPDATED ---
         document.getElementById('balanceTaxComp').innerText = format(finalTaxComp);
         document.getElementById('balanceCessComp').innerText = format(finalCessComp);
         let balTotal = finalTaxComp + finalCessComp;
@@ -620,6 +624,15 @@
         let status = document.getElementById('taxStatus');
         status.value = netTotal > 0 ? "Payable" : (netTotal < 0 ? "Refundable" : "Nil");
         status.style.color = netTotal > 0 ? "#dc3545" : (netTotal < 0 ? "#28a745" : "black");
+
+        // Apply Font Adjustment to all numeric calculation fields
+        const fieldsToAdjust = [
+            'headSalaries', 'taxableIncome', 'totalSlabTax', 'rebate87A', 'marginalRelief87A', 
+            'taxAfterRelief', 'surcharge', 'marginalReliefSurcharge', 'taxAfterSurchargeRelief', 
+            'cess', 'totalTaxLiability', 'relief89', 'balanceTaxComp', 'balanceCessComp', 
+            'balanceTotalComp', 'paidTax', 'paidCess', 'paidTotal', 'netTax', 'netCess', 'netTotal', 'taxStatus'
+        ];
+        fieldsToAdjust.forEach(id => adjustFontSize(id));
     }
     calculateTax();
 </script>
