@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Income Tax Calculator FY 2025-26</title>
+    <title>Income Tax Calculation, FY 2025-26</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -421,7 +421,7 @@
             if (input.tagName === "TEXTAREA") input.style.height = "auto";
             input.style.fontSize = "inherit";
         });
-        document.title = "Income Tax Calculator FY 2025-26";
+        document.title = "Income Tax Calculation, FY 2025-26";
         calculateTax();
         checkInputs(); 
     }
@@ -436,12 +436,12 @@
     }
 
     function updateTitle(elem) {
-        document.title = elem.value.trim() ? toTitleCase(elem.value.trim()) : "Income Tax Calculator FY 2025-26";
+        document.title = elem.value.trim() ? toTitleCase(elem.value.trim()) : "Income Tax Calculation, FY 2025-26";
     }
 
     function getFileName() {
         let nameVal = document.getElementById("user_name").value.trim();
-        return (nameVal ? toTitleCase(nameVal).replace(/[\\/:"*?<>|]/g, "_") : "IncomeTax_Calculation") + ".pdf";
+        return (nameVal ? toTitleCase(nameVal).replace(/[\\/:"*?<>|]/g, "_") : "Income Tax Calculation, FY 2025-26") + ".pdf";
     }
 
     async function generateCanvas() {
@@ -642,3 +642,4 @@
 </script>
 </body>
 </html>
+
