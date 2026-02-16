@@ -427,7 +427,7 @@
     }
 
     function toTitleCase(str) {
-        const whitelist = new Set(["JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEO", "VPO", "TEH", "DISTT", "PIN", "PO", "H.NO", "HNO", "WARD", "PH", "MO", "C/O", "S/O", "D/O", "W/O"]);
+        const whitelist = new Set(["JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEEO", "VPO", "TEH", "DISTT", "PIN", "PO", "HT", "GMSSS", "MO", "C/O", "S/O", "D/O", "W/O"]);
         return str.toLowerCase().split(' ').map(function(word) {
             let cleanWord = word.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
             if (whitelist.has(cleanWord)) return word.toUpperCase();
@@ -642,5 +642,6 @@
 </script>
 </body>
 </html>
+
 
 
