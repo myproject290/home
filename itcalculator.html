@@ -208,9 +208,19 @@
             <col style="width: 20%;"> <col style="width: 35%;"> <col style="width: 15%;"> <col style="width: 30%;">
         </colgroup>
         <tr>
-            <td>Name and Desig.</td>
+            <td>Name</td>
             <td>
                 <textarea id="user_name" class="capitalize nav-field" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
+            </td>
+            <td>eSalary Code</td>
+            <td>
+                <textarea id="salary_code" class="upper nav-field" rows="1" oninput="autoResize(this); this.value = this.value.toUpperCase()"></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>Designation</td>
+            <td>
+                <textarea id="user_desig" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea>
             </td>
             <td>PAN</td>
             <td>
@@ -218,18 +228,14 @@
             </td>
         </tr>
         <tr>
-            <td>e-Salary Code</td>
-            <td><textarea id="salary_code" class="upper nav-field" rows="1" oninput="autoResize(this); this.value = this.value.toUpperCase()"></textarea></td>
+            <td>Office Address</td>
+            <td>
+                <textarea id="office_addr" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea>
+            </td>
             <td>Mobile No.</td>
             <td>
                 <input type="text" id="mobile_no" class="nav-field" maxlength="10" oninput="validateMobile(this)">
             </td>
-        </tr>
-        <tr>
-            <td>Office Address</td>
-            <td><textarea id="office_addr" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea></td>
-            <td>Category</td>
-            <td>Gen. Public</td>
         </tr>
     </table>
 
@@ -459,7 +465,6 @@
                     ta.parentNode.replaceChild(div, ta);
                 });
                 clonedDoc.querySelectorAll('input').forEach(inp => {
-                    // Get font size from original screen element
                     const originalInp = document.getElementById(inp.id);
                     const currentFS = originalInp ? window.getComputedStyle(originalInp).fontSize : "inherit";
 
@@ -551,7 +556,6 @@
                 document.getElementById(`inc-slab-${s.id}`).innerText = format(inc);
                 document.getElementById(`tax-slab-${s.id}`).innerText = format(tax);
                 
-                // Adjustment for slab results
                 adjustFontSize(`to-slab-${s.id}`);
                 adjustFontSize(`inc-slab-${s.id}`);
                 adjustFontSize(`tax-slab-${s.id}`);
@@ -629,7 +633,6 @@
         status.value = netTotal > 0 ? "Payable" : (netTotal < 0 ? "Refundable" : "Nil");
         status.style.color = netTotal > 0 ? "#dc3545" : (netTotal < 0 ? "#28a745" : "black");
 
-        // Apply Font Adjustment to all numeric calculation fields
         const fieldsToAdjust = [
             'grossIncome', 'headSalaries', 'taxableIncome', 'totalSlabTax', 'rebate87A', 'marginalRelief87A', 
             'taxAfterRelief', 'surcharge', 'marginalReliefSurcharge', 'taxAfterSurchargeRelief', 
