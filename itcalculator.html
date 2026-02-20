@@ -210,7 +210,7 @@
         <tr>
             <td>Name</td>
             <td>
-                <textarea id="user_name" class="capitalize nav-field" rows="1" oninput="autoResize(this); updateTitle(this)"></textarea>
+                <textarea id="user_name" class="capitalize nav-field" rows="1" oninput="autoResize(this); updateTitle()"></textarea>
             </td>
             <td>eSalary Code</td>
             <td>
@@ -220,7 +220,7 @@
         <tr>
             <td>Designation</td>
             <td>
-                <textarea id="user_desig" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea>
+                <textarea id="user_desig" class="capitalize nav-field" rows="1" oninput="autoResize(this); updateTitle()"></textarea>
             </td>
             <td>PAN</td>
             <td>
@@ -230,8 +230,8 @@
         <tr>
             <td>Office Address</td>
             <td>
-                <textarea id="office_addr" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea>
-            </td>
+    <textarea id="office_addr" class="capitalize nav-field" rows="1" oninput="autoResize(this)"></textarea>
+</td>
             <td>Mobile No.</td>
             <td>
                 <input type="text" id="mobile_no" class="nav-field" maxlength="10" oninput="validateMobile(this)">
@@ -441,14 +441,29 @@
         }).join(' ');
     }
 
-    function updateTitle(elem) {
-        document.title = elem.value.trim() ? toTitleCase(elem.value.trim()) : "Income Tax Calculation, FY 2025-26";
-    }
+    function updateTitle() {
+    let nameVal = document.getElementById("user_name").value.replace(/\s+/g,' ').trim();
+let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').trim();
+
+    let title = "";
+    if (nameVal) title += toTitleCase(nameVal);
+    if (desigVal) title += (title ? ", " : "") + desigVal.toUpperCase();
+
+    document.title = title || "Income Tax Calculation, FY 2025-26";
+}
 
     function getFileName() {
-        let nameVal = document.getElementById("user_name").value.trim();
-        return (nameVal ? toTitleCase(nameVal).replace(/[\\/:"*?<>|]/g, "_") : "Income Tax Calculation, FY 2025-26") + ".pdf";
-    }
+    let nameVal = document.getElementById("user_name").value.replace(/\s+/g,' ').trim();
+    let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').trim();
+
+    let finalName = "";
+
+    if (nameVal) finalName += toTitleCase(nameVal);
+    if (desigVal) finalName += (finalName ? ", " : "") + desigVal.toUpperCase();
+
+    return (finalName || "Income Tax Calculation, FY 2025-26")
+        .replace(/[\\/:"*?<>|]/g, "_") + ".pdf";
+}
 
     async function generateCanvas() {
         const element = document.getElementById('printContent');
