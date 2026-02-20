@@ -241,7 +241,7 @@
 
     <table class="calc-table">
         <colgroup>
-            <col style="width: 5%;"> <col style="width: 30%;"> <col style="width: 13%;"> <col style="width: 13%;"> <col style="width: 13%;"> <col style="width: 11%;"> <col style="width: 15%;">
+            <col style="width: 5%;"> <col style="width: 22%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 11%;"> <col style="width: 17%;">
         </colgroup>
 
         <tr>
@@ -339,7 +339,7 @@
 
     <table class="summary-table">
         <colgroup>
-            <col style="width: 5%;"> <col style="width: 35%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;">
+            <col style="width: 5%;"> <col style="width: 33%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 15%;"> <col style="width: 17%;">
         </colgroup>
         <tr>
             <td colspan="3" style="border-left: none;"></td> 
@@ -525,7 +525,7 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
         let elem = (typeof idOrElem === 'string') ? document.getElementById(idOrElem) : idOrElem;
         if (!elem) return;
         let text = (elem.tagName === 'INPUT') ? elem.value : elem.innerText;
-        if (text.length > 11) elem.style.fontSize = Math.max(6.5, 12.5 * (11 / text.length)) + "pt";
+        if (text.length > 12) elem.style.fontSize = Math.max(6.5, 12.5 * (12 / text.length)) + "pt";
         else elem.style.fontSize = "inherit";
     }
 
@@ -660,5 +660,6 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
 </script>
 </body>
 </html>
+
 
 
