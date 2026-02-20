@@ -447,7 +447,7 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
 
     let title = "";
     if (nameVal) title += toTitleCase(nameVal);
-    if (desigVal) title += (title ? ", " : "") + desigVal.toUpperCase();
+    if (desigVal) title += (title ? ", " : "") + toTitleCase(desigVal);
 
     document.title = title || "Income Tax Calculation, FY 2025-26";
 }
@@ -459,7 +459,7 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
     let finalName = "";
 
     if (nameVal) finalName += toTitleCase(nameVal);
-    if (desigVal) finalName += (finalName ? ", " : "") + desigVal.toUpperCase();
+    if (desigVal) finalName += (finalName ? ", " : "") + toTitleCase(desigVal);
 
     return (finalName || "Income Tax Calculation, FY 2025-26")
         .replace(/[\\/:"*?<>|]/g, "_") + ".pdf";
