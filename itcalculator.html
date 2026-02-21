@@ -234,7 +234,8 @@
 </td>
             <td>Mobile No.</td>
             <td>
-                <input type="text" id="mobile_no" class="nav-field" maxlength="10" oninput="validateMobile(this)">
+                <input type="tel" id="mobile_no" class="nav-field" maxlength="10"
+       inputmode="numeric" pattern="[0-9]*" oninput="validateMobile(this)">
             </td>
         </tr>
     </table>
@@ -660,5 +661,3 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
 </script>
 </body>
 </html>
-
-
