@@ -1,284 +1,295 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="utf-8">
-<title>Enrollment</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!DOCTYPE html>  
+<html>  
+<head>  
+<meta charset="utf-8">  
+<title>Enrollment</title>  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>  
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<style>
-/* Refresh aur swipe-down ko rokne ke liye */
-html, body { overscroll-behavior-y: contain; }
-body{font-family:Arial;margin:0;padding:5px; overflow-x: auto;}
-#topbar{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;background:#f8f9fa;padding:10px;border-radius:8px; width: fit-content; min-width: 100%;}
-.topbtn{padding:6px 12px;font-size:14px;cursor:pointer;border:1px solid #ccc;background:#fff;border-radius:4px;display:flex;align-items:center;gap:5px;transition: all 0.3s ease;}
-.btn-active { background-color: #28a745 !important; color: white !important; border-color: #1e7e34 !important; }
-#title{text-align:center;font-size:26px;font-weight:bold;margin:5px 0;outline:none;}
-table{border-collapse:collapse; min-width: 1100px; table-layout: fixed;} 
-td,th{border:2px solid #000;text-align:center;padding:5px;font-size:18px;height:32px; white-space: nowrap;}
-.classcol{width:150px}.delcol{width:40px}
-.edit{background:#fff; outline: none;} 
+<style>  
+html, body { overscroll-behavior-y: contain; }  
+body{font-family:Arial;margin:0;padding:5px; overflow-x: auto;}  
+#topbar{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;background:#f8f9fa;padding:10px;border-radius:8px; width: fit-content; min-width: 100%;}  
+.topbtn{padding:6px 12px;font-size:14px;cursor:pointer;border:1px solid #ccc;background:#fff;border-radius:4px;display:flex;align-items:center;gap:5px;transition: all 0.3s ease;}  
+.btn-active { background-color: #28a745 !important; color: white !important; border-color: #1e7e34 !important; }  
+#title{text-align:center;font-size:26px;font-weight:bold;margin:5px 0;outline:none;}  
+
+table{border-collapse:collapse; min-width: 900px; table-layout: fixed; margin: 0 auto;}
+td,th{ border:2px solid #000; text-align:center; padding:5px; font-size:16px; height:32px; overflow: hidden; }
+
+.classcol, .label{ width:110px !important; }
+.delcol{width:40px}
+th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
+
+.edit{background:#fff; outline: none;}
 .edit:focus{background:#fffbe6; border: 2px solid blue !important;}
 .sc-t,.st-t,.obc-t,.gen-t,.tt{color:red;font-weight:bold}
 .head-t{color:red;font-weight:bold}
-.label{color:red;font-weight:bold;white-space:normal;line-height:1.2; width: 150px;}
+.label{ color:red; font-weight:bold; white-space:normal; line-height:1.2; font-size:15px; }
 .delcell button{border:none;background:none;font-size:18px;cursor:pointer;color:black}
 .hidepdf{display:none}
-#pre td,#pri td{height:45px; background-color: #fff;} 
-.pdfmode td,.pdfmode th{border:1px solid #000 !important;outline:none !important;}
+#pri td{height:45px; background-color:#fff;}
+#pre td{height:auto !important; background-color:#fff;}
+.pdfmode td, .pdfmode th { border: 1px solid #000 !important; }
+.pdfmode { padding: 20px !important; background: white; }
 @media print{#topbar{display:none}.delcol,.delcell{display:none}}
 </style>
-</head>
-<body>
+</head>  
+<body>  
+<div id="topbar">  
+<button class="topbtn" onclick="undoAction()"><span>↩️</span> Undo</button>  
+<button class="topbtn" onclick="redoAction()"><span>↪️</span> Redo</button>  
+<div style="width:1px; background:#ccc; margin:0 10px;"></div>  
+<button class="topbtn" onclick="printPDF()">Print/ Save as PDF</button>  
+<button class="topbtn" id="shareBtn" onclick="shareAsPDF()">Share PDF</button>  
+<button class="topbtn" id="downloadBtn" onclick="makePDF()">Download PDF</button>  
+<button class="topbtn" id="saveBtn" onclick="saveToLocal(true)">Save for future</button>  
+<button class="topbtn" id="resetBtn" onclick="resetForm()">Reset</button>  
+</div>  
 
-<div id="topbar">
-<button class="topbtn" onclick="undoAction()"><span>↩️</span> Undo</button>
-<button class="topbtn" onclick="redoAction()"><span>↪️</span> Redo</button>
-<div style="width:1px; background:#ccc; margin:0 10px;"></div>
-<button class="topbtn" onclick="printPDF()">Print PDF</button>
-<button class="topbtn" id="shareBtn" onclick="shareAsPDF()">Share as PDF</button>
-<button class="topbtn" id="downloadBtn" onclick="makePDF('download')">Download PDF</button>
-<button class="topbtn" id="saveBtn" onclick="saveToLocal(true)">Save for future</button>
-<button class="topbtn" id="resetBtn" onclick="resetForm()">Reset</button>
-</div>
+<div id="pdfArea">  
+<div id="title" contenteditable="true" spellcheck="false">Enrollment</div>  
+<table id="mainTable">  
+  <thead>  
+    <tr>  
+      <th class="delcol" rowspan="2"></th>  
+      <th class="classcol" rowspan="2">Class</th>  
+      <th colspan="3">SC</th>  
+      <th colspan="3">ST</th>  
+      <th colspan="3">OBC</th>  
+      <th colspan="3">Gen.</th>  
+      <th colspan="3">Total</th>  
+    </tr>  
+    <tr>  
+      <th>B</th><th>G</th><th class="head-t">T</th>  
+      <th>B</th><th>G</th><th class="head-t">T</th>  
+      <th>B</th><th>G</th><th class="head-t">T</th>  
+      <th>B</th><th>G</th><th class="head-t">T</th>  
+      <th>B</th><th>G</th><th class="head-t">T</th>  
+    </tr>  
+  </thead>  
+  <tbody id="rows"></tbody>  
+  <tr id="pri">  
+    <td class="delcell"><button onclick="deleteRow(this)">×</button></td>  
+    <td class="label">Total (Primary)</td>  
+    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
+    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
+    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
+    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
+    <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
+  </tr>  
+  <tr id="grand">  
+    <td class="delcell"></td>  
+    <td class="label">Grand Total</td>  
+    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
+    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
+    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
+    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
+    <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
+  </tr>  
+</table>  
+</div>  
 
-<div id="pdfArea">
-<div id="title" contenteditable="true" spellcheck="false">Enrollment</div>
-<table id="mainTable">
-  <thead>
-    <tr>
-      <th class="delcol" rowspan="2"></th>
-      <th class="classcol" rowspan="2">Class</th>
-      <th colspan="3">SC</th>
-      <th colspan="3">ST</th>
-      <th colspan="3">OBC</th>
-      <th colspan="3">Gen.</th>
-      <th colspan="3">Total</th>
-    </tr>
-    <tr>
-      <th>B</th><th>G</th><th class="head-t">T</th>
-      <th>B</th><th>G</th><th class="head-t">T</th>
-      <th>B</th><th>G</th><th class="head-t">T</th>
-      <th>B</th><th>G</th><th class="head-t">T</th>
-      <th>B</th><th>G</th><th class="head-t">T</th>
-    </tr>
-  </thead>
-  <tbody id="rows"></tbody>
-  <tr id="pri">
-    <td class="delcell"><button onclick="deleteRow(this)">×</button></td>
-    <td class="label">Total<br>(Primary)</td>
-    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>
-    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>
-    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>
-    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>
-    <td class="tb"></td><td class="tg"></td><td class="tt"></td>
-  </tr>
-  <tr id="grand">
-    <td class="delcell"></td>
-    <td class="label">Grand Total</td>
-    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>
-    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>
-    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>
-    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>
-    <td class="tb"></td><td class="tg"></td><td class="tt"></td>
-  </tr>
-</table>
-</div>
+<script>  
+let undoStack = [];  
+let redoStack = [];  
+let isDataEntered = false;   
+const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];  
 
-<script>
-let undoStack = [];
-let redoStack = [];
-let isDataEntered = false; 
-const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];
+function flashButton(btnId, tempText) {  
+    const btn = document.getElementById(btnId);  
+    if (!btn) return;  
+    const oldHTML = btn.innerHTML;  
+    btn.classList.add("btn-active");  
+    btn.innerText = tempText;  
+    setTimeout(() => {  
+        btn.classList.remove("btn-active");  
+        btn.innerHTML = oldHTML;  
+    }, 2000);  
+}  
 
-function flashButton(btnId, tempText) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    const oldHTML = btn.innerHTML;
-    btn.classList.add("btn-active");
-    btn.innerText = tempText;
-    setTimeout(() => {
-        btn.classList.remove("btn-active");
-        btn.innerHTML = oldHTML;
-    }, 2000);
-}
+function saveState() {  
+    undoStack.push(document.getElementById("pdfArea").innerHTML);  
+    if (undoStack.length > 30) undoStack.shift();  
+    redoStack = [];  
+}  
 
-function saveState() {
-    undoStack.push(document.getElementById("pdfArea").innerHTML);
-    if (undoStack.length > 30) undoStack.shift();
-    redoStack = [];
-}
+function undoAction() {  
+    if (undoStack.length > 0) {  
+        redoStack.push(document.getElementById("pdfArea").innerHTML);  
+        document.getElementById("pdfArea").innerHTML = undoStack.pop();  
+        attachEvents();  
+        calc();  
+    }  
+}  
 
-function undoAction() {
-    if (undoStack.length > 0) {
-        redoStack.push(document.getElementById("pdfArea").innerHTML);
-        document.getElementById("pdfArea").innerHTML = undoStack.pop();
-        attachEvents();
-        calc();
-    }
-}
+function redoAction() {  
+    if (redoStack.length > 0) {  
+        undoStack.push(document.getElementById("pdfArea").innerHTML);  
+        document.getElementById("pdfArea").innerHTML = redoStack.pop();  
+        attachEvents();  
+        calc();  
+    }  
+}  
 
-function redoAction() {
-    if (redoStack.length > 0) {
-        undoStack.push(document.getElementById("pdfArea").innerHTML);
-        document.getElementById("pdfArea").innerHTML = redoStack.pop();
-        attachEvents();
-        calc();
-    }
-}
+function attachEvents() {  
+    document.querySelectorAll(".edit, #title").forEach(el => {  
+        el.onfocus = () => saveState();  
+        if(el.classList.contains('edit')){  
+            el.addEventListener('keydown', (e) => {  
+                if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 || (e.keyCode >= 35 && e.keyCode <= 39)) return;  
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) e.preventDefault();  
+            });  
+            el.addEventListener('input', (e) => {  
+                let clean = el.innerText.replace(/[^\d]/g, '');  
+                if (el.innerText !== clean) {  
+                    el.innerText = clean;  
+                    const range = document.createRange();  
+                    const sel = window.getSelection();  
+                    range.selectNodeContents(el);  
+                    range.collapse(false);  
+                    sel.removeAllRanges();  
+                    sel.addRange(range);  
+                }  
+                isDataEntered = true; calc(); saveToLocal(false);   
+            });  
+        } else {  
+            el.oninput = () => { isDataEntered = true; saveToLocal(false); };  
+        }  
+    });  
+}  
 
-function attachEvents() {
-    document.querySelectorAll(".edit, #title").forEach(el => {
-        el.onfocus = () => saveState();
-        
-        if(el.classList.contains('edit')){
-            el.addEventListener('keydown', (e) => {
-                if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 || (e.keyCode >= 35 && e.keyCode <= 39)) return;
-                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) e.preventDefault();
-            });
+function deleteRow(btn) {  
+    saveState();  
+    btn.closest('tr').remove();  
+    calc();  
+    saveToLocal(false);  
+}  
 
-            el.addEventListener('input', (e) => {
-                let clean = el.innerText.replace(/[^\d]/g, '');
-                if (el.innerText !== clean) {
-                    el.innerText = clean;
-                    const range = document.createRange();
-                    const sel = window.getSelection();
-                    range.selectNodeContents(el);
-                    range.collapse(false);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-                isDataEntered = true; calc(); saveToLocal(false); 
-            });
+function n(x){return x ? (parseInt(x.innerText)||0) : 0}  
 
-            el.addEventListener('paste', (e) => {
-                e.preventDefault();
-                let text = (e.clipboardData || window.clipboardData).getData('text');
-                document.execCommand("insertText", false, text.replace(/[^\d]/g, ''));
-            });
-        } else {
-            // Title Input
-            el.oninput = () => { isDataEntered = true; saveToLocal(false); };
-        }
-    });
-    document.querySelectorAll(".delcell button").forEach(btn => {
-        btn.onclick = function() { deleteRow(this); };
-    });
-}
+function setVal(el, value) {  
+    if(!el) return;  
+    el.innerText = (isDataEntered) ? value : "";  
+}  
 
-function deleteRow(btn) {
-    saveState();
-    btn.closest('tr').remove();
-    calc();
-    saveToLocal(false);
-}
+function calc(){  
+  document.querySelectorAll(".row").forEach(r=>{  
+    let sb=n(r.querySelector(".sc-b")), sg=n(r.querySelector(".sc-g")), stb=n(r.querySelector(".st-b")), stg=n(r.querySelector(".st-g")), ob=n(r.querySelector(".obc-b")), og=n(r.querySelector(".obc-g")), gb=n(r.querySelector(".gen-b")), gg=n(r.querySelector(".gen-g"));  
+    setVal(r.querySelector(".sc-t"), sb+sg); setVal(r.querySelector(".st-t"), stb+stg);  
+    setVal(r.querySelector(".obc-t"), ob+og); setVal(r.querySelector(".gen-t"), gb+gg);  
+    setVal(r.querySelector(".tb"), sb+stb+ob+gb); setVal(r.querySelector(".tg"), sg+stg+og+gg);  
+    setVal(r.querySelector(".tt"), (sb+sg)+(stb+stg)+(ob+og)+(gb+gg));  
+  });  
+  ["pre","pri"].forEach(id=>{  
+    let sumRow=document.getElementById(id); if(!sumRow) return;  
+    let dataRows=document.querySelectorAll(".row."+id);  
+    ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
+      let t=0; dataRows.forEach(r=> t+=n(r.querySelector("."+c)));   
+      setVal(sumRow.querySelector("."+c), t);  
+    });  
+  });  
+  let pre=document.getElementById("pre"), pri=document.getElementById("pri"), grand=document.getElementById("grand");  
+  ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
+    let totalVal = (pre ? n(pre.querySelector("."+c)) : 0) + (pri ? n(pri.querySelector("."+c)) : 0);  
+    setVal(grand.querySelector("."+c), totalVal);  
+  });  
+}  
 
-function n(x){return x ? (parseInt(x.innerText)||0) : 0}
+function buildTable(){  
+  const rows=document.getElementById("rows");  
+  rows.innerHTML = "";  
+  classes.forEach(c=>{  
+    if(c[1] === "total-pre") {  
+      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);  
+    } else {  
+      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);  
+    }  
+  });  
+  attachEvents();  
+}  
 
-function setVal(el, value) {
-    if(!el) return;
-    el.innerText = (isDataEntered) ? value : "";
-}
+function saveToLocal(manual){  
+    localStorage.setItem("goshwara_data", document.getElementById("pdfArea").innerHTML);  
+    localStorage.setItem("isDataEntered", isDataEntered);   
+    if(manual) flashButton("saveBtn", "Saved! ✅");  
+}  
 
-function calc(){
-  document.querySelectorAll(".row").forEach(r=>{
-    let sb=n(r.querySelector(".sc-b")), sg=n(r.querySelector(".sc-g")), stb=n(r.querySelector(".st-b")), stg=n(r.querySelector(".st-g")), ob=n(r.querySelector(".obc-b")), og=n(r.querySelector(".obc-g")), gb=n(r.querySelector(".gen-b")), gg=n(r.querySelector(".gen-g"));
-    setVal(r.querySelector(".sc-t"), sb+sg); setVal(r.querySelector(".st-t"), stb+stg);
-    setVal(r.querySelector(".obc-t"), ob+og); setVal(r.querySelector(".gen-t"), gb+gg);
-    setVal(r.querySelector(".tb"), sb+stb+ob+gb); setVal(r.querySelector(".tg"), sg+stg+og+gg);
-    setVal(r.querySelector(".tt"), (sb+sg)+(stb+stg)+(ob+og)+(gb+gg));
-  });
+function resetForm(){  
+    saveState();  
+    isDataEntered = false;   
+    localStorage.removeItem("goshwara_data");  
+    localStorage.removeItem("isDataEntered");  
+    document.getElementById("title").innerText = "Enrollment";  
+    buildTable();  
+    calc();  
+    flashButton("resetBtn", "Cleared! 🧹");  
+}  
 
-  ["pre","pri"].forEach(id=>{
-    let sumRow=document.getElementById(id); if(!sumRow) return;
-    let dataRows=document.querySelectorAll(".row."+id);
-    ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{
-      let t=0; dataRows.forEach(r=> t+=n(r.querySelector("."+c))); 
-      setVal(sumRow.querySelector("."+c), t);
-    });
-  });
-
-  let pre=document.getElementById("pre"), pri=document.getElementById("pri"), grand=document.getElementById("grand");
-  ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{
-    let totalVal = (pre ? n(pre.querySelector("."+c)) : 0) + (pri ? n(pri.querySelector("."+c)) : 0);
-    setVal(grand.querySelector("."+c), totalVal);
-  });
-}
-
-function buildTable(){
-  const rows=document.getElementById("rows");
-  rows.innerHTML = "";
-  classes.forEach(c=>{
-    if(c[1] === "total-pre") {
-      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);
-    } else {
-      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);
-    }
-  });
-  attachEvents();
-}
-
-function saveToLocal(manual){
-    localStorage.setItem("goshwara_data", document.getElementById("pdfArea").innerHTML);
-    localStorage.setItem("isDataEntered", isDataEntered); 
-    if(manual) flashButton("saveBtn", "Saved! ✅");
-}
-
-function resetForm(){
-    saveState();
-    isDataEntered = false; 
-    localStorage.removeItem("goshwara_data");
-    localStorage.removeItem("isDataEntered");
-    // Title ko bhi reset kiya
-    document.getElementById("title").innerText = "Enrollment";
-    buildTable();
-    calc();
-    flashButton("resetBtn", "Cleared! 🧹");
-}
+async function generatePDFFile() {  
+    const area = document.getElementById("pdfArea");  
+    area.classList.add("pdfmode");  
+    document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.add("hidepdf"));  
+    const canvas = await html2canvas(area, { scale: 2, useCORS: true });  
+    area.classList.remove("pdfmode");  
+    document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.remove("hidepdf"));  
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);  
+    const pdf = new jspdf.jsPDF("p", "mm", "a4");  
+    const pageWidth = pdf.internal.pageSize.getWidth();  
+    const margin = 5;   
+    const innerWidth = pageWidth - (margin * 2);  
+    const imgWidth = innerWidth;  
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;  
+    pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);  
+    return pdf;  
+}  
 
 async function shareAsPDF() {
-    const btn = document.getElementById("shareBtn");
     const title = document.getElementById("title").innerText;
-    document.getElementById("pdfArea").classList.add("pdfmode");
-    document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.add("hidepdf"));
+    // Processing message ke liye green flash
+    const btn = document.getElementById("shareBtn");
+    const oldHTML = btn.innerHTML;
+    btn.classList.add("btn-active");
+    btn.innerText = "Generating...";
+    
     try {
-        const canvas = await html2canvas(document.getElementById("pdfArea"), {scale:2});
-        const pdf = new jspdf.jsPDF("p","mm","a4");
-        pdf.addImage(canvas.toDataURL("image/jpeg", 1.0), "JPEG", 10, 10, 190, canvas.height*190/canvas.width);
+        const pdf = await generatePDFFile();
         const pdfBlob = pdf.output('blob');
         const file = new File([pdfBlob], `${title}.pdf`, { type: 'application/pdf' });
+        
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({ files: [file], title: title });
+            // Share success par green flash dikhana
             flashButton("shareBtn", "Shared! ✅");
+        } else {
+            alert("Sharing not supported");
+            btn.classList.remove("btn-active");
+            btn.innerHTML = oldHTML;
         }
-    } catch (err) { console.error(err); } 
-    finally {
-        document.getElementById("pdfArea").classList.remove("pdfmode");
-        document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.remove("hidepdf"));
-    }
+    } catch (err) { 
+        console.error(err); 
+        btn.classList.remove("btn-active");
+        btn.innerHTML = oldHTML;
+    } 
 }
 
-async function makePDF(mode){
-  const title = document.getElementById("title").innerText;
-  document.getElementById("pdfArea").classList.add("pdfmode");
-  document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.add("hidepdf"));
-  const canvas = await html2canvas(document.getElementById("pdfArea"),{scale:2});
-  const pdf = new jspdf.jsPDF("p","mm","a4");
-  pdf.addImage(canvas.toDataURL("image/jpeg",1.0),"JPEG",10,10,190,canvas.height*190/canvas.width);
-  document.getElementById("pdfArea").classList.remove("pdfmode");
-  document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.remove("hidepdf"));
-  pdf.save(`${title}.pdf`);
-  flashButton("downloadBtn", "Downloaded! ✅");
-}
+async function makePDF(){  
+  const title = document.getElementById("title").innerText;  
+  try {  
+      const pdf = await generatePDFFile();  
+      pdf.save(`${title}.pdf`);  
+      flashButton("downloadBtn", "Downloaded! ✅");  
+  } catch (err) { console.error(err); }  
+}  
 
-function printPDF(){ document.title=document.getElementById("title").innerText; window.print(); }
+function printPDF(){ document.title=document.getElementById("title").innerText; window.print(); }  
 
-window.onload = () => {
-    let d = localStorage.getItem("goshwara_data");
-    isDataEntered = localStorage.getItem("isDataEntered") === "true";
-    if(d) { document.getElementById("pdfArea").innerHTML = d; attachEvents(); } 
-    else { buildTable(); }
-    calc(); 
-};
-</script>
-</body>
+window.onload = () => {  
+    let d = localStorage.getItem("goshwara_data");  
+    isDataEntered = localStorage.getItem("isDataEntered") === "true";  
+    if(d) { document.getElementById("pdfArea").innerHTML = d; attachEvents(); }   
+    else { buildTable(); }  
+    calc();   
+};  
+</script>  
+</body>  
 </html>
