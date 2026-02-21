@@ -68,25 +68,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
     </tr>  
   </thead>  
   <tbody id="rows"></tbody>  
-  <tr id="pri">  
-    <td class="delcell"><button onclick="deleteRow(this)">×</button></td>  
-    <td class="label">Total (Primary)</td>  
-    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
-    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
-    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
-    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
-    <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
-  </tr>  
-  <tr id="grand">  
-    <td class="delcell"></td>  
-    <td class="label">Grand Total</td>  
-    <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
-    <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
-    <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
-    <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
-    <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
-  </tr>  
-</table>  
+  </table>  
 </div>  
 
 <script>  
@@ -205,6 +187,34 @@ function buildTable(){
       rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);  
     }  
   });  
+  
+  // Reset ke waqt fixed summary rows ko vapis add karna
+  const table = document.getElementById("mainTable");
+  // Purani summary rows hatana agar koi bachi ho (safety check)
+  if(document.getElementById("pri")) document.getElementById("pri").remove();
+  if(document.getElementById("grand")) document.getElementById("grand").remove();
+
+  const footerHTML = `
+    <tr id="pri">  
+      <td class="delcell"><button onclick="deleteRow(this)">×</button></td>  
+      <td class="label">Total (Primary)</td>  
+      <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
+      <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
+      <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
+      <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
+      <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
+    </tr>  
+    <tr id="grand">  
+      <td class="delcell"></td>  
+      <td class="label">Grand Total</td>  
+      <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>  
+      <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>  
+      <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>  
+      <td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td>  
+      <td class="tb"></td><td class="tg"></td><td class="tt"></td>  
+    </tr>`;
+  table.insertAdjacentHTML("beforeend", footerHTML);
+
   attachEvents();  
 }  
 
@@ -245,7 +255,6 @@ async function generatePDFFile() {
 
 async function shareAsPDF() {
     const title = document.getElementById("title").innerText;
-    // Processing message ke liye green flash
     const btn = document.getElementById("shareBtn");
     const oldHTML = btn.innerHTML;
     btn.classList.add("btn-active");
@@ -258,7 +267,6 @@ async function shareAsPDF() {
         
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({ files: [file], title: title });
-            // Share success par green flash dikhana
             flashButton("shareBtn", "Shared! ✅");
         } else {
             alert("Sharing not supported");
