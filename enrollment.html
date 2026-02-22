@@ -55,7 +55,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
     border-right: 0.5px solid #000 !important;
     outline: 0.1px solid rgba(0,0,0,0.05); 
 }
-.pdfmode { padding: 20px !important; background: white; }
+.pdfmode { padding: 5px !important; background: white; }
 
 /* --- Ctrl + P Print Mode --- */
 @media print {
@@ -325,11 +325,14 @@ async function generatePDFFile() {
     const imgData = canvas.toDataURL("image/jpeg", 1.0);    
     const pdf = new jspdf.jsPDF("p", "mm", "a4");    
     const pageWidth = pdf.internal.pageSize.getWidth();    
-    const margin = 5;     
-    const innerWidth = pageWidth - (margin * 2);    
-    const imgWidth = innerWidth;    
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;    
-    pdf.addImage(imgData, "JPEG", margin, margin, imgWidth, imgHeight);    
+    const marginX = 2;   // left + right
+const marginTop = 10; // top only
+
+const innerWidth = pageWidth - (marginX * 2);
+const imgWidth = innerWidth;
+const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+pdf.addImage(imgData, "JPEG", marginX, marginTop, imgWidth, imgHeight, undefined, "FAST");    
     return pdf;    
 }    
   
