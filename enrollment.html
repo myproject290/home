@@ -155,6 +155,7 @@ function setVal(el, value) {
 }  
 
 function calc(){  
+  // Calculate individual class row totals
   document.querySelectorAll(".row").forEach(r=>{  
     let sb=n(r.querySelector(".sc-b")), sg=n(r.querySelector(".sc-g")), stb=n(r.querySelector(".st-b")), stg=n(r.querySelector(".st-g")), ob=n(r.querySelector(".obc-b")), og=n(r.querySelector(".obc-g")), gb=n(r.querySelector(".gen-b")), gg=n(r.querySelector(".gen-g"));  
     setVal(r.querySelector(".sc-t"), sb+sg); setVal(r.querySelector(".st-t"), stb+stg);  
@@ -162,19 +163,28 @@ function calc(){
     setVal(r.querySelector(".tb"), sb+stb+ob+gb); setVal(r.querySelector(".tg"), sg+stg+og+gg);  
     setVal(r.querySelector(".tt"), (sb+sg)+(stb+stg)+(ob+og)+(gb+gg));  
   });  
+
+  // Calculate Sub-totals (Pre and Pri) if they exist
   ["pre","pri"].forEach(id=>{  
-    let sumRow=document.getElementById(id); if(!sumRow) return;  
-    let dataRows=document.querySelectorAll(".row."+id);  
+    let sumRow = document.getElementById(id); 
+    if(!sumRow) return;  
+    let dataRows = document.querySelectorAll(".row."+id);  
     ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
       let t=0; dataRows.forEach(r=> t+=n(r.querySelector("."+c)));   
       setVal(sumRow.querySelector("."+c), t);  
     });  
   });  
-  let pre=document.getElementById("pre"), pri=document.getElementById("pri"), grand=document.getElementById("grand");  
-  ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
-    let totalVal = (pre ? n(pre.querySelector("."+c)) : 0) + (pri ? n(pri.querySelector("."+c)) : 0);  
-    setVal(grand.querySelector("."+c), totalVal);  
-  });  
+
+  // Calculate Grand Total - Directly from ALL data rows (independent of sub-total rows)
+  let grand = document.getElementById("grand");
+  if(grand) {
+    let allDataRows = document.querySelectorAll(".row"); // All class rows
+    ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
+        let totalVal = 0;
+        allDataRows.forEach(r => totalVal += n(r.querySelector("."+c)));
+        setVal(grand.querySelector("."+c), totalVal);  
+    });
+  }
 }  
 
 function buildTable(){  
@@ -188,9 +198,7 @@ function buildTable(){
     }  
   });  
   
-  // Reset ke waqt fixed summary rows ko vapis add karna
   const table = document.getElementById("mainTable");
-  // Purani summary rows hatana agar koi bachi ho (safety check)
   if(document.getElementById("pri")) document.getElementById("pri").remove();
   if(document.getElementById("grand")) document.getElementById("grand").remove();
 
