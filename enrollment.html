@@ -325,7 +325,7 @@ async function generatePDFFile() {
     const imgData = canvas.toDataURL("image/jpeg", 1.0);    
     const pdf = new jspdf.jsPDF("p", "mm", "a4");    
     const pageWidth = pdf.internal.pageSize.getWidth();    
-    const marginX = 2;   // left + right
+    const marginX = 1;   // left + right
 const marginTop = 10; // top only
 
 const innerWidth = pageWidth - (marginX * 2);
