@@ -41,7 +41,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 .sc-t,.st-t,.obc-t,.gen-t,.tt{color:red;font-weight:bold}
 .head-t{color:red;font-weight:bold}
 .label{ color:red; font-weight:bold; white-space:normal; line-height:1.2; font-size:20px; }
-.delcell button { border:none; background:none; font-size:22px; cursor:pointer; color:black; font-weight:bold; line-height:1; }
+.delcell button{border:none;background:none;font-size:18px;cursor:pointer;color:black}
 .hidepdf{display:none}
 #pri td{height:45px; background-color:#fff;}
 #pre td{height:auto !important; background-color:#fff;}
@@ -66,10 +66,10 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 </head>    
 <body>    
 <div id="topbar">    
-<button class="topbtn" onclick="undoAction()"><span>&#8630;</span> Undo</button>    
-<button class="topbtn" onclick="redoAction()"><span>&#8631;</span> Redo</button>    
+<button class="topbtn" onclick="undoAction()"><span>↩️</span> Undo</button>    
+<button class="topbtn" onclick="redoAction()"><span>↪️</span> Redo</button>    
 <div style="width:1px; background:#ccc; margin:0 10px;"></div>    
-<button class="topbtn" id="zeroBtn" onclick="toggleZeros()"><span>&#128065;</span> Hide 0</button>
+<button class="topbtn" id="zeroBtn" onclick="toggleZeros()"><span>👁️</span> Hide 0</button>
 <button class="topbtn" onclick="printPDF()">Print/ Save as PDF</button>    
 <button class="topbtn" id="shareBtn" onclick="shareAsPDF()">Share PDF</button>    
 <button class="topbtn" id="downloadBtn" onclick="makePDF()">Download PDF</button>    
@@ -191,9 +191,11 @@ function toggleZeros() {
     zerosHidden = !zerosHidden;
     const btn = document.getElementById("zeroBtn");
     if(zerosHidden) {
-        btn.innerHTML = "<span>&#128064;</span> Show 0";
+        btn.innerHTML = "<span>👀</span> Show 0";
+        btn.classList.add("btn-active");
     } else {
-        btn.innerHTML = "<span>&#128065;</span> Hide 0";
+        btn.innerHTML = "<span>👁️</span> Hide 0";
+        btn.classList.remove("btn-active");
     }
     calc();
 }
@@ -227,14 +229,25 @@ function calc(){
     });  
   }
 
-  // Exact Zero hide logic
-  const allDataCells = document.querySelectorAll("#mainTable td:not(.classcol):not(.label):not(.delcell)");
-  allDataCells.forEach(td => {
+  // Result-based Hide logic (Strict numeric check)
+  const allCells = document.querySelectorAll("#mainTable td:not(.classcol):not(.label):not(.delcell)");
+  allCells.forEach(td => {
       let valText = td.innerText.trim();
       let numericVal = parseInt(valText);
       
-      if (zerosHidden && valText !== "" && numericVal === 0 && /^0+$/.test(valText)) {
-          td.style.color = "transparent";
+      // Hide tabhi hoga jab:
+      // 1. zerosHidden ON ho
+      // 2. Text khali na ho
+      // 3. Mathematical result exact 0 ho (covers 0, 00, 000 etc.)
+      // 4. Text ka format "01" jaisa na ho (check length if it starts with 0)
+      
+      if (zerosHidden && valText !== "" && numericVal === 0 && !/^(0[1-9]+|[1-9]+0)/.test(valText)) {
+          // Special check for multi-zero strings like "00"
+          if (/^0+$/.test(valText)) {
+              td.style.color = "transparent";
+          } else {
+              td.style.color = "";
+          }
       } else {
           td.style.color = "";
       }
@@ -246,9 +259,9 @@ function buildTable(){
   rows.innerHTML = "";    
   classes.forEach(c=>{    
     if(c[1] === "total-pre") {    
-      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">&times;</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
+      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     } else {    
-      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">&times;</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
+      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     }    
   });    
     
@@ -258,7 +271,7 @@ function buildTable(){
   
   const footerHTML = `  
     <tr id="pri">    
-      <td class="delcell"><button onclick="deleteRow(this)">&times;</button></td>    
+      <td class="delcell"><button onclick="deleteRow(this)">×</button></td>    
       <td class="label">Total<br>(Primary)</td>    
       <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>    
       <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>    
