@@ -103,19 +103,28 @@ function undoAction() {
     if (undoStack.length > 0) {  
         redoStack.push(document.getElementById("pdfArea").innerHTML);  
         document.getElementById("pdfArea").innerHTML = undoStack.pop();  
+
+        // FORCE data mode ON after undo
+        isDataEntered = true;
+
         attachEvents();  
-        calc();  
+
+        // small delay so DOM properly restore ho
+        setTimeout(()=>calc(),50);  
     }  
-}  
+}
 
 function redoAction() {  
     if (redoStack.length > 0) {  
         undoStack.push(document.getElementById("pdfArea").innerHTML);  
         document.getElementById("pdfArea").innerHTML = redoStack.pop();  
+
+        isDataEntered = true;
+
         attachEvents();  
-        calc();  
+        setTimeout(()=>calc(),50);  
     }  
-}  
+}
 
 function attachEvents() {  
     document.querySelectorAll(".edit, #title").forEach(el => {  
