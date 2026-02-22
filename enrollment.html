@@ -195,10 +195,12 @@ function toggleZeros() {
     const btn = document.getElementById("zeroBtn");
 
     if (zerosHidden) {
-        btn.innerHTML = "<span>&#9678;</span> Show 0";   // ◉
+        // zeros hidden → button should say SHOW
+        btn.innerHTML = "<span>&#128065;</span> Show 0";   // 👁
         btn.classList.add("btn-active");
     } else {
-        btn.innerHTML = "<span>&#128065;</span> Hide 0"; // 👁
+        // zeros visible → button should say HIDE
+        btn.innerHTML = "<span>&#9678;</span> Hide 0";     // ◉
         btn.classList.remove("btn-active");
     }
 
