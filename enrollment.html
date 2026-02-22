@@ -22,6 +22,10 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 
 .edit{background:#fff; outline: none;}
 .edit:focus{background:#fffbe6; border: 2px solid blue !important;}
+
+/* Summary rows (Pre, Pri, Grand) text styling */
+#pre td, #pri td, #grand td { color: red; font-weight: bold; }
+
 .sc-t,.st-t,.obc-t,.gen-t,.tt{color:red;font-weight:bold}
 .head-t{color:red;font-weight:bold}
 .label{ color:red; font-weight:bold; white-space:normal; line-height:1.2; font-size:15px; }
@@ -155,7 +159,6 @@ function setVal(el, value) {
 }  
 
 function calc(){  
-  // Calculate individual class row totals
   document.querySelectorAll(".row").forEach(r=>{  
     let sb=n(r.querySelector(".sc-b")), sg=n(r.querySelector(".sc-g")), stb=n(r.querySelector(".st-b")), stg=n(r.querySelector(".st-g")), ob=n(r.querySelector(".obc-b")), og=n(r.querySelector(".obc-g")), gb=n(r.querySelector(".gen-b")), gg=n(r.querySelector(".gen-g"));  
     setVal(r.querySelector(".sc-t"), sb+sg); setVal(r.querySelector(".st-t"), stb+stg);  
@@ -164,7 +167,6 @@ function calc(){
     setVal(r.querySelector(".tt"), (sb+sg)+(stb+stg)+(ob+og)+(gb+gg));  
   });  
 
-  // Calculate Sub-totals (Pre and Pri) if they exist
   ["pre","pri"].forEach(id=>{  
     let sumRow = document.getElementById(id); 
     if(!sumRow) return;  
@@ -175,10 +177,9 @@ function calc(){
     });  
   });  
 
-  // Calculate Grand Total - Directly from ALL data rows (independent of sub-total rows)
   let grand = document.getElementById("grand");
   if(grand) {
-    let allDataRows = document.querySelectorAll(".row"); // All class rows
+    let allDataRows = document.querySelectorAll(".row");
     ["sc-b","sc-g","sc-t","st-b","st-g","st-t","obc-b","obc-g","obc-t","gen-b","gen-g","gen-t","tb","tg","tt"].forEach(c=>{  
         let totalVal = 0;
         allDataRows.forEach(r => totalVal += n(r.querySelector("."+c)));
@@ -309,4 +310,3 @@ window.onload = () => {
 </script>  
 </body>  
 </html>
-
