@@ -72,7 +72,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 <button class="topbtn" onclick="undoAction()"><span>&#8634;</span> Undo</button>    
 <button class="topbtn" onclick="redoAction()"><span>&#8635;</span> Redo</button>    
 <div style="width:1px; background:#ccc; margin:0 10px;"></div>    
-<button class="topbtn" id="zeroBtn" onclick="toggleZeros()"><span>&#128065;</span> Hide 0</button>
+<button class="topbtn" id="zeroBtn" onclick="toggleZeros()"><span>&#9678;</span> Hide 0</button>
 <button class="topbtn" onclick="printPDF()">Print/ Save as PDF</button>    
 <button class="topbtn" id="shareBtn" onclick="shareAsPDF()">Share PDF</button>    
 <button class="topbtn" id="downloadBtn" onclick="makePDF()">Download PDF</button>    
@@ -108,7 +108,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 let undoStack = [];    
 let redoStack = [];    
 let isDataEntered = false;     
-let zerosHidden = false;
+let zerosHidden = false; // Refresh par default Show mode
 const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];    
   
 function flashButton(btnId, tempText) {    
@@ -192,19 +192,22 @@ function setVal(el, value) {
 
 function toggleZeros() {
     zerosHidden = !zerosHidden;
-    const btn = document.getElementById("zeroBtn");
+    updateZeroButtonUI();
+    calc();
+}
 
+function updateZeroButtonUI() {
+    const btn = document.getElementById("zeroBtn");
+    if (!btn) return;
     if (zerosHidden) {
-        // zeros hidden → button should say SHOW
-        btn.innerHTML = "<span>&#128065;</span> Show 0";   // 👁
+        // Zeros chhup gaye -> User ko Show karne ka option do
+        btn.innerHTML = "<span>&#128065;</span> Show 0"; // Eye Icon
         btn.classList.add("btn-active");
     } else {
-        // zeros visible → button should say HIDE
-        btn.innerHTML = "<span>&#9678;</span> Hide 0";     // ◉
+        // Zeros dikh rahe hain -> User ko Hide karne ka option do
+        btn.innerHTML = "<span>&#9678;</span> Hide 0"; // Circle Icon
         btn.classList.remove("btn-active");
     }
-
-    calc();
 }
 
 function calc(){    
@@ -236,25 +239,12 @@ function calc(){
     });  
   }
 
-  // Result-based Hide logic (Strict numeric check)
   const allCells = document.querySelectorAll("#mainTable td:not(.classcol):not(.label):not(.delcell)");
   allCells.forEach(td => {
       let valText = td.innerText.trim();
       let numericVal = parseInt(valText);
-      
-      // Hide tabhi hoga jab:
-      // 1. zerosHidden ON ho
-      // 2. Text khali na ho
-      // 3. Mathematical result exact 0 ho (covers 0, 00, 000 etc.)
-      // 4. Text ka format "01" jaisa na ho (check length if it starts with 0)
-      
       if (zerosHidden && valText !== "" && numericVal === 0 && !/^(0[1-9]+|[1-9]+0)/.test(valText)) {
-          // Special check for multi-zero strings like "00"
-          if (/^0+$/.test(valText)) {
-              td.style.color = "transparent";
-          } else {
-              td.style.color = "";
-          }
+          td.style.color = "transparent";
       } else {
           td.style.color = "";
       }
@@ -327,14 +317,12 @@ async function generatePDFFile() {
     const imgData = canvas.toDataURL("image/jpeg", 1.0);    
     const pdf = new jspdf.jsPDF("p", "mm", "a4");    
     const pageWidth = pdf.internal.pageSize.getWidth();    
-    const marginX = 1;   // left + right
-const marginTop = 10; // top only
-
-const innerWidth = pageWidth - (marginX * 2);
-const imgWidth = innerWidth;
-const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-pdf.addImage(imgData, "JPEG", marginX, marginTop, imgWidth, imgHeight, undefined, "FAST");    
+    const marginX = 1;   
+    const marginTop = 10; 
+    const innerWidth = pageWidth - (marginX * 2);
+    const imgWidth = innerWidth;
+    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+    pdf.addImage(imgData, "JPEG", marginX, marginTop, imgWidth, imgHeight, undefined, "FAST");    
     return pdf;    
 }    
   
@@ -344,20 +332,16 @@ async function shareAsPDF() {
     const oldHTML = btn.innerHTML;  
     btn.classList.add("btn-active");  
     btn.innerText = "Generating...";  
-      
     try {  
         const pdf = await generatePDFFile();  
         const pdfBlob = pdf.output('blob');  
         const file = new File([pdfBlob], `${title}.pdf`, { type: 'application/pdf' });  
-          
         if (navigator.canShare && navigator.canShare({ files: [file] })) {  
             await navigator.share({ files: [file], title: title });  
         } else {  
             alert("Sharing not supported");  
         }  
-    } catch (err) {   
-        console.error(err);   
-    } finally {
+    } catch (err) { console.error(err); } finally {
         btn.classList.remove("btn-active");  
         btn.innerHTML = oldHTML;  
     }
@@ -379,6 +363,7 @@ window.onload = () => {
     isDataEntered = localStorage.getItem("isDataEntered") === "true";    
     if(d) { document.getElementById("pdfArea").innerHTML = d; attachEvents(); }     
     else { buildTable(); }    
+    updateZeroButtonUI(); // Refresh par 'Hide 0' (◉) button set karega
     calc();     
 };    
 </script>    
