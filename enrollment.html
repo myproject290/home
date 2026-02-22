@@ -66,9 +66,10 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 </head>    
 <body>    
 <div id="topbar">    
-<button class="topbtn" onclick="undoAction()"><span>↩️</span> Undo</button>    
-<button class="topbtn" onclick="redoAction()"><span>↪️</span> Redo</button>    
+<button class="topbtn" onclick="undoAction()"><span>â†©ï¸</span> Undo</button>    
+<button class="topbtn" onclick="redoAction()"><span>â†ªï¸</span> Redo</button>    
 <div style="width:1px; background:#ccc; margin:0 10px;"></div>    
+<button class="topbtn" id="zeroBtn" onclick="toggleZeros()"><span>ðŸ‘ï¸</span> Hide 0</button>
 <button class="topbtn" onclick="printPDF()">Print/ Save as PDF</button>    
 <button class="topbtn" id="shareBtn" onclick="shareAsPDF()">Share PDF</button>    
 <button class="topbtn" id="downloadBtn" onclick="makePDF()">Download PDF</button>    
@@ -104,6 +105,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 let undoStack = [];    
 let redoStack = [];    
 let isDataEntered = false;     
+let zerosHidden = false;
 const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];    
   
 function flashButton(btnId, tempText) {    
@@ -184,7 +186,20 @@ function setVal(el, value) {
     if(!el) return;    
     el.innerText = (isDataEntered) ? value : "";    
 }    
-  
+
+function toggleZeros() {
+    zerosHidden = !zerosHidden;
+    const btn = document.getElementById("zeroBtn");
+    if(zerosHidden) {
+        btn.innerHTML = "<span>ðŸ‘€</span> Show 0";
+        btn.classList.add("btn-active");
+    } else {
+        btn.innerHTML = "<span>ðŸ‘ï¸</span> Hide 0";
+        btn.classList.remove("btn-active");
+    }
+    calc();
+}
+
 function calc(){    
   document.querySelectorAll(".row").forEach(r=>{    
     let sb=n(r.querySelector(".sc-b")), sg=n(r.querySelector(".sc-g")), stb=n(r.querySelector(".st-b")), stg=n(r.querySelector(".st-g")), ob=n(r.querySelector(".obc-b")), og=n(r.querySelector(".obc-g")), gb=n(r.querySelector(".gen-b")), gg=n(r.querySelector(".gen-g"));    
@@ -212,7 +227,31 @@ function calc(){
         allDataRows.forEach(r => totalVal += n(r.querySelector("."+c)));  
         setVal(grand.querySelector("."+c), totalVal);    
     });  
-  }  
+  }
+
+  // Result-based Hide logic (Strict numeric check)
+  const allCells = document.querySelectorAll("#mainTable td:not(.classcol):not(.label):not(.delcell)");
+  allCells.forEach(td => {
+      let valText = td.innerText.trim();
+      let numericVal = parseInt(valText);
+      
+      // Hide tabhi hoga jab:
+      // 1. zerosHidden ON ho
+      // 2. Text khali na ho
+      // 3. Mathematical result exact 0 ho (covers 0, 00, 000 etc.)
+      // 4. Text ka format "01" jaisa na ho (check length if it starts with 0)
+      
+      if (zerosHidden && valText !== "" && numericVal === 0 && !/^(0[1-9]+|[1-9]+0)/.test(valText)) {
+          // Special check for multi-zero strings like "00"
+          if (/^0+$/.test(valText)) {
+              td.style.color = "transparent";
+          } else {
+              td.style.color = "";
+          }
+      } else {
+          td.style.color = "";
+      }
+  });
 }    
   
 function buildTable(){    
@@ -220,9 +259,9 @@ function buildTable(){
   rows.innerHTML = "";    
   classes.forEach(c=>{    
     if(c[1] === "total-pre") {    
-      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
+      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">Ã—</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     } else {    
-      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
+      rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">Ã—</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     }    
   });    
     
@@ -232,7 +271,7 @@ function buildTable(){
   
   const footerHTML = `  
     <tr id="pri">    
-      <td class="delcell"><button onclick="deleteRow(this)">×</button></td>    
+      <td class="delcell"><button onclick="deleteRow(this)">Ã—</button></td>    
       <td class="label">Total<br>(Primary)</td>    
       <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>    
       <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>    
@@ -257,7 +296,7 @@ function buildTable(){
 function saveToLocal(manual){    
     localStorage.setItem("goshwara_data", document.getElementById("pdfArea").innerHTML);    
     localStorage.setItem("isDataEntered", isDataEntered);     
-    if(manual) flashButton("saveBtn", "Saved! ✅");    
+    if(manual) flashButton("saveBtn", "Saved! âœ…");    
 }    
   
 function resetForm(){    
@@ -268,7 +307,7 @@ function resetForm(){
     document.getElementById("title").innerText = "Enrollment";    
     buildTable();    
     calc();    
-    flashButton("resetBtn", "Cleared! 🧹");    
+    flashButton("resetBtn", "Cleared! ðŸ§¹");    
 }    
   
 async function generatePDFFile() {    
@@ -303,14 +342,12 @@ async function shareAsPDF() {
           
         if (navigator.canShare && navigator.canShare({ files: [file] })) {  
             await navigator.share({ files: [file], title: title });  
-            // Yahan share ho gaya ya menu khul gaya
         } else {  
             alert("Sharing not supported");  
         }  
     } catch (err) {   
         console.error(err);   
     } finally {
-        // Ye hamesha button ko wapas normal kar dega
         btn.classList.remove("btn-active");  
         btn.innerHTML = oldHTML;  
     }
@@ -321,7 +358,7 @@ async function makePDF(){
   try {    
       const pdf = await generatePDFFile();    
       pdf.save(`${title}.pdf`);    
-      flashButton("downloadBtn", "Downloaded! ✅");    
+      flashButton("downloadBtn", "Downloaded! âœ…");    
   } catch (err) { console.error(err); }    
 }    
   
@@ -337,5 +374,3 @@ window.onload = () => {
 </script>    
 </body>    
 </html>
-
-
