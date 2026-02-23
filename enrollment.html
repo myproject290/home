@@ -112,7 +112,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 let undoStack = [];    
 let redoStack = [];    
 let isDataEntered = false;     
-let zerosHidden = false; // Refresh par default Show mode
+let zerosHidden = false; 
 const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];    
   
 function flashButton(btnId, tempText) {    
@@ -204,12 +204,10 @@ function updateZeroButtonUI() {
     const btn = document.getElementById("zeroBtn");
     if (!btn) return;
     if (zerosHidden) {
-        // Zeros chhup gaye -> User ko Show karne ka option do
-        btn.innerHTML = "<span>&#128065;</span> Show 0"; // Eye Icon
+        btn.innerHTML = "<span>&#128065;</span> Show 0"; 
         btn.classList.add("btn-active");
     } else {
-        // Zeros dikh rahe hain -> User ko Hide karne ka option do
-        btn.innerHTML = "<span>&#9678;</span> Hide 0"; // Circle Icon
+        btn.innerHTML = "<span>&#9678;</span> Hide 0"; 
         btn.classList.remove("btn-active");
     }
 }
@@ -297,16 +295,20 @@ function buildTable(){
 function saveToLocal(manual){    
     localStorage.setItem("goshwara_data", document.getElementById("pdfArea").innerHTML);    
     localStorage.setItem("isDataEntered", isDataEntered);     
+    localStorage.setItem("zerosHidden", zerosHidden); // Yahan zeros state save ho rahi hai
     if(manual) flashButton("saveBtn", "Saved! ✅");    
 }    
   
 function resetForm(){    
     saveState();    
     isDataEntered = false;     
+    zerosHidden = false; // Reset par zero show mode par aa jayega
     localStorage.removeItem("goshwara_data");    
     localStorage.removeItem("isDataEntered");    
+    localStorage.removeItem("zerosHidden");
     document.getElementById("title").innerText = "Enrollment";    
     buildTable();    
+    updateZeroButtonUI();
     calc();    
     flashButton("resetBtn", "Cleared! 🧹");    
 }    
@@ -365,12 +367,18 @@ function printPDF(){ document.title=document.getElementById("title").innerText; 
 window.onload = () => {    
     let d = localStorage.getItem("goshwara_data");    
     isDataEntered = localStorage.getItem("isDataEntered") === "true";    
+    
+    // Zeros setting ko memory se wapas lana
+    let savedZeros = localStorage.getItem("zerosHidden");
+    if (savedZeros !== null) {
+        zerosHidden = (savedZeros === "true");
+    }
+
     if(d) { document.getElementById("pdfArea").innerHTML = d; attachEvents(); }     
     else { buildTable(); }    
-    updateZeroButtonUI(); // Refresh par 'Hide 0' (◉) button set karega
+    updateZeroButtonUI(); 
     calc();     
 };    
 </script>    
 </body>    
 </html>
-
