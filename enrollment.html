@@ -19,7 +19,7 @@ body{font-family:Arial;margin:0;padding:5px; overflow-x: auto;}
 }        
 #title{text-align:center;font-size:25px;font-weight:bold;margin:5px 0;outline:none;}    
 
-/* --- Table Base Style (Web View: 0.5px) --- */
+/* --- Table Base Style --- */
 table {
     border-collapse: collapse; 
     min-width: 900px; 
@@ -53,7 +53,6 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 #pri td{height:45px; background-color:#fff;}
 #pre td{height:auto !important; background-color:#fff;}
 
-/* --- Share & Download PDF Mode (Sharp 0.5px) --- */
 .pdfmode td, .pdfmode th { border: 0.5px solid #000 !important; }
 .pdfmode table { 
     border-right: 0.5px solid #000 !important;
@@ -61,7 +60,6 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 }
 .pdfmode { padding: 5px !important; background: white; }
 
-/* --- Ctrl + P Print Mode --- */
 @media print {
     #topbar { display:none; }
     .delcol, .delcell { display:none; }
@@ -83,6 +81,7 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 <button class="topbtn" id="saveBtn" onclick="saveToLocal(true)">Save for future</button>    
 <button class="topbtn" id="resetBtn" onclick="resetForm()">Reset</button>    
 </div>    
+
 <div id="pdfArea">    
 <div id="title" contenteditable="true" spellcheck="false">Enrollment</div>    
 <table id="mainTable">    
@@ -114,17 +113,13 @@ let redoStack = [];
 let isDataEntered = false;     
 let zerosHidden = false; 
 const classes=[["Nursery","pre"],["LKG","pre"],["UKG","pre"],["TOTAL PRE-PRI","total-pre"],["I","pri"],["II","pri"],["III","pri"],["IV","pri"],["V","pri"]];    
-  
+
 function flashButton(btnId, tempText) {    
     const btn = document.getElementById(btnId);    
     if (!btn) return;    
     const oldHTML = btn.innerHTML;    
-    btn.classList.add("btn-active");    
-    btn.innerText = tempText;    
-    setTimeout(() => {    
-        btn.classList.remove("btn-active");    
-        btn.innerHTML = oldHTML;    
-    }, 2000);    
+    btn.innerHTML = tempText;    
+    setTimeout(() => { btn.innerHTML = oldHTML; }, 2000);    
 }    
   
 function saveState() {    
@@ -205,10 +200,8 @@ function updateZeroButtonUI() {
     if (!btn) return;
     if (zerosHidden) {
         btn.innerHTML = "<span>&#128065;</span> Show 0"; 
-        btn.classList.add("btn-active");
     } else {
         btn.innerHTML = "<span>&#9678;</span> Hide 0"; 
-        btn.classList.remove("btn-active");
     }
 }
 
@@ -288,21 +281,20 @@ function buildTable(){
       <td class="tb"></td><td class="tg"></td><td class="tt"></td>    
     </tr>`;  
   table.insertAdjacentHTML("beforeend", footerHTML);  
-  
   attachEvents();    
 }    
   
 function saveToLocal(manual){    
     localStorage.setItem("goshwara_data", document.getElementById("pdfArea").innerHTML);    
     localStorage.setItem("isDataEntered", isDataEntered);     
-    localStorage.setItem("zerosHidden", zerosHidden); // Yahan zeros state save ho rahi hai
+    localStorage.setItem("zerosHidden", zerosHidden); 
     if(manual) flashButton("saveBtn", "Saved! ✅");    
 }    
   
 function resetForm(){    
     saveState();    
     isDataEntered = false;     
-    zerosHidden = false; // Reset par zero show mode par aa jayega
+    zerosHidden = false; 
     localStorage.removeItem("goshwara_data");    
     localStorage.removeItem("isDataEntered");    
     localStorage.removeItem("zerosHidden");
@@ -336,20 +328,23 @@ async function shareAsPDF() {
     const title = document.getElementById("title").innerText;  
     const btn = document.getElementById("shareBtn");  
     const oldHTML = btn.innerHTML;  
-    btn.classList.add("btn-active");  
-    btn.innerText = "Generating...";  
+    btn.innerHTML = "Generating...";  
+    
     try {  
         const pdf = await generatePDFFile();  
         const pdfBlob = pdf.output('blob');  
         const file = new File([pdfBlob], `${title}.pdf`, { type: 'application/pdf' });  
+        
+        btn.innerHTML = oldHTML; 
+
         if (navigator.canShare && navigator.canShare({ files: [file] })) {  
             await navigator.share({ files: [file], title: title });  
         } else {  
-            alert("Sharing not supported");  
+            alert("Permission denied");  
         }  
-    } catch (err) { console.error(err); } finally {
-        btn.classList.remove("btn-active");  
-        btn.innerHTML = oldHTML;  
+    } catch (err) { 
+        btn.innerHTML = oldHTML;
+        alert("Permission denied");
     }
 }  
   
@@ -367,13 +362,8 @@ function printPDF(){ document.title=document.getElementById("title").innerText; 
 window.onload = () => {    
     let d = localStorage.getItem("goshwara_data");    
     isDataEntered = localStorage.getItem("isDataEntered") === "true";    
-    
-    // Zeros setting ko memory se wapas lana
     let savedZeros = localStorage.getItem("zerosHidden");
-    if (savedZeros !== null) {
-        zerosHidden = (savedZeros === "true");
-    }
-
+    if (savedZeros !== null) { zerosHidden = (savedZeros === "true"); }
     if(d) { document.getElementById("pdfArea").innerHTML = d; attachEvents(); }     
     else { buildTable(); }    
     updateZeroButtonUI(); 
