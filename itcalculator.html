@@ -534,12 +534,57 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
     }
 
     function formatInput(elem) {
-        let rawVal = elem.value.replace(/,/g, '');
-        if (!rawVal || isNaN(rawVal)) { calculateTax(); if(rawVal === "") elem.style.fontSize = "inherit"; return; }
-        elem.value = Math.round(rawVal).toLocaleString('en-IN');
-        adjustFontSize(elem);
+    let cursor = elem.selectionStart;
+    let valueBefore = elem.value;
+    
+    // 1. Sirf numbers rakhein
+    let digits = valueBefore.replace(/,/g, '');
+    
+    // Agar field khali hai toh zero na dikhaye, khali rehne de
+    if (digits === "") {
+        elem.value = "";
+        elem.style.fontSize = "inherit";
         calculateTax();
+        return;
     }
+
+    // 2. Formatting Logic (Zeroes ko preserve karne ke liye)
+    let formatted;
+    // Agar digits "0", "00", "000" hain, toh unhe as-is dikhayein bina comma ke
+    if (/^0+$/.test(digits)) {
+        formatted = digits;
+    } else {
+        // Baaki numbers ko Indian format mein convert karein
+        formatted = Number(digits).toLocaleString('en-IN');
+    }
+    
+    // 3. Cursor position calculation
+    let commasBefore = (valueBefore.substring(0, cursor).match(/,/g) || []).length;
+    let digitsBefore = cursor - commasBefore;
+    
+    elem.value = formatted;
+    
+    // 4. Nayi cursor position set karein
+    let newCommasBefore = 0;
+    let currentDigits = 0;
+    let i = 0;
+    while (i < formatted.length && currentDigits < digitsBefore) {
+        if (formatted[i] !== ',') currentDigits++;
+        else newCommasBefore++;
+        i++;
+    }
+    
+    let newCursorPos = digitsBefore + newCommasBefore;
+    
+    // Selection ko lock karne ke liye
+    requestAnimationFrame(() => {
+        elem.setSelectionRange(newCursorPos, newCursorPos);
+    });
+
+    adjustFontSize(elem);
+    calculateTax();
+}
+
 
     const d_now = new Date();
     document.getElementById('currentDate').innerText = `${String(d_now.getDate()).padStart(2,'0')}/${String(d_now.getMonth()+1).padStart(2,'0')}/${d_now.getFullYear()}`;
@@ -664,3 +709,4 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
 </script>
 </body>
 </html>
+
