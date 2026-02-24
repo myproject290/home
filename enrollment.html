@@ -66,6 +66,112 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
     table { border-right: 2px solid #000 !important; }
     th:last-child, td:last-child { border-right: 2px solid #000 !important; }
 }
+/* ================= BODY + SECOND HEADER ROW ================= */
+
+/* SC */
+#mainTable tr td:nth-child(3){
+  border-left:1.5px solid #000!important;
+}
+#mainTable tr th:nth-child(3),
+#mainTable tr td:nth-child(5){
+  border-right:1.5px solid #000!important;
+}
+
+/* ST */
+#mainTable tr th:nth-child(4),
+#mainTable tr td:nth-child(6){
+  border-left:1.5px solid #000!important;
+}
+#mainTable tr th:nth-child(6),
+#mainTable tr td:nth-child(8){
+  border-right:1.5px solid #000!important;
+}
+
+/* OBC */
+#mainTable tr th:nth-child(7),
+#mainTable tr td:nth-child(9){
+  border-left:1.5px solid #000!important;
+}
+#mainTable tr th:nth-child(9),
+#mainTable tr td:nth-child(11){
+  border-right:1.5px solid #000!important;
+}
+
+/* GEN */
+#mainTable tr th:nth-child(10),
+#mainTable tr td:nth-child(12){
+  border-left:1.5px solid #000!important;
+}
+#mainTable tr th:nth-child(12),
+#mainTable tr td:nth-child(14){
+  border-right:1.5px solid #000!important;
+}
+
+/* TOTAL */
+#mainTable tr th:nth-child(13),
+#mainTable tr td:nth-child(15){
+  border-left:1.5px solid #000!important;
+}
+#mainTable tr th:nth-child(15),
+#mainTable tr td:nth-child(17){
+  border-right:1.5px solid #000!important;
+}
+
+/* ===== FIRST HEADER ROW (SC ST OBC GEN TOTAL) ===== */
+
+thead tr:first-child th:nth-child(3),
+thead tr:first-child th:nth-child(4),
+thead tr:first-child th:nth-child(5),
+thead tr:first-child th:nth-child(6),
+thead tr:first-child th:nth-child(7){
+  border-left:1.5px solid #000!important;
+  border-right:1.5px solid #000!important;
+}
+/* Restore thick border at SC-B start */
+
+#mainTable thead tr:nth-child(2) th:first-child,
+#mainTable tbody td:nth-child(3){
+  border-left:1.5px solid #000 !important;
+}
+/* ===== Thick TOP border (excluding × column) ===== */
+
+#mainTable thead tr:first-child th:not(.delcol){
+  border-top:1.5px solid #000 !important;
+}
+
+/* ===== Thick BOTTOM border (excluding × column) ===== */
+
+#mainTable tbody tr:last-child td:not(.delcell){
+  border-bottom:1.5px solid #000 !important;
+}
+/* Thick left border for Class column (not × column) */
+
+#mainTable th.classcol,
+#mainTable td.classcol,
+#mainTable td.label{
+  border-left:1.5px solid #000 !important;
+}
+/* Bottom thick line under B G T row INCLUDING Class column (exclude ×) */
+
+/* Class header (rowspan cell) */
+#mainTable thead tr:first-child th.classcol{
+  border-bottom:1.5px solid #000 !important;
+}
+
+/* All B G T cells */
+#mainTable thead tr:nth-child(2) th{
+  border-bottom:1.5px solid #000 !important;
+}
+/* Total (Pre-Primary): top + bottom (exclude × column) */
+#mainTable tr#pre td:not(.delcell){
+  border-top:1.5px solid #000 !important;
+  border-bottom:1.5px solid #000 !important;
+}
+
+/* Total (Primary): bottom only (exclude × column) */
+#mainTable tr#pri td:not(.delcell){
+  border-bottom:1.5px solid #000 !important;
+}
 </style>
 
 </head>    
@@ -372,4 +478,3 @@ window.onload = () => {
 </script>    
 </body>    
 </html>
-
