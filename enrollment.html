@@ -258,22 +258,10 @@ function attachEvents() {
     document.querySelectorAll(".edit, #title").forEach(el => {    
         el.onfocus = () => saveState();    
         if(el.classList.contains('edit')){    
-            el.addEventListener('keydown', (e) => {
-
-    // Allow delete, backspace, arrows etc
-    if ([46, 8, 9, 27, 13].includes(e.keyCode) || (e.keyCode >= 35 && e.keyCode <= 39)) return;
-
-    // Only numbers
-    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
-        e.preventDefault();
-        return;
-    }
-
-    // ❌ Prevent starting zero
-    if (el.innerText.trim() === "" && (e.key === "0")) {
-        e.preventDefault();
-    }
-});    
+            el.addEventListener('keydown', (e) => {    
+                if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 || (e.keyCode >= 35 && e.keyCode <= 39)) return;    
+                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) e.preventDefault();    
+            });    
             el.addEventListener('input', (e) => {    
                 let clean = el.innerText.replace(/[^\d]/g, '');    
                 if (el.innerText !== clean) {    
@@ -352,16 +340,29 @@ function calc(){
     });  
   }
 
-  const allCells = document.querySelectorAll("#mainTable td:not(.classcol):not(.label):not(.delcell)");
-  allCells.forEach(td => {
-      let valText = td.innerText.trim();
-      let numericVal = parseInt(valText);
-      if (zerosHidden && valText !== "" && numericVal === 0 && !/^(0[1-9]+|[1-9]+0)/.test(valText)) {
-          td.style.color = "transparent";
-      } else {
-          td.style.color = "";
-      }
-  });
+  // TOTAL rows + TOTAL columns me hi Hide 0
+const totalCells = document.querySelectorAll(`
+#mainTable td.sc-t,
+#mainTable td.st-t,
+#mainTable td.obc-t,
+#mainTable td.gen-t,
+#mainTable td.tb,
+#mainTable td.tg,
+#mainTable td.tt,
+#pre td,
+#pri td,
+#grand td
+`);
+
+totalCells.forEach(td => {
+    let v = parseInt(td.innerText.trim());
+
+    if (zerosHidden && v === 0) {
+        td.style.color = "transparent";
+    } else {
+        td.style.color = "";
+    }
+});
 }    
   
 function buildTable(){    
