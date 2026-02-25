@@ -258,10 +258,22 @@ function attachEvents() {
     document.querySelectorAll(".edit, #title").forEach(el => {    
         el.onfocus = () => saveState();    
         if(el.classList.contains('edit')){    
-            el.addEventListener('keydown', (e) => {    
-                if ([46, 8, 9, 27, 13].indexOf(e.keyCode) !== -1 || (e.keyCode >= 35 && e.keyCode <= 39)) return;    
-                if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) e.preventDefault();    
-            });    
+            el.addEventListener('keydown', (e) => {
+
+    // Allow delete, backspace, arrows etc
+    if ([46, 8, 9, 27, 13].includes(e.keyCode) || (e.keyCode >= 35 && e.keyCode <= 39)) return;
+
+    // Only numbers
+    if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+        e.preventDefault();
+        return;
+    }
+
+    // ❌ Prevent starting zero
+    if (el.innerText.trim() === "" && (e.key === "0")) {
+        e.preventDefault();
+    }
+});    
             el.addEventListener('input', (e) => {    
                 let clean = el.innerText.replace(/[^\d]/g, '');    
                 if (el.innerText !== clean) {    
