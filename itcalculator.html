@@ -474,7 +474,11 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
         return await html2canvas(element, {
             scale: 2, useCORS: true, backgroundColor: "#ffffff",
             onclone: (clonedDoc) => {
-                clonedDoc.querySelectorAll('textarea').forEach(ta => {
+                // PDF ke liye yellow background white kar do
+clonedDoc.querySelectorAll('.input-bg').forEach(el => {
+    el.style.backgroundColor = '#ffffff';
+});
+clonedDoc.querySelectorAll('textarea').forEach(ta => {
                     const div = clonedDoc.createElement('div');
                     div.style = "width:100%; min-height:25px; font-weight:bold; line-height:1.5; white-space:pre-wrap; color:#000;";
                     let val = ta.value;
