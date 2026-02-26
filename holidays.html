@@ -7,7 +7,8 @@
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2252%22 font-size=%2275%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>H</text></svg>">
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
 <style>
 * { box-sizing: border-box; }
@@ -34,6 +35,18 @@ body {
     font-weight: bold;
 }
 
+.btn-print {
+    background-color: #007bff;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
 #content-to-print {
     background: #fff;
     padding: 12px;
@@ -44,7 +57,7 @@ body {
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    font-size: 12px;
 }
 
 th, td {
@@ -79,35 +92,12 @@ th {
     font-weight: bold;
 }
 
-@media (max-width: 600px) {
-    table { font-size: 11px; }
-}
-
 @media print {
-
-    body {
-        margin: 0;
-        background: #fff;
-    }
-
-    .download-container {
-        display: none;
-    }
-
-    #content-to-print {
-        max-width: 100%;
-        margin: 0;
-        padding: 10mm;
-    }
-
-    table {
-        font-size: 12px;
-    }
-
-    @page {
-        size: A4;
-        margin: 5mm;
-    }
+    body { margin: 0; background: #fff; }
+    .download-container { display: none; }
+    #content-to-print { max-width: 100%; margin: 0; padding: 10mm; }
+    table { font-size: 12px; }
+    @page { size: A4; margin: 5mm; }
 }
 </style>
 </head>
@@ -115,95 +105,133 @@ th {
 <body>
 
 <div class="download-container">
-    <button class="btn-download" onclick="printPage()">
-        Print / Save as PDF
+    <button class="btn-print" onclick="window.print()">
+        Print PDF
     </button>
-    <button class="btn-download" onclick="downloadPDF()" style="margin-left:10px;">
+    <button class="btn-download" onclick="downloadVectorPDF()">
         Download PDF
     </button>
 </div>
 
 <div id="content-to-print">
+    <h2 id="pdf-title" style="text-align:center; margin-top:0;">
+        Himachal Pradesh Government Holidays - 2026
+    </h2>
 
-<h2 style="text-align:center; margin-top:0;">
-Himachal Pradesh Government Holidays - 2026
-</h2>
+    <table id="holidays-table">
+        <thead>
+            <tr>
+                <th class="date-col">Date</th>
+                <th>Gazetted Holidays</th>
+                <th class="date-col">Date</th>
+                <th>Restricted Holidays</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td class="date-col">25 Jan</td><td>Statehood Day</td><td class="date-col">01 Jan</td><td>New Year's Day</td></tr>
+            <tr><td class="date-col">26 Jan</td><td>Republic Day</td><td class="date-col">14 Jan</td><td>Makar Sankranti</td></tr>
+            <tr><td></td><td></td><td class="date-col">23 Jan</td><td>Basant Panchami</td></tr>
+            <tr><td class="date-col">01 Feb</td><td>Guru Ravidas Jayanti</td><td class="date-col">12 Feb</td><td>Swami Dayanand Saraswati Jayanti</td></tr>
+            <tr><td class="date-col">15 Feb</td><td>Maha Shivratri</td><td></td><td></td></tr>
+            <tr><td class="date-col">04 Mar</td><td>Holi</td><td class="date-col">31 Mar</td><td>Mahavir Jayanti</td></tr>
+            <tr><td class="date-col">21 Mar</td><td>Id-ul-Fitr</td><td></td><td></td></tr>
+            <tr><td class="date-col">26 Mar</td><td>Ram Navami</td><td></td><td></td></tr>
+            <tr><td class="date-col">03 Apr</td><td>Good Friday</td><td class="date-col">05 Apr</td><td>Easter Sunday</td></tr>
+            <tr><td class="date-col">14 Apr</td><td>Dr. B.R. Ambedkar's Birthday</td><td></td><td></td></tr>
+            <tr><td class="date-col">15 Apr</td><td>Himachal Day</td><td></td><td></td></tr>
+            <tr><td class="date-col">19 Apr</td><td>Parshu Ram Jayanti</td><td></td><td></td></tr>
+            <tr><td class="date-col">01 May</td><td>Budha Purnima</td><td class="date-col">09 May</td><td>Guru Rabindranath Tagore Jayanti</td></tr>
+            <tr><td class="date-col">27 May</td><td>Id-ul-Zuha</td><td></td><td></td></tr>
+            <tr><td class="date-col">17 Jun</td><td>Maharana Pratap Jayanti</td><td></td><td></td></tr>
+            <tr><td class="date-col">26 Jun</td><td>Muharram</td><td></td><td></td></tr>
+            <tr><td class="date-col">29 Jun</td><td>Sant Guru Kabir Jayanti</td><td></td><td></td></tr>
+            <tr><td class="date-col">15 Aug</td><td>Independence Day</td><td class="date-col">28 Aug</td><td>*Raksha Bandhan</td></tr>
+            <tr><td class="date-col">04 Sep</td><td>Janmashtami</td><td class="date-col">14 Sep</td><td>Ganesh Chaturthi</td></tr>
+            <tr><td class="date-col">02 Oct</td><td>Gandhi Jayanti</td><td class="date-col">19 Oct</td><td>Maha Ashtami</td></tr>
+            <tr><td class="date-col">20 Oct</td><td>Dussehra</td><td class="date-col">29 Oct</td><td>*Karva Chauth</td></tr>
+            <tr><td class="date-col">26 Oct</td><td>Valmiki Jayanti</td><td></td><td></td></tr>
+            <tr><td class="date-col">08 Nov</td><td>Diwali</td><td class="date-col">09 Nov</td><td>Goverdhan Puja</td></tr>
+            <tr><td class="date-col">24 Nov</td><td>Guru Nanak Jayanti</td><td class="date-col">11 Nov</td><td>*Bhai Duj</td></tr>
+            <tr><td></td><td></td><td class="date-col">24 Nov</td><td>Guru Teg Bahadur's Martyrdom Day</td></tr>
+            <tr><td class="date-col">25 Dec</td><td>Christmas Day</td><td class="date-col">24 Dec</td><td>Christmas Eve</td></tr>
+        </tbody>
+    </table>
 
-<table>
-<thead>
-<tr>
-<th class="date-col">Date</th>
-<th>Gazetted Holidays</th>
-<th class="date-col">Date</th>
-<th>Restricted Holidays</th>
-</tr>
-</thead>
-<tbody>
-
-<tr><td class="date-col">25 Jan</td><td>Statehood Day</td><td class="date-col">01 Jan</td><td>New Year's Day</td></tr>
-<tr><td class="date-col">26 Jan</td><td>Republic Day</td><td class="date-col">14 Jan</td><td>Makar Sankranti</td></tr>
-<tr><td></td><td></td><td class="date-col">23 Jan</td><td>Basant Panchami</td></tr>
-
-<tr><td class="date-col">01 Feb</td><td>Guru Ravidas Jayanti</td><td class="date-col">12 Feb</td><td>Swami Dayanand Saraswati Jayanti</td></tr>
-<tr><td class="date-col">15 Feb</td><td>Maha Shivratri</td><td></td><td></td></tr>
-
-<tr><td class="date-col">04 Mar</td><td>Holi</td><td class="date-col">31 Mar</td><td>Mahavir Jayanti</td></tr>
-<tr><td class="date-col">21 Mar</td><td>Id-ul-Fitr</td><td></td><td></td></tr>
-<tr><td class="date-col">26 Mar</td><td>Ram Navami</td><td></td><td></td></tr>
-
-<tr><td class="date-col">03 Apr</td><td>Good Friday</td><td class="date-col">05 Apr</td><td>Easter Sunday</td></tr>
-<tr><td class="date-col">14 Apr</td><td>Dr. B.R. Ambedkar's Birthday</td><td></td><td></td></tr>
-<tr><td class="date-col">15 Apr</td><td>Himachal Day</td><td></td><td></td></tr>
-<tr><td class="date-col">19 Apr</td><td>Parshu Ram Jayanti</td><td></td><td></td></tr>
-
-<tr><td class="date-col">01 May</td><td>Budha Purnima</td><td class="date-col">09 May</td><td>Guru Rabindranath Tagore Jayanti</td></tr>
-<tr><td class="date-col">27 May</td><td>Id-ul-Zuha</td><td></td><td></td></tr>
-
-<tr><td class="date-col">17 Jun</td><td>Maharana Pratap Jayanti</td><td></td><td></td></tr>
-<tr><td class="date-col">26 Jun</td><td>Muharram</td><td></td><td></td></tr>
-<tr><td class="date-col">29 Jun</td><td>Sant Guru Kabir Jayanti</td><td></td><td></td></tr>
-
-<tr><td class="date-col">15 Aug</td><td>Independence Day</td><td class="date-col">28 Aug</td><td><span class="star">*</span>Raksha Bandhan</td></tr>
-
-<tr><td class="date-col">04 Sep</td><td>Janmashtami</td><td class="date-col">14 Sep</td><td>Ganesh Chaturthi</td></tr>
-
-<tr><td class="date-col">02 Oct</td><td>Gandhi Jayanti</td><td class="date-col">19 Oct</td><td>Maha Ashtami</td></tr>
-<tr><td class="date-col">20 Oct</td><td>Dussehra</td><td class="date-col">29 Oct</td><td><span class="star">*</span>Karva Chauth</td></tr>
-<tr><td class="date-col">26 Oct</td><td>Valmiki Jayanti</td><td></td><td></td></tr>
-
-<tr><td class="date-col">08 Nov</td><td>Diwali</td><td class="date-col">09 Nov</td><td>Goverdhan Puja</td></tr>
-<tr><td class="date-col">24 Nov</td><td>Guru Nanak Jayanti</td><td class="date-col">11 Nov</td><td><span class="star">*</span>Bhai Duj</td></tr>
-<tr><td></td><td></td><td class="date-col">24 Nov</td><td>Guru Teg Bahadur's Martyrdom Day</td></tr>
-
-<tr><td class="date-col">25 Dec</td><td>Christmas Day</td><td class="date-col">24 Dec</td><td>Christmas Eve</td></tr>
-
-</tbody>
-</table>
-
-<div class="note">
-<strong>Note:</strong> <span class="star">*</span> Raksha Bandhan, Karwa Chauth and Bhai Duj are declared as Gazetted Holidays for women employees of the State Government.
-</div>
-
+    <div id="pdf-note" class="note">
+        <strong>Note:</strong> * Raksha Bandhan, Karwa Chauth and Bhai Duj are declared as Gazetted Holidays for women employees of the State Government.
+    </div>
 </div>
 
 <script>
-function downloadPDF() {
-    const element = document.getElementById('content-to-print');
+function downloadVectorPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF('p', 'mm', 'a4');
 
-    const opt = {
-        margin: [10, 10, 10, 10],
-        filename: 'Holidays, 2026.pdf',
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 2 },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+    const title = document.getElementById('pdf-title').innerText;
+    const noteText = document.getElementById('pdf-note').innerText;
 
-    html2pdf().set(opt).from(element).save();
+    // --- Title Bold ---
+    doc.setFont("helvetica", "bold"); 
+    doc.setFontSize(16);
+    doc.text(title, 105, 15, { align: 'center' });
+
+    doc.autoTable({
+        html: '#holidays-table',
+        startY: 22,
+        margin: { left: 10, right: 10 },
+        theme: 'grid',
+        styles: { 
+            fontSize: 8.5, 
+            cellPadding: 2.5,
+            lineColor: [221, 221, 221],
+            lineWidth: 0.1,
+            textColor: [0, 0, 0] // Default Black
+        },
+        headStyles: { 
+            fillColor: [234, 244, 255], 
+            textColor: [0, 0, 0], 
+            fontStyle: 'bold',
+            fontSize: 10
+        },
+        columnStyles: {
+            0: { fontStyle: 'bold', cellWidth: 20 },
+            2: { fontStyle: 'bold', cellWidth: 20 }
+        },
+        // --- Special Logic for Red Asterisk Only ---
+        didParseCell: function(data) {
+            // Cell se '*' hata dete hain taaki wo black mein print na ho
+            if (data.section === 'body' && data.cell.text && data.cell.text[0].includes('*')) {
+                data.cell.text[0] = data.cell.text[0].replace('*', '  '); // Space chhod di asterisk ke liye
+            }
+        },
+        didDrawCell: function(data) {
+            // Sirf wahan jahan asterisk hona chahiye tha, wahan Red '*' draw karein
+            if (data.section === 'body' && data.column.index === 1 || data.column.index === 3) {
+                // Hum check kar rahe hain original HTML table se ki asterisk tha ya nahi
+                const originalText = data.cell.raw.innerText || data.cell.raw.textContent;
+                if (originalText && originalText.includes('*')) {
+                    doc.setFontSize(10);
+                    doc.setTextColor(255, 0, 0); // Pure Red
+                    doc.setFont("helvetica", "bold");
+                    // Asterisk ko text ke start mein draw karna
+                    doc.text('*', data.cell.x + 2.5, data.cell.y + 5.5);
+                    doc.setTextColor(0, 0, 0); // Wapas black set karein
+                }
+            }
+        }
+    });
+
+    // Note Section
+    const finalY = doc.lastAutoTable.finalY;
+    doc.setFillColor(255, 243, 205);
+    doc.rect(10, finalY + 5, 190, 10, 'F');
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.text(noteText, 12, finalY + 11);
+
+    doc.save('HP_Holidays_2026.pdf');
 }
 
-function printPage() {
-    window.print();
-}
 </script>
 
 </body>
