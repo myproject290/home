@@ -4,204 +4,157 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HP Government Holidays 2026</title>
-   
-   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2252%22 font-size=%2275%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>H</text></svg>">
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2252%22 font-size=%2275%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>H</text></svg>">
-   
+
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2252%22 font-size=%2275%22 fill=%22white%22 font-family=%22Arial%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>H</text></svg>">
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <style>
-    * {
-        box-sizing: border-box; /* Padding se width na badhe isliye */
-    }
-    body {
-        font-family: Arial, sans-serif;
-        margin: 10px;
-        background-color: #f9f9f9;
-    }
-    .download-container {
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .btn-download {
-        background-color: #27ae60;
-        color: white;
-        padding: 12px 25px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-size: 16px;
-        font-weight: bold;
-        transition: background 0.3s;
-    }
-    .btn-download:hover {
-        background-color: #219150;
-    }
-    
-    #content-to-print {
-    background-color: #ffffff;
-    padding: 12px;
-    max-width: 800px;
-    margin: 0 auto;   /* A4 approx height */
+* { box-sizing: border-box; }
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 10px;
+    background-color: #f9f9f9;
 }
 
-    .holiday-table {
-        width: 100%;
-        border-collapse: collapse;
-        background-color: #ffffff;
-        table-layout: fixed; /* Table ko fix rakhta hai taaki cells wrap ho sakein */
-        margin-bottom: 15px;
-    }
-    .holiday-table th, .holiday-table td {
-        border: 1px solid #ddd;
-        padding: 8px;
-        text-align: left;
-        vertical-align: top;
-        font-size: 13px;
-        word-wrap: break-word; /* Text ko cell ke andar wrap karega */
-        overflow-wrap: break-word;
-    }
-    .holiday-table th {
-        background-color: #2c3e50;
-        color: white;
-        text-transform: uppercase;
-    }
-    .month-col {
-        font-weight: bold;
-        width: 20%;
-    }
-    .note {
-        font-size: 13px;
-        color: #333;
-        background-color: #fff3cd;
-        padding: 10px;
-        border: 1px solid #ffeeba;
-        margin-top: 5px;
-        line-height: 1.5;
-        width: 100%;
-        word-wrap: break-word; /* Isse note ka text kategi nahi, wrap hoga */
-        overflow-wrap: break-word;
-        display: block;
-    }
-    ul {
-        list-style-type: none;
-        padding: 0;
-        margin: 0;
-    }
-    .date {
-        font-weight: bold;
-        color: #d35400;
-        display: inline-block;
-        width: 55px;
-    }
-    .holiday-table tr {
-    height: 70px;
+.download-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-download {
+    background-color: #27ae60;
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+#content-to-print {
+    background: #fff;
+    padding: 12px;
+    max-width: 1000px;
+    margin: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 11px;
+    vertical-align: top;
+}
+
+th {
+    background: #eaf4ff;
+    color: #000;
+    text-transform: uppercase;
+    font-size: 16px;
+}
+
+.date-col {
+    width: 12%;
+    font-weight: bold;
+    color: #000;   /* black */
+}
+
+.note {
+    margin-top: 10px;
+    font-size: 13px;
+    background: #fff3cd;
+    padding: 10px;
+    border: 1px solid #ffeeba;
+}
+
+@media (max-width: 600px) {
+    table { font-size: 11px; }
 }
 </style>
 </head>
+
 <body>
 
-    <div class="download-container">
-        <button class="btn-download" onclick="downloadPDF()">Download PDF</button>
-    </div>
+<div class="download-container">
+<button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+</div>
 
-    <div id="content-to-print">
-        <h2 style="text-align: center; color: #2c3e50; margin-top: 0; font-size: 20px;">Himachal Pradesh Government Holidays - 2026</h2>
+<div id="content-to-print">
 
-        <table class="holiday-table">
-            <thead>
-                <tr>
-                    <th class="month-col">Month</th>
-                    <th>Gazetted Holidays</th>
-                    <th>Restricted Holidays</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="month-col">January</td>
-                    <td><ul><li><span class="date">25 Jan</span> Statehood Day</li><li><span class="date">26 Jan</span> Republic Day</li></ul></td>
-                    <td><ul><li><span class="date">01 Jan</span> New Year's Day</li><li><span class="date">14 Jan</span> Makar Sankranti</li><li><span class="date">23 Jan</span> Basant Panchami</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">February</td>
-                    <td><ul><li><span class="date">01 Feb</span> Guru Ravidas Jayanti</li><li><span class="date">15 Feb</span> Maha Shivratri</li></ul></td>
-                    <td><ul><li><span class="date">12 Feb</span> Swami Dayanand Saraswati Jayanti</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">March</td>
-                    <td><ul><li><span class="date">04 Mar</span> Holi</li><li><span class="date">21 Mar</span> Id-ul-Fitr</li><li><span class="date">26 Mar</span> Ram Navami</li></ul></td>
-                    <td><ul><li><span class="date">31 Mar</span> Mahavir Jayanti</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">April</td>
-                    <td><ul><li><span class="date">03 Apr</span> Good Friday</li><li><span class="date">14 Apr</span> Dr. B.R. Ambedkar's B'day</li><li><span class="date">15 Apr</span> Himachal Day</li><li><span class="date">19 Apr</span> Parshu Ram Jayanti</li></ul></td>
-                    <td><ul><li><span class="date">05 Apr</span> Easter Sunday</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">May</td>
-                    <td><ul><li><span class="date">01 May</span> Budha Purnima</li><li><span class="date">27 May</span> Id-ul-Zuha</li></ul></td>
-                    <td><ul><li><span class="date">09 May</span> Guru Rabindranath Tagore Jayanti</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">June</td>
-                    <td><ul><li><span class="date">17 Jun</span> Maharana Pratap Jayanti</li><li><span class="date">26 Jun</span> Muharram</li><li><span class="date">29 Jun</span> Guru Kabir Jayanti</li></ul></td>
-                    <td>--</td>
-                </tr>
-                <tr><td class="month-col">July</td><td>--</td><td>--</td></tr>
-                <tr>
-                    <td class="month-col">August</td>
-                    <td><ul><li><span class="date">15 Aug</span> Independence Day</li></ul></td>
-                    <td><ul><li><span class="date">28 Aug</span> *Raksha Bandhan</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">September</td>
-                    <td><ul><li><span class="date">04 Sep</span> Janmashtami</li></ul></td>
-                    <td><ul><li><span class="date">14 Sep</span> Ganesh Chaturthi</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">October</td>
-                    <td><ul><li><span class="date">02 Oct</span> Gandhi Jayanti</li><li><span class="date">20 Oct</span> Dussehra</li><li><span class="date">26 Oct</span> Valmiki Jayanti</li></ul></td>
-                    <td><ul><li><span class="date">19 Oct</span> Maha Ashtami</li><li><span class="date">29 Oct</span> *Karva Chauth</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">November</td>
-                    <td><ul><li><span class="date">08 Nov</span> Diwali</li><li><span class="date">24 Nov</span> Guru Nanak Jayanti</li></ul></td>
-                    <td><ul><li><span class="date">09 Nov</span> Goverdhan Puja</li><li><span class="date">11 Nov</span> *Bhai Duj</li><li><span class="date">24 Nov</span> Guru Teg Bahadur's Martyrdom Day</li></ul></td>
-                </tr>
-                <tr>
-                    <td class="month-col">December</td>
-                    <td><ul><li><span class="date">25 Dec</span> Christmas Day</li></ul></td>
-                    <td><ul><li><span class="date">24 Dec</span> Christmas Eve</li></ul></td>
-                </tr>
-            </tbody>
-        </table>
+<h2 style="text-align:center; margin-top:0;">
+Himachal Pradesh Government Holidays - 2026
+</h2>
 
-        <div class="note">
-            <strong>Note:</strong> * Raksha Bandhan, Bhai Duj and Karwa Chauth are declared as Gazetted Holidays for women employees of the State Government.
-        </div>
-    </div>
+<table>
+<thead>
+<tr>
+<th class="date-col">Date</th>
+<th>Gazetted Holidays</th>
+<th class="date-col">Date</th>
+<th>Restricted Holidays</th>
+</tr>
+</thead>
+<tbody>
 
-    <script>
-        function downloadPDF() {
-    window.scrollTo(0,0);
+<tr><td class="date-col">25 Jan</td><td>Statehood Day</td><td class="date-col">01 Jan</td><td>New Year's Day</td></tr>
+<tr><td class="date-col">26 Jan</td><td>Republic Day</td><td class="date-col">14 Jan</td><td>Makar Sankranti</td></tr>
+<tr><td></td><td></td><td class="date-col">23 Jan</td><td>Basant Panchami</td></tr>
 
-    const element = document.getElementById('content-to-print');
+<tr><td class="date-col">01 Feb</td><td>Guru Ravidas Jayanti</td><td class="date-col">12 Feb</td><td>Swami Dayanand Saraswati Jayanti</td></tr>
+<tr><td class="date-col">15 Feb</td><td>Maha Shivratri</td><td></td><td></td></tr>
 
-    // A4 height approx in px (html2canvas scale ke baad)
-    element.style.height = "1080px";
+<tr><td class="date-col">04 Mar</td><td>Holi</td><td class="date-col">31 Mar</td><td>Mahavir Jayanti</td></tr>
+<tr><td class="date-col">21 Mar</td><td>Id-ul-Fitr</td><td></td><td></td></tr>
+<tr><td class="date-col">26 Mar</td><td>Ram Navami</td><td></td><td></td></tr>
 
-    const opt = {
-        margin: [5,2,2,2],
-        filename: 'Holidays, 2026.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2.5,
-            scrollY: 0
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
+<tr><td class="date-col">03 Apr</td><td>Good Friday</td><td class="date-col">05 Apr</td><td>Easter Sunday</td></tr>
+<tr><td class="date-col">14 Apr</td><td>Dr. B.R. Ambedkar's Birthday</td><td></td><td></td></tr>
+<tr><td class="date-col">15 Apr</td><td>Himachal Day</td><td></td><td></td></tr>
+<tr><td class="date-col">19 Apr</td><td>Parshu Ram Jayanti</td><td></td><td></td></tr>
 
-    html2pdf().set(opt).from(element).save();
+<tr><td class="date-col">01 May</td><td>Budha Purnima</td><td class="date-col">09 May</td><td>Guru Rabindranath Tagore Jayanti</td></tr>
+<tr><td class="date-col">27 May</td><td>Id-ul-Zuha</td><td></td><td></td></tr>
+
+<tr><td class="date-col">17 Jun</td><td>Maharana Pratap Jayanti</td><td></td><td></td></tr>
+<tr><td class="date-col">26 Jun</td><td>Muharram</td><td></td><td></td></tr>
+<tr><td class="date-col">29 Jun</td><td>Guru Kabir Jayanti</td><td></td><td></td></tr>
+
+<tr><td class="date-col">15 Aug</td><td>Independence Day</td><td class="date-col">28 Aug</td><td>*Raksha Bandhan</td></tr>
+
+<tr><td class="date-col">04 Sep</td><td>Janmashtami</td><td class="date-col">14 Sep</td><td>Ganesh Chaturthi</td></tr>
+
+<tr><td class="date-col">02 Oct</td><td>Gandhi Jayanti</td><td class="date-col">19 Oct</td><td>Maha Ashtami</td></tr>
+<tr><td class="date-col">20 Oct</td><td>Dussehra</td><td class="date-col">29 Oct</td><td>*Karva Chauth</td></tr>
+<tr><td class="date-col">26 Oct</td><td>Valmiki Jayanti</td><td></td><td></td></tr>
+
+<tr><td class="date-col">08 Nov</td><td>Diwali</td><td class="date-col">09 Nov</td><td>Goverdhan Puja</td></tr>
+<tr><td class="date-col">24 Nov</td><td>Guru Nanak Jayanti</td><td class="date-col">11 Nov</td><td>*Bhai Duj</td></tr>
+<tr><td></td><td></td><td class="date-col">24 Nov</td><td>Guru Teg Bahadur's Martyrdom Day</td></tr>
+
+<tr><td class="date-col">25 Dec</td><td>Christmas Day</td><td class="date-col">24 Dec</td><td>Christmas Eve</td></tr>
+
+</tbody>
+</table>
+
+<div class="note">
+<strong>Note:</strong> * Raksha Bandhan, Bhai Duj and Karwa Chauth are declared as Gazetted Holidays for women employees of the State Government.
+</div>
+
+</div>
+
+<script>
+function downloadPDF() {
+const element = document.getElementById('content-to-print');
+html2pdf().from(element).save('Holidays, 2026.pdf');
 }
-    </script>
+</script>
+
 </body>
 </html>
