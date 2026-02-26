@@ -74,7 +74,6 @@ th {
     border: 1px solid #ffeeba;
 }
 
-/* Star red color */
 .star {
     color: red;
     font-weight: bold;
@@ -83,6 +82,7 @@ th {
 @media (max-width: 600px) {
     table { font-size: 11px; }
 }
+
 @media print {
 
     body {
@@ -91,7 +91,7 @@ th {
     }
 
     .download-container {
-        display: none;   /* Download button hide */
+        display: none;
     }
 
     #content-to-print {
@@ -115,7 +115,10 @@ th {
 <body>
 
 <div class="download-container">
-<button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+    <button class="btn-download" onclick="printPage()" style="margin-left:10px;">
+        Print / Save as PDF
+    </button>
 </div>
 
 <div id="content-to-print">
@@ -194,6 +197,10 @@ function downloadPDF() {
     };
 
     html2pdf().set(opt).from(element).save();
+}
+
+function printPage() {
+    window.print();
 }
 </script>
 
