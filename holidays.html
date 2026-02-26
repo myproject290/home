@@ -49,7 +49,7 @@ table {
 
 th, td {
     border: 1px solid #ddd;
-    padding: 11px;
+    padding: 9px;
     vertical-align: top;
 }
 
@@ -157,8 +157,17 @@ Himachal Pradesh Government Holidays - 2026
 
 <script>
 function downloadPDF() {
-const element = document.getElementById('content-to-print');
-html2pdf().from(element).save('Holidays, 2026.pdf');
+    const element = document.getElementById('content-to-print');
+
+    const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'Holidays, 2026.pdf',
+        image: { type: 'jpeg', quality: 1 },
+        html2canvas: { scale: 2 },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save();
 }
 </script>
 
