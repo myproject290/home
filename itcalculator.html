@@ -7,10 +7,9 @@
     
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2250%22 font-size=%2260%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>IT</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2250%22 font-size=%2260%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>IT</text></svg>">
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         body {
             font-family: "Calibri", "Arial", sans-serif;
@@ -66,7 +65,7 @@
         .sheet {
             background-color: white;
             width: 210mm;
-            min-height: 297mm;
+            min-height: auto;
             padding: 12mm 12mm; 
             box-shadow: 0 0 15px rgba(0,0,0,0.5);
             box-sizing: border-box;
@@ -182,10 +181,13 @@
             @page { size: A4; margin: 0; }
             body { background: none; padding: 0; margin: 0; }
             .no-print { display: none; }
-            .sheet { box-shadow: none; width: 100%; min-height: 297mm; margin: 0; padding: 10mm 15mm 0 15mm; border: none; }
+            .sheet { box-shadow: none; width: 100%; min-height: auto; margin: 0; padding: 10mm 15mm 0 15mm; border: none; }
             .input-bg { background-color: transparent !important; }
             input, textarea { background-color: transparent !important; font-weight: bold; }
         }
+        /* Summary table ke khali box ki borders hatane ke liye */
+
+
     </style>
 </head>
 <body oninput="checkInputs()">
@@ -196,11 +198,12 @@
 </div>
 
 <div class="no-print">
-    <button class="btn-print" onclick="printPage()">🖨️ Print / Save as PDF (HD Quality)</button>
+    <button class="btn-print" onclick="printPage()">🖨️ Print / Save as PDF</button>
     <button class="btn-share" onclick="sharePDF()">📱 Share as PDF</button>
-    <button class="btn-download" onclick="downloadPDF()">📄 Download PDF</button>
+    <button class="btn-download" style="background-color: #17a2b8;" onclick="downloadVectorPDF()">📄 Download PDF</button>
     <button id="resetBtn" class="btn-reset" onclick="resetForm()">🔄 Reset</button>
 </div>
+
 
 <div class="sheet" id="printContent">
     <h2>Income Tax Calculation for the Financial Year 2025-26 (AY 2026-27)</h2>
@@ -346,11 +349,12 @@
             <col style="width: 5%;"> <col style="width: 32%;"> <col style="width: 15%;"> <col style="width: 16%;"> <col style="width: 15%;"> <col style="width: 17%;">
         </colgroup>
         <tr>
-            <td colspan="3" style="border-left: none;"></td> 
-            <td class="center bold" style="background-color: #f0fff0;">Tax</td>
-            <td class="center bold" style="background-color: #f0fff0;">Cess</td>
-            <td class="center bold" style="background-color: #f0fff0;">Total</td>
-        </tr>
+    <td colspan="3" style="border-left: none; border-top: none;"></td> 
+    <td class="center bold" style="background-color: #f0fff0;">Tax</td>
+    <td class="center bold" style="background-color: #f0fff0;">Cess</td>
+    <td class="center bold" style="background-color: #f0fff0;">Total</td>
+</tr>
+
         <tr>
             <td class="col-idx">15.</td>
             <td colspan="2" class="wrap-text">Balance Income Tax payable after relief</td>
@@ -469,69 +473,7 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
         .replace(/[\\/:"*?<>|]/g, "_") + ".pdf";
 }
 
-            async function generateCanvas() {
-        const element = document.getElementById('printContent');
-        return await html2canvas(element, {
-            scale: 2, useCORS: true, backgroundColor: "#ffffff",
-            onclone: (clonedDoc) => {
-                // Sabhi input backgrounds aur colored table cells ko white kar do
-                clonedDoc.querySelectorAll('.input-bg, #taxStatus, td').forEach(el => {
-                    // Agar cell ka background transparent nahi hai, toh use white kar do
-                    const bg = window.getComputedStyle(el).backgroundColor;
-                    if (bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
-                        el.style.setProperty('background-color', '#ffffff', 'important');
-                    }
-                });
-                
-                clonedDoc.querySelectorAll('textarea').forEach(ta => {
-                    const div = clonedDoc.createElement('div');
-                    div.style = "width:100%; min-height:25px; font-weight:bold; line-height:1.5; white-space:pre-wrap; color:#000;";
-                    let val = ta.value;
-                    if (ta.classList.contains('upper')) val = val.toUpperCase();
-                    if (ta.classList.contains('capitalize')) val = toTitleCase(val);
-                    div.innerText = val;
-                    ta.parentNode.replaceChild(div, ta);
-                });
-
-                clonedDoc.querySelectorAll('input').forEach(inp => {
-                    const originalInp = document.getElementById(inp.id);
-                    const currentFS = originalInp ? window.getComputedStyle(originalInp).fontSize : "inherit";
-
-                    const div = clonedDoc.createElement('div');
-                    div.style = `width:100%; min-height:24px; display:flex; align-items:center; font-weight:bold; color:#000; font-size:${currentFS}; justify-content:${inp.classList.contains('right')?'flex-end':(inp.classList.contains('center')?'center':'flex-start')}`;
-                    div.innerText = inp.value;
-                    inp.parentNode.replaceChild(div, inp);
-                });
-            }
-        });
-    }
-
     function printPage() { window.print(); }
-
-    async function sharePDF() {
-        const overlay = document.getElementById('loadingOverlay'); overlay.style.display = 'flex';
-        try {
-            const canvas = await generateCanvas();
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, 210, (canvas.height * 210) / canvas.width);
-            const file = new File([pdf.output('blob')], getFileName(), { type: "application/pdf" });
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({ files: [file], title: 'Income Tax Calculation' });
-            } else { pdf.save(getFileName()); }
-        } catch (e) { alert(e.message); } finally { overlay.style.display = 'none'; }
-    }
-
-    async function downloadPDF() {
-        const overlay = document.getElementById('loadingOverlay'); overlay.style.display = 'flex';
-        try {
-            const canvas = await generateCanvas();
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            pdf.addImage(canvas.toDataURL('image/jpeg', 0.85), 'JPEG', 0, 0, 210, (canvas.height * 210) / canvas.width);
-            pdf.save(getFileName());
-        } catch (e) { alert(e.message); } finally { overlay.style.display = 'none'; }
-    }
 
     function autoResize(elem) { elem.style.height = 'auto'; elem.style.height = elem.scrollHeight + 'px'; }
 
@@ -716,6 +658,235 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
         fieldsToAdjust.forEach(id => adjustFontSize(id));
     }
     calculateTax();
+  
+  async function buildVectorPDF() {
+
+    const { jsPDF } = window.jspdf;
+    const element = document.getElementById('printContent');
+
+    const tables = element.querySelectorAll("table");
+    const cells = element.querySelectorAll("th, td");
+
+    // ===== SAVE ORIGINAL STYLES =====
+    const originalTableCollapse = [];
+    const originalBorders = [];
+    const originalBackgrounds = [];
+
+    tables.forEach((t, i) => {
+        originalTableCollapse[i] = t.style.borderCollapse;
+        t.style.borderCollapse = "separate";
+        t.style.borderSpacing = "0";
+        t.style.border = "none";
+    });
+
+    cells.forEach((c, i) => {
+        originalBorders[i] = {
+            border: c.style.border,
+            right: c.style.borderRight,
+            bottom: c.style.borderBottom,
+            left: c.style.borderLeft,
+            top: c.style.borderTop
+        };
+        originalBackgrounds[i] = c.style.backgroundColor;
+
+        c.style.border = "none";
+        c.style.backgroundColor = "white";
+    });
+
+    element.querySelectorAll("input, textarea").forEach(el => {
+        el.style.backgroundColor = "transparent";
+    });
+
+    // ===============================
+    // GRID ENGINE (UNCHANGED)
+    // ===============================
+
+    cells.forEach((c) => {
+        c.style.borderRight = "1px solid black";
+        c.style.borderBottom = "1px solid black";
+    });
+
+    tables.forEach(table => {
+        const firstRow = table.querySelector("tr:first-child");
+        if (firstRow) {
+            firstRow.querySelectorAll("th, td").forEach(cell => {
+                cell.style.borderTop = "1px solid black";
+            });
+        }
+    });
+
+    tables.forEach(table => {
+        table.querySelectorAll("tr").forEach(row => {
+            const firstCell = row.querySelector("th, td");
+            if (firstCell) {
+                firstCell.style.borderLeft = "1px solid black";
+            }
+        });
+    });
+
+    const calcTable = element.querySelector(".calc-table");
+
+    if (calcTable) {
+
+        const slabHeaderRow = calcTable.querySelector("tr:nth-child(5)");
+        if (slabHeaderRow) {
+            const headerCells = slabHeaderRow.querySelectorAll("td");
+            if (headerCells.length >= 3) {
+                headerCells[2].style.borderLeft = "none";
+            }
+        }
+
+        for (let i = 1; i <= 7; i++) {
+            const row = document.getElementById(`row-slab-${i}`);
+            if (row) {
+                const firstCell = row.querySelector("td");
+                if (firstCell) {
+                    firstCell.style.borderLeft = "none";
+                }
+            }
+        }
+
+        const totalRow = calcTable.querySelector("td[colspan='4']")?.parentElement;
+        if (totalRow) {
+            const totalCells = totalRow.querySelectorAll("td");
+            if (totalCells.length > 0) {
+                totalCells[0].style.borderLeft = "none";
+            }
+        }
+
+        const lastRow = calcTable.querySelector("tr:last-child");
+        if (lastRow) {
+            lastRow.querySelectorAll("td").forEach(td => {
+                td.style.borderBottom = "none";
+            });
+        }
+    }
+
+    const summaryFirstRow = element.querySelector(".summary-table tr:first-child");
+    if (summaryFirstRow) {
+        const firstCell = summaryFirstRow.querySelector("td");
+        if (firstCell) {
+            firstCell.style.borderLeft = "none";
+        }
+    }
+
+    // ===============================
+    // 🔥 SPACE FIX (ONLY)
+    // ===============================
+
+    const incomeTaxLiabilityCell = document.getElementById("slab-title-cell");
+
+    const slabTotalCell = Array.from(
+        element.querySelectorAll(".calc-table td.bold")
+    ).find(td => td.innerText.trim() === "Total Income Tax");
+
+    const sr13Cell = Array.from(
+        element.querySelectorAll(".calc-table td.bold")
+    ).find(td => td.innerText.includes("Total Income Tax (11+12)"));
+
+    const sr17Cell = Array.from(
+        element.querySelectorAll(".summary-table td.bold")
+    ).find(td => td.innerText.trim() === "Net Income Tax");
+
+    if (incomeTaxLiabilityCell) incomeTaxLiabilityCell.style.letterSpacing = "0.8px";
+    if (slabTotalCell) slabTotalCell.style.letterSpacing = "0.8px";
+    if (sr13Cell) sr13Cell.style.letterSpacing = "0.8px";
+    if (sr17Cell) sr17Cell.style.letterSpacing = "0.8px";
+
+    // ===============================
+    // PDF GENERATION
+    // ===============================
+
+    const doc = new jsPDF({
+        orientation: 'p',
+        unit: 'mm',
+        format: 'a4',
+        precision: 16,
+        putOnlyUsedFonts: true
+    });
+
+    await doc.html(element, {
+        x: 0,
+        y: 0,
+        width: 210,
+        windowWidth: 794,
+        autoPaging: 'slice',
+        html2canvas: {
+            scale: 0.2645833333,
+            useCORS: true,
+            letterRendering: true,
+            dpi: 300
+        }
+    });
+
+    // ===============================
+    // RESTORE
+    // ===============================
+
+    tables.forEach((t, i) => {
+        t.style.borderCollapse = originalTableCollapse[i];
+    });
+
+    cells.forEach((c, i) => {
+        c.style.border = originalBorders[i].border;
+        c.style.borderRight = originalBorders[i].right;
+        c.style.borderBottom = originalBorders[i].bottom;
+        c.style.borderLeft = originalBorders[i].left;
+        c.style.borderTop = originalBorders[i].top;
+        c.style.backgroundColor = originalBackgrounds[i];
+    });
+
+    if (incomeTaxLiabilityCell) incomeTaxLiabilityCell.style.letterSpacing = "";
+    if (slabTotalCell) slabTotalCell.style.letterSpacing = "";
+    if (sr13Cell) sr13Cell.style.letterSpacing = "";
+    if (sr17Cell) sr17Cell.style.letterSpacing = "";
+
+    return doc;
+}
+
+// ===== DOWNLOAD VECTOR PDF =====
+async function downloadVectorPDF() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+
+    try {
+        const doc = await buildVectorPDF();
+        doc.save(getFileName());
+    } catch (e) {
+        alert("Vector PDF error");
+    }
+
+    overlay.style.display = 'none';
+}
+
+
+// ===== SHARE VECTOR PDF =====
+async function sharePDF() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.style.display = 'flex';
+
+    try {
+        const doc = await buildVectorPDF();
+
+        const blob = doc.output("blob");
+        const file = new File([blob], getFileName(), { type: "application/pdf" });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+                files: [file],
+                title: 'Income Tax Calculation'
+            });
+        } else {
+            doc.save(getFileName());
+        }
+
+    } catch (e) {
+        alert("Sharing failed");
+    }
+
+    overlay.style.display = 'none';
+}
+
 </script>
 </body>
 </html>
