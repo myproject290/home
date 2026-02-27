@@ -347,9 +347,9 @@
         </colgroup>
         <tr>
             <td colspan="3" style="border-left: none;"></td> 
-            <td class="center bold" style="background-color: #f0fff0;">Tax</td>
-            <td class="center bold" style="background-color: #f0fff0;">Cess</td>
-            <td class="center bold" style="background-color: #f0fff0;">Total</td>
+            <td class="center bold summary-header" style="background-color: #f0fff0;">Tax</td>
+            <td class="center bold summary-header" style="background-color: #f0fff0;">Cess</td>
+            <td class="center bold summary-header" style="background-color: #f0fff0;">Total</td>
         </tr>
         <tr>
             <td class="col-idx">15.</td>
@@ -475,10 +475,15 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
             scale: 2, useCORS: true, backgroundColor: "#ffffff",
             onclone: (clonedDoc) => {
                 // PDF ke liye yellow background white kar do
-clonedDoc.querySelectorAll('.input-bg').forEach(el => {
-    el.style.backgroundColor = '#ffffff';
-});
-clonedDoc.querySelectorAll('textarea').forEach(ta => {
+                clonedDoc.querySelectorAll('.input-bg').forEach(el => {
+                    el.style.setProperty('background-color', '#ffffff', 'important');
+                });
+                // Summary header (Tax, Cess, Total) ki background white kar do
+                clonedDoc.querySelectorAll('.summary-header').forEach(el => {
+                    el.style.setProperty('background-color', '#ffffff', 'important');
+                });
+                
+                clonedDoc.querySelectorAll('textarea').forEach(ta => {
                     const div = clonedDoc.createElement('div');
                     div.style = "width:100%; min-height:25px; font-weight:bold; line-height:1.5; white-space:pre-wrap; color:#000;";
                     let val = ta.value;
