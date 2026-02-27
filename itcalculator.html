@@ -347,9 +347,9 @@
         </colgroup>
         <tr>
             <td colspan="3" style="border-left: none;"></td> 
-            <td class="center bold summary-header" style="background-color: #f0fff0;">Tax</td>
-            <td class="center bold summary-header" style="background-color: #f0fff0;">Cess</td>
-            <td class="center bold summary-header" style="background-color: #f0fff0;">Total</td>
+            <td class="center bold" style="background-color: #f0fff0;">Tax</td>
+            <td class="center bold" style="background-color: #f0fff0;">Cess</td>
+            <td class="center bold" style="background-color: #f0fff0;">Total</td>
         </tr>
         <tr>
             <td class="col-idx">15.</td>
@@ -469,18 +469,18 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
         .replace(/[\\/:"*?<>|]/g, "_") + ".pdf";
 }
 
-    async function generateCanvas() {
+            async function generateCanvas() {
         const element = document.getElementById('printContent');
         return await html2canvas(element, {
             scale: 2, useCORS: true, backgroundColor: "#ffffff",
             onclone: (clonedDoc) => {
-                // PDF ke liye yellow background white kar do
-                clonedDoc.querySelectorAll('.input-bg').forEach(el => {
-                    el.style.setProperty('background-color', '#ffffff', 'important');
-                });
-                // Summary header (Tax, Cess, Total) ki background white kar do
-                clonedDoc.querySelectorAll('.summary-header').forEach(el => {
-                    el.style.setProperty('background-color', '#ffffff', 'important');
+                // Sabhi input backgrounds aur colored table cells ko white kar do
+                clonedDoc.querySelectorAll('.input-bg, #taxStatus, td').forEach(el => {
+                    // Agar cell ka background transparent nahi hai, toh use white kar do
+                    const bg = window.getComputedStyle(el).backgroundColor;
+                    if (bg !== 'rgba(0, 0, 0, 0)' && bg !== 'transparent') {
+                        el.style.setProperty('background-color', '#ffffff', 'important');
+                    }
                 });
                 
                 clonedDoc.querySelectorAll('textarea').forEach(ta => {
@@ -492,6 +492,7 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
                     div.innerText = val;
                     ta.parentNode.replaceChild(div, ta);
                 });
+
                 clonedDoc.querySelectorAll('input').forEach(inp => {
                     const originalInp = document.getElementById(inp.id);
                     const currentFS = originalInp ? window.getComputedStyle(originalInp).fontSize : "inherit";
