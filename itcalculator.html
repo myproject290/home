@@ -663,186 +663,131 @@ let desigVal = document.getElementById("user_desig").value.replace(/\s+/g,' ').t
 
     const { jsPDF } = window.jspdf;
     const element = document.getElementById('printContent');
+    const inputs = element.querySelectorAll("input, textarea");
+    const allCells = element.querySelectorAll("th, td");
+    const replacements = [];
 
-    const tables = element.querySelectorAll("table");
-    const cells = element.querySelectorAll("th, td");
+    // ===============================
+    // 1️⃣ REMOVE ALL BACKGROUNDS (PDF ONLY)
+    // ===============================
 
-    // ===== SAVE ORIGINAL STYLES =====
-    const originalTableCollapse = [];
-    const originalBorders = [];
-    const originalBackgrounds = [];
+    const originalBg = [];
+    const originalLineHeight = [];
 
-    tables.forEach((t, i) => {
-        originalTableCollapse[i] = t.style.borderCollapse;
-        t.style.borderCollapse = "separate";
-        t.style.borderSpacing = "0";
-        t.style.border = "none";
+    allCells.forEach((cell, i) => {
+        originalBg[i] = cell.style.backgroundColor;
+        originalLineHeight[i] = cell.style.lineHeight;
+
+        cell.style.backgroundColor = "white";
+        cell.style.lineHeight = "1.4";   // ✅ updated line-height
     });
 
-    cells.forEach((c, i) => {
-        originalBorders[i] = {
-            border: c.style.border,
-            right: c.style.borderRight,
-            bottom: c.style.borderBottom,
-            left: c.style.borderLeft,
-            top: c.style.borderTop
-        };
-        originalBackgrounds[i] = c.style.backgroundColor;
-
-        c.style.border = "none";
-        c.style.backgroundColor = "white";
-    });
-
-    element.querySelectorAll("input, textarea").forEach(el => {
-        el.style.backgroundColor = "transparent";
+    element.querySelectorAll(".input-bg").forEach(el => {
+        el.style.backgroundColor = "white";
     });
 
     // ===============================
-    // GRID ENGINE (UNCHANGED)
+    // 2️⃣ FIX BOLD LETTER SPACING
     // ===============================
 
-    cells.forEach((c) => {
-        c.style.borderRight = "1px solid black";
-        c.style.borderBottom = "1px solid black";
-    });
+    const boldTargets = [
+        "Income Tax Liability",
+        "Total Income Tax",
+        "Total Income Tax (11+12)",
+        "Net Income Tax"
+    ];
 
-    tables.forEach(table => {
-        const firstRow = table.querySelector("tr:first-child");
-        if (firstRow) {
-            firstRow.querySelectorAll("th, td").forEach(cell => {
-                cell.style.borderTop = "1px solid black";
-            });
-        }
-    });
+    const boldCells = element.querySelectorAll("td.bold, #slab-title-cell");
 
-    tables.forEach(table => {
-        table.querySelectorAll("tr").forEach(row => {
-            const firstCell = row.querySelector("th, td");
-            if (firstCell) {
-                firstCell.style.borderLeft = "1px solid black";
+    boldCells.forEach(cell => {
+        boldTargets.forEach(text => {
+            if (cell.innerText.trim() === text || cell.innerText.includes(text)) {
+                cell.style.letterSpacing = "0.4px";
             }
         });
     });
 
-    const calcTable = element.querySelector(".calc-table");
-
-    if (calcTable) {
-
-        const slabHeaderRow = calcTable.querySelector("tr:nth-child(5)");
-        if (slabHeaderRow) {
-            const headerCells = slabHeaderRow.querySelectorAll("td");
-            if (headerCells.length >= 3) {
-                headerCells[2].style.borderLeft = "none";
-            }
-        }
-
-        for (let i = 1; i <= 7; i++) {
-            const row = document.getElementById(`row-slab-${i}`);
-            if (row) {
-                const firstCell = row.querySelector("td");
-                if (firstCell) {
-                    firstCell.style.borderLeft = "none";
-                }
-            }
-        }
-
-        const totalRow = calcTable.querySelector("td[colspan='4']")?.parentElement;
-        if (totalRow) {
-            const totalCells = totalRow.querySelectorAll("td");
-            if (totalCells.length > 0) {
-                totalCells[0].style.borderLeft = "none";
-            }
-        }
-
-        const lastRow = calcTable.querySelector("tr:last-child");
-        if (lastRow) {
-            lastRow.querySelectorAll("td").forEach(td => {
-                td.style.borderBottom = "none";
-            });
-        }
-    }
-
-    const summaryFirstRow = element.querySelector(".summary-table tr:first-child");
-    if (summaryFirstRow) {
-        const firstCell = summaryFirstRow.querySelector("td");
-        if (firstCell) {
-            firstCell.style.borderLeft = "none";
-        }
-    }
-
     // ===============================
-    // 🔥 SPACE FIX (ONLY)
+    // 3️⃣ REPLACE INPUTS WITH DIVS
     // ===============================
 
-    const incomeTaxLiabilityCell = document.getElementById("slab-title-cell");
+    inputs.forEach(input => {
 
-    const slabTotalCell = Array.from(
-        element.querySelectorAll(".calc-table td.bold")
-    ).find(td => td.innerText.trim() === "Total Income Tax");
+        const box = document.createElement("div");
 
-    const sr13Cell = Array.from(
-        element.querySelectorAll(".calc-table td.bold")
-    ).find(td => td.innerText.includes("Total Income Tax (11+12)"));
+        let val = input.value;
+        if (input.classList.contains('upper')) val = val.toUpperCase();
+        if (input.classList.contains('capitalize')) val = toTitleCase(val);
 
-    const sr17Cell = Array.from(
-        element.querySelectorAll(".summary-table td.bold")
-    ).find(td => td.innerText.trim() === "Net Income Tax");
+        box.innerText = val || " ";
 
-    if (incomeTaxLiabilityCell) incomeTaxLiabilityCell.style.letterSpacing = "0.8px";
-    if (slabTotalCell) slabTotalCell.style.letterSpacing = "0.8px";
-    if (sr13Cell) sr13Cell.style.letterSpacing = "0.8px";
-    if (sr17Cell) sr17Cell.style.letterSpacing = "0.8px";
+        box.style.fontFamily = "Calibri, Arial, sans-serif";
+        box.style.fontSize = window.getComputedStyle(input).fontSize;
+        box.style.fontWeight = "bold";
+        box.style.whiteSpace = "normal";
+        box.style.wordBreak = "break-word";
+        box.style.width = "100%";
+        box.style.color = "black";
+        box.style.lineHeight = "1.4";   // ✅ updated line-height
+        box.style.letterSpacing = "0.3px";
+
+        if (input.classList.contains('right')) box.style.textAlign = 'right';
+        if (input.classList.contains('center')) box.style.textAlign = 'center';
+
+        input.style.display = "none";
+        input.parentNode.insertBefore(box, input);
+        replacements.push({ box, input });
+    });
 
     // ===============================
-    // PDF GENERATION
+    // 4️⃣ GENERATE PDF
     // ===============================
 
     const doc = new jsPDF({
         orientation: 'p',
         unit: 'mm',
         format: 'a4',
-        precision: 16,
-        putOnlyUsedFonts: true
+        precision: 16
     });
 
     await doc.html(element, {
         x: 0,
         y: 0,
+        margin: [0, 0, 0, 0],
+        autoPaging: 'slice',
         width: 210,
         windowWidth: 794,
-        autoPaging: 'slice',
         html2canvas: {
             scale: 0.2645833333,
             useCORS: true,
             letterRendering: true,
-            dpi: 300
+            logging: false
         }
     });
 
     // ===============================
-    // RESTORE
+    // 5️⃣ RESTORE ORIGINAL
     // ===============================
 
-    tables.forEach((t, i) => {
-        t.style.borderCollapse = originalTableCollapse[i];
+    replacements.forEach(item => {
+        item.box.remove();
+        item.input.style.display = "";
     });
 
-    cells.forEach((c, i) => {
-        c.style.border = originalBorders[i].border;
-        c.style.borderRight = originalBorders[i].right;
-        c.style.borderBottom = originalBorders[i].bottom;
-        c.style.borderLeft = originalBorders[i].left;
-        c.style.borderTop = originalBorders[i].top;
-        c.style.backgroundColor = originalBackgrounds[i];
+    allCells.forEach((cell, i) => {
+        cell.style.backgroundColor = originalBg[i];
+        cell.style.letterSpacing = "";
+        cell.style.lineHeight = originalLineHeight[i];
     });
-
-    if (incomeTaxLiabilityCell) incomeTaxLiabilityCell.style.letterSpacing = "";
-    if (slabTotalCell) slabTotalCell.style.letterSpacing = "";
-    if (sr13Cell) sr13Cell.style.letterSpacing = "";
-    if (sr17Cell) sr17Cell.style.letterSpacing = "";
 
     return doc;
 }
+
+
+
+
+
+
 
 // ===== DOWNLOAD VECTOR PDF =====
 async function downloadVectorPDF() {
