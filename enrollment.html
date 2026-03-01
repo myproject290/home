@@ -5,14 +5,13 @@
 
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2250%22 font-size=%2270%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>E</text></svg>">
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2250%22 font-size=%2270%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>E</text></svg>">
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>    
+    
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  
 <style>    
 html, body { overscroll-behavior-y: auto; }    
 body{font-family:Arial;margin:0;padding:5px; overflow-x: auto;}    
 #topbar{display:flex;gap:8px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;background:#f8f9fa;padding:10px;border-radius:8px; width: fit-content; min-width: 100%;}    
-.topbtn{padding:6px 12px;font-size:14px;cursor:pointer;border:1px solid #ccc;background:#fff;border-radius:4px;display:flex;align-items:center;gap:5px;transition: all 0.3s ease;}
+.topbtn{padding:6px 12px;font-size:14px;cursor:pointer;border:1px solid #ccc;background:#fff;border-radius:4px;display:flex;align-items:center;gap:5px;transition: all 0.2s ease;}
 .topbtn span{
     font-size:16px;
     line-height:1;
@@ -37,7 +36,7 @@ td, th {
     overflow: hidden; 
 }
 
-.classcol, .label{ width:140px !important; }
+.classcol, .label{ width:175px !important; }
 .delcol{width:40px}
 th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 
@@ -50,9 +49,6 @@ th:not(.classcol):not(.delcol), td:not(.classcol):not(.delcell) { width: 45px; }
 .label{ color:red; font-weight:bold; white-space:normal; line-height:1.2; font-size:20px; }
 .delcell button{border:none;background:none;font-size:18px;cursor:pointer;color:black}
 .hidepdf{display:none}
-#pri td{height:45px; background-color:#fff;}
-#pre td{height:auto !important; background-color:#fff;}
-
 .pdfmode td, .pdfmode th { border: 0.5px solid #000 !important; }
 .pdfmode table { 
     border-right: 0.5px solid #000 !important;
@@ -273,7 +269,7 @@ function buildTable(){
   rows.innerHTML = "";    
   classes.forEach(c=>{    
     if(c[1] === "total-pre") {    
-      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total<br>(Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
+      rows.insertAdjacentHTML("beforeend",`<tr id="pre"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="label">Total (Pre-Primary)</td><td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td><td class="st-b"></td><td class="st-g"></td><td class="st-t"></td><td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td><td class="gen-b"></td><td class="gen-g"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     } else {    
       rows.insertAdjacentHTML("beforeend",`<tr class="row ${c[1]}"><td class="delcell"><button onclick="deleteRow(this)">×</button></td><td class="classcol">${c[0]}</td><td class="sc-b edit" contenteditable="true" inputmode="numeric"></td><td class="sc-g edit" contenteditable="true" inputmode="numeric"></td><td class="sc-t"></td><td class="st-b edit" contenteditable="true" inputmode="numeric"></td><td class="st-g edit" contenteditable="true" inputmode="numeric"></td><td class="st-t"></td><td class="obc-b edit" contenteditable="true" inputmode="numeric"></td><td class="obc-g edit" contenteditable="true" inputmode="numeric"></td><td class="obc-t"></td><td class="gen-b edit" contenteditable="true" inputmode="numeric"></td><td class="gen-g edit" contenteditable="true" inputmode="numeric"></td><td class="gen-t"></td><td class="tb"></td><td class="tg"></td><td class="tt"></td></tr>`);    
     }    
@@ -286,7 +282,7 @@ function buildTable(){
   const footerHTML = `  
     <tr id="pri">    
       <td class="delcell"><button onclick="deleteRow(this)">×</button></td>    
-      <td class="label">Total<br>(Primary)</td>    
+      <td class="label">Total (Primary)</td>    
       <td class="sc-b"></td><td class="sc-g"></td><td class="sc-t"></td>    
       <td class="st-b"></td><td class="st-g"></td><td class="st-t"></td>    
       <td class="obc-b"></td><td class="obc-g"></td><td class="obc-t"></td>    
@@ -327,24 +323,105 @@ function resetForm(){
     flashButton("resetBtn", "Cleared! 🧹");    
 }    
   
-async function generatePDFFile() {    
-    const area = document.getElementById("pdfArea");    
-    area.classList.add("pdfmode");    
-    document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.add("hidepdf"));    
-    const canvas = await html2canvas(area, { scale: 2, useCORS: true });    
-    area.classList.remove("pdfmode");    
-    document.querySelectorAll(".delcell,.delcol").forEach(e=>e.classList.remove("hidepdf"));    
-    const imgData = canvas.toDataURL("image/jpeg", 1.0);    
-    const pdf = new jspdf.jsPDF("p", "mm", "a4");    
-    const pageWidth = pdf.internal.pageSize.getWidth();    
-    const marginX = 1;   
-    const marginTop = 10; 
-    const innerWidth = pageWidth - (marginX * 2);
-    const imgWidth = innerWidth;
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    pdf.addImage(imgData, "JPEG", marginX, marginTop, imgWidth, imgHeight, undefined, "FAST");    
-    return pdf;    
-}    
+async function generatePDFFile() {
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    // Yeh line aapke naye editable title ko uthayegi
+    const title = document.getElementById("title").innerText.trim();
+    
+    const pageWidth = 210;
+    const margin = 10;
+    const usableWidth = pageWidth - margin * 2;
+    const classWidth = 37; 
+    const totalDataCols = 15; 
+    const dataWidth = (usableWidth - classWidth) / totalDataCols;
+    const rowHeight = 7; 
+    let y = 25;
+
+    // Title styling
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(16);
+    pdf.setTextColor(0, 0, 0);
+    pdf.text(title, pageWidth / 2, 15, { align: "center" });
+    pdf.setFontSize(11);
+
+    const rows = document.querySelectorAll("#mainTable tr");
+
+    rows.forEach((row, rowIndex) => {
+        let x = margin;
+        const cells = Array.from(row.querySelectorAll("th, td"))
+                           .filter(c => !c.classList.contains("delcol") && !c.classList.contains("delcell"));
+
+        const isHeaderRow1 = rowIndex === 0;
+        const isHeaderRow2 = rowIndex === 1;
+        const isAnyTotalRow = ["pre", "pri", "grand"].includes(row.id);
+
+        if (isHeaderRow1) {
+            pdf.setLineWidth(0.3);
+            pdf.rect(x, y, classWidth, rowHeight * 2); 
+            pdf.text("Class", x + (classWidth / 2), y + rowHeight, { align: "center", baseline: "middle" });
+            x += classWidth;
+        } else if (isHeaderRow2) {
+            x += classWidth;
+        }
+
+        cells.forEach((cell) => {
+            if (isHeaderRow1 && cell.classList.contains("classcol")) return;
+
+            let colspan = parseInt(cell.getAttribute("colspan")) || 1;
+            let currentWidth = (cell.classList.contains("classcol") || cell.classList.contains("label")) 
+                               ? classWidth : dataWidth * colspan;
+
+            // --- RED COLOR FOR 'T' ---
+            const isTotalColumn = cell.classList.contains("sc-t") || cell.classList.contains("st-t") || 
+                                  cell.classList.contains("obc-t") || cell.classList.contains("gen-t") || 
+                                  cell.classList.contains("tt") || cell.classList.contains("head-t") ||
+                                  (isHeaderRow2 && (cell.innerText.trim() === "T"));
+
+            if (isHeaderRow1 || isHeaderRow2 || isAnyTotalRow || isTotalColumn) {
+                pdf.setFont("helvetica", "bold");
+                isTotalColumn ? pdf.setTextColor(200, 0, 0) : pdf.setTextColor(0, 0, 0);
+                if (isAnyTotalRow && !isTotalColumn) pdf.setTextColor(200, 0, 0); // Total rows general text red
+            } else {
+                pdf.setFont("helvetica", "normal");
+                pdf.setTextColor(0, 0, 0);
+            }
+
+            // Cell Border
+            pdf.setLineWidth(0.1);
+            pdf.rect(x, y, currentWidth, rowHeight);
+
+            // --- HIDE 0 LOGIC ---
+            let txt = cell.innerText.trim();
+            if (zerosHidden && !isHeaderRow1 && !isHeaderRow2 && txt === "0") txt = "";
+
+            pdf.text(txt, x + (currentWidth / 2), y + (rowHeight / 2), {
+                align: "center", baseline: "middle", maxWidth: currentWidth - 1
+            });
+
+            // Bold lines for totals
+            if (isAnyTotalRow || isHeaderRow2) {
+                pdf.setLineWidth(0.3);
+                pdf.line(x, y + rowHeight, x + currentWidth, y + rowHeight);
+                if(isAnyTotalRow) pdf.line(x, y, x + currentWidth, y);
+            }
+            x += currentWidth;
+        });
+        y += rowHeight;
+    });
+
+    // Final Thick Borders
+    pdf.setLineWidth(0.4);
+    pdf.rect(margin, 25, usableWidth, y - 25);
+    pdf.setLineWidth(0.3);
+    pdf.line(margin + classWidth, 25, margin + classWidth, y);
+    for (let i = 1; i <= 5; i++) {
+        pdf.line(margin + classWidth + (i * dataWidth * 3), 25, margin + classWidth + (i * dataWidth * 3), y);
+    }
+
+    return pdf;
+}
   
 async function shareAsPDF() {  
     const title = document.getElementById("title").innerText;  
