@@ -95,9 +95,21 @@ th {
 @media print {
     body { margin: 0; background: #fff; }
     .download-container { display: none; }
-    #content-to-print { max-width: 100%; margin: 0; padding: 10mm; }
-    table { font-size: 12px; }
-    @page { size: A4; margin: 5mm; }
+    
+    #content-to-print { 
+        max-width: 100%; 
+        margin: 0; 
+        padding: 10px 10px 10px 10px; /* Padding kam kar di (Cramped na lage isliye 5px) */
+    }
+
+    table { font-size: 14px; }
+
+    @page { 
+        size: A4; 
+        margin: 10mm 15mm 1mm 15mm; /* Page Margin badha di (Lagbhag 56px) */
+    }
+}
+
 }
 </style>
 </head>
@@ -178,11 +190,11 @@ function downloadVectorPDF() {
     doc.autoTable({
         html: '#holidays-table',
         startY: 22,
-        margin: { left: 10, right: 10 },
+        margin: { left: 6, right: 6 },
         theme: 'grid',
         styles: { 
-            fontSize: 10, 
-            cellPadding: [2.5, 0, 2.5, 2.5],
+            fontSize: 14, 
+            cellPadding: [1.8, 1, 1.8, 2.5],
             lineColor: [221, 221, 221],
             lineWidth: 0.1,
             textColor: [0, 0, 0] // Default Black
@@ -191,7 +203,7 @@ function downloadVectorPDF() {
             fillColor: [234, 244, 255], 
             textColor: [0, 0, 0], 
             fontStyle: 'bold',
-            fontSize: 12
+            fontSize: 14
         },
         columnStyles: {
             0: { fontStyle: 'bold', cellWidth: 20 },
@@ -221,19 +233,25 @@ function downloadVectorPDF() {
         }
     });
 
-    // Note Section
+        // Note Section
     const finalY = doc.lastAutoTable.finalY;
-    doc.setFillColor(255, 243, 205);
-    doc.rect(10, finalY + 5, 190, 10, 'F');
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8.5);
-    doc.text(noteText, 12, finalY + 11);
+    const margin = 12; // Left side se space
+    const maxWidth = 186; // Page ki width ke hisaab se wrap limit
 
-    doc.save('HP_Holidays_2026.pdf');
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    
+    // Text ko wrap karne ke liye split karein
+    const wrappedNote = doc.splitTextToSize(noteText, maxWidth);
+
+    // Text draw karein (wrappedNote array format mein hai, jo automatic multi-line handle karta hai)
+    doc.text(wrappedNote, margin, finalY + 11);
+
+
+    doc.save('HP Holidays 2026.pdf');
 }
 
 </script>
 
 </body>
 </html>
-
