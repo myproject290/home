@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Financial Calculator</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --bg: #f8f9fa;
+            --card: #ffffff;
+            --text-dark: #202124;
+            --text-light: #5f6368;
+            --success: #188038; 
+            --border: #dadce0;
+            --error: #d93025;
+            --badge-bg: #e6f4ea;
+            --badge-text: #137333;
+        }
+
+        html, body { height: 100%; margin: 0; background-color: var(--bg); }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            padding: 20px 10px;
+            box-sizing: border-box;
+        }
+
+        .calc-container { 
+            background: var(--card); 
+            padding: 24px; 
+            border-radius: 24px; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 450px;
+            min-height: 650px; 
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            margin-top: 10px;
+        }
+
+        h2 { text-align: center; color: var(--primary); margin: 0 0 16px 0; font-size: 28px; letter-spacing: -0.5px; }
+
+        .tab-menu { display: flex; background: #f1f3f4; border-radius: 12px; padding: 4px; margin-bottom: 20px; flex-shrink: 0; }
+
+        .tab-menu button { 
+            flex: 1; background: none; border: none; padding: 10px 2px; 
+            cursor: pointer; font-weight: 700; color: var(--text-light); 
+            border-radius: 8px; font-size: 14px; transition: 0.2s;
+        }
+
+        .tab-menu button.active { background: var(--primary); color: white; }
+
+        .input-group { margin-bottom: 15px; }
+        .hidden { display: none !important; }
+
+        label { display: block; margin-bottom: 6px; font-size: 15px; font-weight: 700; color: var(--text-dark); }
+
+        input, select { 
+            width: 100%; padding: 12px 14px; border: 2px solid var(--border); 
+            border-radius: 10px; box-sizing: border-box; font-size: 20px; 
+            font-weight: 600; outline: none;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        .time-inputs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
+
+        .btn-reset { 
+            width: 100%; padding: 12px; background-color: #fce8e6; color: var(--error); 
+            border: none; border-radius: 10px; font-size: 16px; cursor: pointer; 
+            margin-top: 15px; font-weight: 700; 
+        }
+
+        .result-box { 
+            margin-top: auto; padding: 20px; background: #f0f9f1; 
+            border-radius: 16px; border: 2px solid #ceead6; margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+
+        .label-container { display: flex; align-items: center; gap: 8px; }
+
+        .result-label { font-size: 15px; color: var(--success); font-weight: 600; }
+        .result-value { color: var(--success); font-size: 22px; font-weight: 800; }
+
+        .pct-badge {
+            background-color: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 6px;
+            border: 1px solid #ceead6;
+            letter-spacing: 0.5px;
+        }
+
+        .divider { height: 2px; background-color: #81c995; margin: 12px 0; }
+
+        .total-row .result-label { font-size: 18px; font-weight: 800; }
+        .total-row .result-value { font-size: 30px; }
+
+        @media (max-height: 700px) {
+            .calc-container { min-height: auto; padding: 15px; }
+            h2 { font-size: 22px; }
+            input, select { padding: 8px 10px; font-size: 18px; }
+            .result-value { font-size: 18px; }
+            .total-row .result-value { font-size: 24px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="calc-container">
+    <h2 id="calc-title">Fixed Deposit</h2>
+    
+    <div class="tab-menu">
+        <button onclick="switchTab('FD')" class="active" id="tab-FD">FD</button>
+        <button onclick="switchTab('RD')" id="tab-RD">RD</button>
+        <button onclick="switchTab('EMI')" id="tab-EMI">EMI</button>
+        <button onclick="switchTab('LOAN')" id="tab-LOAN">LOAN</button>
+    </div>
+
+    <form id="calcForm">
+        <div class="input-group">
+            <label id="amount-label">Principal Amount</label>
+            <input type="text" id="principal" oninput="formatAmount(this)" inputmode="decimal" placeholder="0">
+        </div>
+
+        <div class="input-group">
+            <label>Interest Rate (%)</label>
+            <input type="number" id="rate" step="0.01" oninput="calculate()" inputmode="decimal" placeholder="0">
+        </div>
+
+        <div class="input-group" id="freq-container">
+            <label>Compounding Frequency</label>
+            <select id="frequency" onchange="calculate()">
+                <option value="12">Monthly</option>
+                <option value="4" selected>Quarterly</option>
+                <option value="2">Half Yearly</option>
+                <option value="1">Yearly</option>
+            </select>
+        </div>
+
+        <div class="time-inputs">
+            <div class="input-group">
+                <label>Years</label>
+                <input type="number" id="years" oninput="calculate()" inputmode="numeric" placeholder="0">
+            </div>
+            <div class="input-group">
+                <label>Months</label>
+                <input type="number" id="months" oninput="calculate()" inputmode="numeric" placeholder="0">
+            </div>
+            <div class="input-group" id="days-container">
+                <label>Days</label>
+                <input type="number" id="days" oninput="calculate()" inputmode="numeric" placeholder="0">
+            </div>
+        </div>
+    </form>
+
+    <button class="btn-reset" onclick="resetCalc()">Reset</button>
+
+    <div class="result-box">
+        
+        <div class="result-item" id="row-sub">
+            <span class="result-label" id="res-sub-label">Total Investment</span>
+            <span class="result-value" id="res-sub">0</span>
+        </div>
+        
+        <div class="result-item hidden" id="row-emi">
+            <span class="result-label" id="res-emi-label">Monthly EMI</span>
+            <span class="result-value" id="res-emi">0</span>
+        </div>
+        
+        <div class="result-item" id="row-interest">
+            <div class="label-container">
+                <span class="result-label" id="res-interest-label">Interest Earned</span>
+                <span id="int-pct" class="pct-badge">0%</span>
+            </div>
+            <span class="result-value" id="res-interest">0</span>
+        </div>
+        
+        <div class="divider" id="row-divider"></div>
+        
+        <div class="result-item total-row" id="row-total">
+            <span class="result-label" id="res-total-label">Maturity Amount</span>
+            <span class="result-value" id="res-total">0</span>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let currentMode = 'FD';
+
+    function formatAmount(input) {
+        let cursorPosition = input.selectionStart;
+        let originalValue = input.value;
+        let meaningfulCharsBefore = 0;
+        for (let i = 0; i < cursorPosition; i++) {
+            if (/[0-9.]/.test(originalValue[i])) meaningfulCharsBefore++;
+        }
+
+        let rawValue = input.value.replace(/,/g, '').replace(/[^0-9.]/g, '');
+        
+        if (!rawValue) {
+            input.value = "";
+            calculate();
+            return;
+        }
+
+        let parts = rawValue.split('.');
+        let integerPart = parts[0];
+        let decimalPart = parts.length > 1 ? '.' + parts[1] : ''; 
+
+        let lastThree = integerPart.slice(-3);
+        let otherNumbers = integerPart.slice(0, -3);
+        
+        if (otherNumbers !== '') lastThree = ',' + lastThree;
+        
+        let formattedInteger = otherNumbers.replace(/\B(?=(\d{2})+(?!\d))/g, ",") + lastThree;
+        let newValue = formattedInteger + decimalPart;
+
+        input.value = newValue;
+
+        let newCursorPos = 0;
+        let meaningfulCharsSeen = 0;
+
+        for (let i = 0; i < newValue.length; i++) {
+            if (meaningfulCharsSeen === meaningfulCharsBefore) {
+                newCursorPos = i;
+                break;
+            }
+            if (/[0-9.]/.test(newValue[i])) meaningfulCharsSeen++;
+            newCursorPos = i + 1;
+        }
+
+        input.setSelectionRange(newCursorPos, newCursorPos);
+        calculate();
+    }
+
+    function switchTab(mode) {
+        currentMode = mode;
+        document.querySelectorAll('.tab-menu button').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('tab-' + mode).classList.add('active');
+        
+        const title = document.getElementById('calc-title');
+        const amountLabel = document.getElementById('amount-label');
+        const freqContainer = document.getElementById('freq-container');
+        const daysContainer = document.getElementById('days-container'); 
+        
+        const rowEmi = document.getElementById('row-emi');
+        const rowSub = document.getElementById('row-sub');
+        const rowInterest = document.getElementById('row-interest');
+        const rowTotal = document.getElementById('row-total');
+        const rowDivider = document.getElementById('row-divider');
+        const pctBadge = document.getElementById('int-pct');
+
+        if (mode === 'FD') {
+            daysContainer.classList.remove('hidden');
+        } else {
+            daysContainer.classList.add('hidden');
+        }
+        
+        if (mode === 'FD' || mode === 'RD') {
+            rowEmi.classList.add('hidden');
+            freqContainer.classList.remove('hidden');
+            pctBadge.classList.remove('hidden'); 
+            
+            rowSub.style.order = "1";      
+            rowInterest.style.order = "2"; 
+            rowDivider.style.order = "3";
+            rowTotal.style.order = "4";    
+
+        } 
+        else if (mode === 'EMI') {
+            rowEmi.classList.remove('hidden');
+            freqContainer.classList.add('hidden');
+            pctBadge.classList.remove('hidden');
+            
+            rowSub.style.order = "1";      
+            rowInterest.style.order = "2"; 
+            rowEmi.style.order = "3";      
+            rowDivider.style.order = "4";
+            rowTotal.style.order = "5";    
+        } 
+        else if (mode === 'LOAN') {
+            rowEmi.classList.remove('hidden');
+            freqContainer.classList.add('hidden');
+            pctBadge.classList.remove('hidden');
+            
+            rowSub.style.order = "1";      
+            rowInterest.style.order = "2"; 
+            rowEmi.style.order = "3";      
+            rowDivider.style.order = "4";
+            rowTotal.style.order = "5";    
+        }
+
+        if (mode === 'FD') {
+            title.innerText = 'Fixed Deposit';
+            amountLabel.innerText = 'Principal Amount';
+        } else if (mode === 'RD') {
+            title.innerText = 'Recurring Deposit';
+            amountLabel.innerText = 'Monthly Deposit';
+        } else if (mode === 'EMI') {
+            title.innerText = 'EMI Calculator';
+            amountLabel.innerText = 'Loan Principal';
+        } else if (mode === 'LOAN') {
+            title.innerText = 'Loan Calculator';
+            amountLabel.innerText = 'Monthly EMI';
+        }
+
+        resetCalc();
+    }
+
+    function resetCalc() {
+        document.getElementById('calcForm').reset();
+        document.getElementById('res-sub').innerText = "0";
+        document.getElementById('res-emi').innerText = "0";
+        document.getElementById('res-interest').innerText = "0";
+        document.getElementById('res-total').innerText = "0";
+        document.getElementById('int-pct').innerText = "0%";
+        updateLabels();
+    }
+
+    function updateLabels() {
+        const subLabel = document.getElementById('res-sub-label');
+        const emiLabel = document.getElementById('res-emi-label');
+        const intLabel = document.getElementById('res-interest-label');
+        const totalLabel = document.getElementById('res-total-label');
+
+        if (currentMode === 'EMI') {
+            subLabel.innerText = "Loan Principal";
+            intLabel.innerText = "Interest Cost"; 
+            emiLabel.innerText = "Total Repayment"; 
+            totalLabel.innerText = "Monthly EMI";   
+        } else if (currentMode === 'LOAN') {
+            subLabel.innerText = "Monthly EMI";
+            intLabel.innerText = "Interest Cost"; 
+            emiLabel.innerText = "Total Repayment"; 
+            totalLabel.innerText = "Loan Principal"; 
+        } else {
+            subLabel.innerText = "Total Investment";
+            intLabel.innerText = "Interest Earned";
+            totalLabel.innerText = "Maturity Amount";
+        }
+    }
+
+    function calculate() {
+        const principalInput = document.getElementById('principal').value.replace(/,/g, '');
+        const P = parseFloat(principalInput) || 0;
+        
+        const R = parseFloat(document.getElementById('rate').value) || 0;
+        const n = parseInt(document.getElementById('frequency').value) || 4; 
+        const y = parseFloat(document.getElementById('years').value) || 0;
+        const m = parseFloat(document.getElementById('months').value) || 0;
+        const d = parseFloat(document.getElementById('days').value) || 0;
+
+        const T = y + (m / 12) + (d / 365);
+        const tMonths = Math.round(y * 12 + m + (d / 30));
+        
+        // FIX: Changed check from tMonths <= 0 to T <= 0
+        if (P <= 0 || R <= 0 || T <= 0) return;
+
+        updateLabels();
+        let subVal = 0; let interest = 0; let total = 0; let emiVal = 0;
+        let denominatorForPct = 0; 
+
+        const format = (num) => Math.round(num).toLocaleString('en-IN');
+        const monthsPerCompounding = 12 / n;
+
+        if (currentMode === 'FD') {
+            const cycles = n * T;
+            if (cycles <= 1.00001) {
+                 interest = P * (R / 100) * T;
+                 total = P + interest;
+            } else {
+                 total = P * Math.pow((1 + (R / 100) / n), (n * T));
+            }
+            subVal = P;
+            interest = total - P;
+            denominatorForPct = subVal; 
+
+            document.getElementById('res-sub').innerText = format(subVal);
+            document.getElementById('res-interest').innerText = format(interest);
+            document.getElementById('res-total').innerText = format(total);
+        } 
+        else if (currentMode === 'RD') {
+            // Re-check tMonths validity specifically for RD/EMI logic if needed, 
+            // but usually RD/EMI require at least 1 month conceptually.
+            // For RD, if tMonths is 0 (only days entered), we can default to simple interest on days or force min 1 month.
+            // Here assuming RD/EMI users enter months.
+            
+            if (tMonths <= monthsPerCompounding) {
+                let simpleInt = 0;
+                // If only days are entered, tMonths might be 0 or 1.
+                // Standard RD formulas work on monthly integers. 
+                // Fallback to simple logic if tMonths is small
+                if (tMonths < 1) {
+                    interest = P * (R/100) * T; // Treat as single deposit for duration
+                    subVal = P; // Only 1 deposit effectively
+                } else {
+                    for(let i=1; i<=tMonths; i++) {
+                        let monthsInvested = tMonths - i + 1; 
+                        simpleInt += P * (R/100) * (monthsInvested/12);
+                    }
+                    subVal = P * tMonths;
+                    interest = simpleInt;
+                }
+                total = subVal + interest;
+            } else {
+                const r_comp = (R / 100) / n; 
+                const r_eff = Math.pow(1 + r_comp, n / 12) - 1; 
+                total = P * ((Math.pow(1 + r_eff, tMonths) - 1) / r_eff) * (1 + r_eff);
+                subVal = P * tMonths;
+                interest = total - subVal;
+            }
+            denominatorForPct = subVal; 
+
+            document.getElementById('res-sub').innerText = format(subVal);
+            document.getElementById('res-interest').innerText = format(interest);
+            document.getElementById('res-total').innerText = format(total);
+        }
+        else if (currentMode === 'EMI') {
+            if (tMonths < 1) { 
+               // EMI doesn't make sense for < 1 month usually, treat as simple interest
+               emiVal = P + (P * (R/100) * T);
+               interest = P * (R/100) * T;
+               total = emiVal;
+            } else {
+                const monthlyRate = (R / 100) / 12;
+                emiVal = P * monthlyRate * Math.pow(1 + monthlyRate, tMonths) / (Math.pow(1 + monthlyRate, tMonths) - 1);
+                total = emiVal * tMonths; 
+                interest = total - P;
+            }
+            denominatorForPct = total; 
+
+            document.getElementById('res-sub').innerText = format(P); 
+            document.getElementById('res-interest').innerText = format(interest); 
+            document.getElementById('res-emi').innerText = format(total); 
+            document.getElementById('res-total').innerText = format(emiVal); 
+        }
+        else if (currentMode === 'LOAN') {
+            if (tMonths < 1) {
+                // Edge case handling
+                interest = 0; 
+                loanPrincipal = 0;
+            } else {
+                const monthlyRate = (R / 100) / 12;
+                const loanPrincipal = P / ((monthlyRate * Math.pow(1 + monthlyRate, tMonths)) / (Math.pow(1 + monthlyRate, tMonths) - 1));
+                let totalRepayment = P * tMonths;
+                interest = totalRepayment - loanPrincipal;
+                
+                document.getElementById('res-sub').innerText = format(P); 
+                document.getElementById('res-interest').innerText = format(interest); 
+                document.getElementById('res-emi').innerText = format(totalRepayment); 
+                document.getElementById('res-total').innerText = format(loanPrincipal); 
+                
+                denominatorForPct = totalRepayment;
+            }
+        }
+        
+        if (denominatorForPct > 0) {
+            let roundedInterest = Math.round(interest);
+            let roundedDenominator = Math.round(denominatorForPct);
+            let pct = (roundedInterest / roundedDenominator) * 100;
+            document.getElementById('int-pct').innerText = pct.toFixed(2) + '%';
+        }
+    }
+
+    switchTab('FD'); 
+</script>
+
+</body>
+</html>
