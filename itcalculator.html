@@ -2,7 +2,7 @@
 <head>  
     <meta charset="UTF-8">  
     <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-    <title>Income Tax Calculation, FY 2025-26</title>  
+    <title>Income Tax Calculation, FY 2026-27</title>  
 
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2250%22 font-size=%2275%22 fill=%22white%22 font-family=%22Arial, sans-serif%22 font-weight=%22bold%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>IT</text></svg>">
 
@@ -201,7 +201,7 @@
 </div>  
 
 <div class="sheet" id="printContent">  
-    <h2>Income Tax Calculation for the Financial Year 2025-26 (AY 2026-27)</h2>  
+    <h2>Income Tax Calculation for the Financial Year 2026-27 (AY 2027-28)</h2>  
     <h3>Tax Regime Opted: New Regime</h3>  
 
     <table class="info-table">  
@@ -237,7 +237,7 @@
         <td class="col-idx">1.</td>  
         <td colspan="5" class="wrap-text">Income from salary including Employer Share to NPS</td>  
         <td class="right input-bg">  
-            <input type="text" inputmode="numeric" id="grossIncome" class="right input-bg nav-field" placeholder="0" oninput="formatInput(this)">  
+            <input type="text" inputmode="numeric" id="grossIncome" class="right input-bg nav-field" value="0" oninput="formatInput(this)">  
         </td>  
     </tr>  
     <tr>  
@@ -254,7 +254,7 @@
         <td class="col-idx">4.</td>  
         <td colspan="5" class="wrap-text">Deduction u/s 80CCD(2) (Employer Share to NPS @ 14%)</td>  
         <td class="right input-bg">  
-            <input type="text" inputmode="numeric" id="npsDeduction" class="right input-bg nav-field" placeholder="0" oninput="formatInput(this)">  
+            <input type="text" inputmode="numeric" id="npsDeduction" class="right input-bg nav-field" value="0" oninput="formatInput(this)">  
         </td>  
     </tr>  
     <tr>  
@@ -301,7 +301,7 @@
     </tr>  
     <tr>  
         <td class="col-idx">10.</td>  
-        <td colspan="5" class="wrap-text">Add: Surcharge (10% > 50L, 15% > 1Cr, 25% > 2Cr)</td>  
+        <td colspan="5" class="wrap-text">Add: Surcharge (if applicable)</td>  
         <td class="right" id="surcharge">0</td>  
     </tr>  
     <tr>  
@@ -328,7 +328,7 @@
         <td class="col-idx">15.</td>  
         <td colspan="5" class="wrap-text">Relief under section 89(1) if any (attach form 10E)</td>  
         <td class="right input-bg">  
-            <input type="text" inputmode="numeric" id="relief89" class="right input-bg" placeholder="0" oninput="formatInput(this)">  
+            <input type="text" inputmode="numeric" id="relief89" class="right input-bg" value="0" oninput="formatInput(this)">  
         </td>  
     </tr>  
 </table>  
@@ -353,8 +353,8 @@
     <tr>  
         <td class="col-idx">17.</td>  
         <td colspan="2" class="wrap-text">Income Tax already paid</td>  
-        <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>  
-        <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" placeholder="0" oninput="formatInput(this)"></td>  
+        <td class="right input-bg"><input type="text" inputmode="numeric" id="paidTax" class="right input-bg" value="0" oninput="formatInput(this)"></td>  
+        <td class="right input-bg"><input type="text" inputmode="numeric" id="paidCess" class="right input-bg" value="0" oninput="formatInput(this)"></td>  
         <td class="right" id="paidTotal">0</td>  
     </tr>  
     <tr>  
@@ -405,24 +405,44 @@
     });  
   
     function checkInputs() {  
-        let inputs = document.querySelectorAll("input, textarea");  
-        let hasValue = false;  
-        for (let input of inputs) {  
-            if (!input.readOnly && input.value.trim() !== "") { hasValue = true; break; }  
+    let inputs = document.querySelectorAll("input, textarea");  
+    let hasValue = false;  
+    for (let input of inputs) {  
+        // अगर इनपुट ReadOnly नहीं है AND उसकी वैल्यू खाली नहीं है AND उसकी वैल्यू "0" भी नहीं है
+        if (!input.readOnly && input.value.trim() !== "" && input.value.trim() !== "0") { 
+            hasValue = true; 
+            break; 
         }  
-        document.getElementById("resetBtn").style.display = hasValue ? "inline-flex" : "none";  
     }  
+    document.getElementById("resetBtn").style.display = hasValue ? "inline-flex" : "none";  
+}
+
   
     function resetForm() {  
-        let inputs = document.querySelectorAll("input, textarea");  
-        inputs.forEach(input => {  
-            input.value = "";  
-            if (input.tagName === "TEXTAREA") input.style.height = "auto";  
-        });  
-        document.title = "Income Tax Calculation, FY 2025-26";  
-        calculateTax();  
-        checkInputs();   
-    }  
+    let inputs = document.querySelectorAll("input, textarea");  
+    inputs.forEach(input => {
+        // अगर ID 'npsDeduction' या 'relief89' है, तो उसे "0" कर दे
+        if (input.id === "npsDeduction" || input.id === "relief89") {
+            input.value = "0"; 
+        } else {
+            // बाकी सभी बॉक्स को खाली कर दे
+            input.value = "";
+        }
+        
+        // टेक्सटएरिया की हाइट वापस सामान्य करें
+        if (input.tagName === "TEXTAREA") input.style.height = "auto";  
+    });  
+
+    // पेज टाइटल को वापस डिफ़ॉल्ट करें
+    document.title = "Income Tax Calculation, FY 2026-27";  
+    
+    // 0 वैल्यू के साथ पूरी टेबल का हिसाब दोबारा लगाएं
+    calculateTax();  
+    
+    // बटन को वापस छुपाने के लिए (क्योंकि अब सिर्फ 0 बचे हैं)
+    checkInputs();   
+}
+
   
     function toTitleCase(str) {  
         const whitelist = new Set(["JBT", "GPS", "GMS", "GHS", "GSSS", "CHT", "BEEO", "BPEO", "DEO", "DDEEO", "VPO", "TEH", "DISTT", "PIN", "PO", "HT", "GMSSS", "MO", "C/O", "S/O", "D/O", "W/O"]);  
@@ -439,7 +459,7 @@
         let title = "";  
         if (nameVal) title += toTitleCase(nameVal);  
         if (desigVal) title += (title ? ", " : "") + toTitleCase(desigVal);  
-        document.title = title || "Income Tax Calculation, FY 2025-26";  
+        document.title = title || "Income Tax Calculation, FY 2026-27";  
     }  
   
     function getFileName() {  
@@ -498,7 +518,7 @@
     document.getElementById('headSalaries').innerText = format(headSalaries);  
     document.getElementById('taxableIncome').innerText = format(taxable);  
 
-    // 2. Slab Calculation Logic (New Regime FY 2025-26)
+    // 2. Slab Calculation Logic (New Regime FY 2026-27)
     let slabs = [  
         { start: 0, limit: 400000, rate: 0, id: 1 },  
         { start: 400000, limit: 800000, rate: 0.05, id: 2 },  
@@ -792,7 +812,58 @@ box.style.letterSpacing = "0.5px"; // Bold text ko chipalne se rokne ke liye
             } else { doc.save(getFileName()); }  
         } catch (e) { alert("Sharing failed"); }  
         document.getElementById('loadingOverlay').style.display = 'none';  
-    }  
+    }
+
+// --- सुधारित इनपुट हैंडलिंग ---
+document.querySelectorAll('#grossIncome, #npsDeduction, #relief89, #paidTax, #paidCess').forEach(input => {
+    input.addEventListener('focus', function() {
+        if (this.value.replace(/,/g, '').trim() === "0") {
+            this.value = "";
+        }
+    });
+
+    input.addEventListener('blur', function() {
+        let rawVal = this.value.trim();
+        if (rawVal === "" || rawVal === "0") {
+            this.value = "0";
+        } else {
+            formatInput(this); 
+        }
+        calculateTax(); 
+    });
+});
+
+// --- पेज लोड होते ही गणना शुरू करें ---
+window.onload = function() {
+    document.querySelectorAll('#grossIncome, #npsDeduction, #relief89, #paidTax, #paidCess').forEach(input => {
+        if(input.value === "" || input.value === "0") {
+            input.value = "0";
+        }
+        formatInput(input);
+    });
+    calculateTax();
+};
+
+// --- रिसेट फंक्शन में सुधार ताकि लोड जैसा व्यवहार हो ---
+function resetForm() {  
+    let inputs = document.querySelectorAll("input, textarea");  
+    inputs.forEach(input => {
+        if (["grossIncome", "npsDeduction", "relief89", "paidTax", "paidCess"].includes(input.id)) {
+            input.value = "0"; 
+            formatInput(input); // 0 को फॉर्मेट करें
+        } else {
+            input.value = "";
+        }
+        if (input.tagName === "TEXTAREA") input.style.height = "auto";  
+    });  
+
+    document.title = "Income Tax Calculation, FY 2026-27";  
+    calculateTax();  
+    checkInputs();   
+}
+
+
+  
 </script>  
 </body>  
 </html>
