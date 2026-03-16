@@ -414,45 +414,49 @@
     }
 
     function calculate() {
-let subTotal = 0;
+    let subTotal = 0;
 
-document.querySelectorAll("#itemsTable tr").forEach(row => {  
-    let cells = row.querySelectorAll("td");  
-    if (cells.length < 5) return;  
+    document.querySelectorAll("#itemsTable tr").forEach(row => {  
+        let cells = row.querySelectorAll("td");  
+        if (cells.length < 5) return;  
 
-    // Input fields ko safe tareeke se select karein  
-    let qInput = cells[2].querySelector("input");  
-    let rInput = cells[3].querySelector("input");  
-    let aInput = cells[4].querySelector("input");  
+        let qInput = cells[2].querySelector("input");  
+        let rInput = cells[3].querySelector("input");  
+        let aInput = cells[4].querySelector("input");  
 
-    if (!qInput || !rInput || !aInput) return;  
+        if (!qInput || !rInput || !aInput) return;  
 
-    let q = parseFloat(qInput.value) || 0;  
-    let r = parseFloat(rInput.value) || 0;  
+        let q = parseFloat(qInput.value) || 0;  
+        let r = parseFloat(rInput.value) || 0;  
 
-    let amt = q * r;  
-      
-    // Professional approach: Agar 0 hai toh bhi 0.00 dikhayein  
-    aInput.value = amt.toFixed(2);  
+        // 1. Pehle row ka amount calculate karke 2 decimal tak round karein
+        let rowAmt = Math.round(q * r * 100) / 100; 
+        
+        // 2. Screen par wahi 2 decimal wala amount dikhayein
+        aInput.value = rowAmt.toFixed(2);  
 
-    subTotal += amt;  
-});  
+        // 3. Subtotal mein wahi amount jodein jo screen par dikh raha hai
+        subTotal += rowAmt;  
+    });  
 
-let roundedTotal = Math.round(subTotal);  
-let diff = roundedTotal - subTotal;  
+    // JavaScript floating point error se bachne ke liye final Subtotal ko bhi clean karein
+    subTotal = Math.round(subTotal * 100) / 100;
 
-// Round Off string format  
-let roundOffStr = diff.toFixed(2);  
-if (diff > 0) {  
-    roundOffStr = "+" + roundOffStr;  
-} else if (diff === 0) {  
-    roundOffStr = "0.00"; // Sirf 0.00 dikhane ke liye  
-}  
+    let roundedTotal = Math.round(subTotal);  
+    let diff = roundedTotal - subTotal;  
 
-document.getElementById("subTotal").innerText = subTotal.toFixed(2);  
-document.getElementById("roundOff").innerText = roundOffStr;  
-document.getElementById("grandTotal").innerText = roundedTotal.toFixed(2);
+    let roundOffStr = diff.toFixed(2);  
+    if (diff > 0) {  
+        roundOffStr = "+" + roundOffStr;  
+    } else if (diff === 0) {  
+        roundOffStr = "0.00"; 
+    }  
+
+    document.getElementById("subTotal").innerText = subTotal.toFixed(2);  
+    document.getElementById("roundOff").innerText = roundOffStr;  
+    document.getElementById("grandTotal").innerText = roundedTotal.toFixed(2);
 }
+
 
 
     function addNewRow() {
