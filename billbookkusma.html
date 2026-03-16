@@ -3,9 +3,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Book Kusma</title>
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>BBK</text></svg>">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/&gt;&lt;text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22&gt;BBK&lt;/text&gt;&lt;/svg&gt;">
 
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>BBK</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,&lt;svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22&gt;&lt;rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/&gt;&lt;text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22&gt;BBK&lt;/text&gt;&lt;/svg&gt;">
     
     <style>
         :root { --font-sz: 16px; }
@@ -163,10 +163,10 @@
     </div>
 
     <div class="bill-meta">
-        <div>No. <input type="text" id="billNo" class="input-cell" value="" oninput="adjustWidth(this)" style="width: 4.5ch;"></div>
+        <div>No. <input type="text" id="billNo" class="input-cell" value="146" oninput="adjustWidth(this)" style="width: 4.5ch;"></div>
         <div class="date-group">
             <span>Date:</span>
-            <input type="text" id="billDate" class="input-cell" value="" oninput="autoSlash(this); adjustWidth(this)" inputmode="numeric" style="width: 11.5ch;">
+            <input type="text" id="billDate" class="input-cell" value="16/03/2026" oninput="autoSlash(this); adjustWidth(this)" inputmode="numeric" style="width: 11.5ch;">
         </div>
     </div>
     
@@ -217,45 +217,45 @@
     <div class="history-section">
         <h3>📜 Saved History (Sorted by Bill No.)</h3>
         <div id="historyList"><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(12)" style="flex-grow:1; cursor:pointer;"><b>#145</b> - SMC GPS Pathiar (Rs.375.00)</div>
-                <button onclick="moveToTrash(12)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(11)" style="flex-grow:1; cursor:pointer;"><b>#144</b> - GPS Lakha Mandal (Rs.375.00)</div>
-                <button onclick="moveToTrash(11)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(10)" style="flex-grow:1; cursor:pointer;"><b>#143</b> - SMC GPS Sukrehar (Rs.375.00)</div>
-                <button onclick="moveToTrash(10)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(9)" style="flex-grow:1; cursor:pointer;"><b>#142</b> - SMC GPS Sukrehar (Rs.27.00)</div>
-                <button onclick="moveToTrash(9)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(8)" style="flex-grow:1; cursor:pointer;"><b>#141</b> - SMC GPS Chambi (Rs.192.00)</div>
-                <button onclick="moveToTrash(8)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(7)" style="flex-grow:1; cursor:pointer;"><b>#140</b> - SMC GPS Kasba Pathiar (Rs.528.00)</div>
-                <button onclick="moveToTrash(7)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(6)" style="flex-grow:1; cursor:pointer;"><b>#139</b> - SMC GPS Khatehr U (Rs.222.00)</div>
-                <button onclick="moveToTrash(6)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(5)" style="flex-grow:1; cursor:pointer;"><b>#138</b> - SMC GPS Dadh (Rs.390.00)</div>
-                <button onclick="moveToTrash(5)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(4)" style="flex-grow:1; cursor:pointer;"><b>#137</b> - SMC GPS Kasba Pathiar (Rs.474.00)</div>
-                <button onclick="moveToTrash(4)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(3)" style="flex-grow:1; cursor:pointer;"><b>#136</b> - SMC GPS Lakha Mandal (Rs.234.00)</div>
-                <button onclick="moveToTrash(3)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(2)" style="flex-grow:1; cursor:pointer;"><b>#135</b> - SMC GPS Sukrehar (Rs.270.00)</div>
-                <button onclick="moveToTrash(2)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(1)" style="flex-grow:1; cursor:pointer;"><b>#134</b> - SMC GPS Khatehr U (Rs.222.00)</div>
-                <button onclick="moveToTrash(1)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(0)" style="flex-grow:1; cursor:pointer;"><b>#133</b> - SMC GPS Chambi (Rs.192.00)</div>
-                <button onclick="moveToTrash(0)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div></div>
+            <div onclick="loadBill(12)" style="flex-grow:1; cursor:pointer;"><b>#145</b> - SMC GPS Pathiar (Rs. 375.00)</div>
+            <button onclick="moveToTrash(12)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(11)" style="flex-grow:1; cursor:pointer;"><b>#144</b> - GPS Lakha Mandal (Rs. 375.00)</div>
+            <button onclick="moveToTrash(11)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(10)" style="flex-grow:1; cursor:pointer;"><b>#143</b> - SMC GPS Sukrehar (Rs. 375.00)</div>
+            <button onclick="moveToTrash(10)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(9)" style="flex-grow:1; cursor:pointer;"><b>#142</b> - SMC GPS Sukrehar (Rs. 27.00)</div>
+            <button onclick="moveToTrash(9)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(8)" style="flex-grow:1; cursor:pointer;"><b>#141</b> - SMC GPS Chambi (Rs. 192.00)</div>
+            <button onclick="moveToTrash(8)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(7)" style="flex-grow:1; cursor:pointer;"><b>#140</b> - SMC GPS Kasba Pathiar (Rs. 528.00)</div>
+            <button onclick="moveToTrash(7)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(6)" style="flex-grow:1; cursor:pointer;"><b>#139</b> - SMC GPS Khatehr U (Rs. 222.00)</div>
+            <button onclick="moveToTrash(6)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(5)" style="flex-grow:1; cursor:pointer;"><b>#138</b> - SMC GPS Dadh (Rs. 390.00)</div>
+            <button onclick="moveToTrash(5)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(4)" style="flex-grow:1; cursor:pointer;"><b>#137</b> - SMC GPS Kasba Pathiar (Rs. 474.00)</div>
+            <button onclick="moveToTrash(4)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(3)" style="flex-grow:1; cursor:pointer;"><b>#136</b> - SMC GPS Lakha Mandal (Rs. 234.00)</div>
+            <button onclick="moveToTrash(3)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(2)" style="flex-grow:1; cursor:pointer;"><b>#135</b> - SMC GPS Sukrehar (Rs. 270.00)</div>
+            <button onclick="moveToTrash(2)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(1)" style="flex-grow:1; cursor:pointer;"><b>#134</b> - SMC GPS Khatehr U (Rs. 222.00)</div>
+            <button onclick="moveToTrash(1)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(0)" style="flex-grow:1; cursor:pointer;"><b>#133</b> - SMC GPS Chambi (Rs. 192.00)</div>
+            <button onclick="moveToTrash(0)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div></div>
         <button class="btn-danger-all" onclick="deleteAllHistory()">⚠️ Move All to Trash</button>
     </div>
 
@@ -414,20 +414,46 @@
     }
 
     function calculate() {
-        let subTotal = 0;
-        document.querySelectorAll("#itemsTable tr").forEach(row => {
-            let cells = row.querySelectorAll("td");
-            let q = parseFloat(cells[2].querySelector("input").value) || 0;
-            let r = parseFloat(cells[3].querySelector("input").value) || 0;
-            let amt = q * r;
-            cells[4].querySelector("input").value = amt > 0 ? amt.toFixed(2) : "";
-            subTotal += amt;
-        });
-        let roundedTotal = Math.round(subTotal);
-        document.getElementById('subTotal').innerText = subTotal.toFixed(2);
-        document.getElementById('roundOff').innerText = (roundedTotal - subTotal).toFixed(2);
-        document.getElementById('grandTotal').innerText = roundedTotal.toFixed(2);
-    }
+let subTotal = 0;
+
+document.querySelectorAll("#itemsTable tr").forEach(row => {  
+    let cells = row.querySelectorAll("td");  
+    if (cells.length < 5) return;  
+
+    // Input fields ko safe tareeke se select karein  
+    let qInput = cells[2].querySelector("input");  
+    let rInput = cells[3].querySelector("input");  
+    let aInput = cells[4].querySelector("input");  
+
+    if (!qInput || !rInput || !aInput) return;  
+
+    let q = parseFloat(qInput.value) || 0;  
+    let r = parseFloat(rInput.value) || 0;  
+
+    let amt = q * r;  
+      
+    // Professional approach: Agar 0 hai toh bhi 0.00 dikhayein  
+    aInput.value = amt.toFixed(2);  
+
+    subTotal += amt;  
+});  
+
+let roundedTotal = Math.round(subTotal);  
+let diff = roundedTotal - subTotal;  
+
+// Round Off string format  
+let roundOffStr = diff.toFixed(2);  
+if (diff > 0) {  
+    roundOffStr = "+" + roundOffStr;  
+} else if (diff === 0) {  
+    roundOffStr = "0.00"; // Sirf 0.00 dikhane ke liye  
+}  
+
+document.getElementById("subTotal").innerText = subTotal.toFixed(2);  
+document.getElementById("roundOff").innerText = roundOffStr;  
+document.getElementById("grandTotal").innerText = roundedTotal.toFixed(2);
+}
+
 
     function addNewRow() {
         const tbody = document.getElementById('itemsTable');
@@ -561,6 +587,7 @@ function restoreAllTrash() {
 }
 
 </script>
+
 
 
 </body></html>
