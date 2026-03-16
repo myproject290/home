@@ -2,8 +2,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bill Book Kusma</title>
-
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>BBK</text></svg>">
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>BBK</text></svg>">
 
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2245%22 fill=%22white%22 font-family=%22Verdana,sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>BBK</text></svg>">
     
@@ -50,7 +50,22 @@
         #billNo { min-width: 40px; }
 
         .row-controls-left { display: flex; justify-content: flex-start; gap: 8px; margin-top: 8px; }
-        .btn-row { width: 24px; height: 24px; border: none; border-radius: 4px; cursor: pointer; color: white; font-weight: bold; font-size: 18px; display: flex; align-items: center; justify-content: center; }
+        .btn-row { 
+    width: 1.2em;
+    height: 1.2em; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    color: white; 
+    font-weight: 900;    
+    font-size: 1.8em;    
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 0; 
+    line-height: 0;    
+    overflow: hidden;    
+}
         .add-r { background: #2e7d32; }
         .rem-r { background: #c62828; }
 
@@ -67,8 +82,24 @@
         .signature-box { display: flex; flex-direction: column; align-items: center; text-align: center; min-width: 180px; opacity: 0; }
         .sig-line { border-top: 1px solid #222; width: 100%; margin-bottom: 5px; }
 
-        .btn-group { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 10px; }
-        .btn { padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; color: white; font-size: 12px; text-align: center; }
+        .btn-group { 
+    display: flex;       /* Grid ki jagah flex */
+    gap: 8px; 
+    width: 100%;         /* Poori width cover karne ke liye */
+    margin-top: 10px;
+}
+
+.btn { 
+    flex: 1;             /* Ye har button ko barabar faila dega */
+    padding: 10px; 
+    border: none; 
+    border-radius: 4px; 
+    cursor: pointer; 
+    font-weight: bold; 
+    color: white; 
+    text-align: center;
+}
+
         .btn-save { background: #2e7d32; }
         .btn-print { background: #333; }
         .btn-clear { background: #d84315; }
@@ -76,12 +107,12 @@
         .btn-master { background: #4527a0; }
         
         .history-section { margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid #ddd; }
-        .btn-danger-all { background: #b71c1c; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        .btn-danger-all { background: #b71c1c; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: inherit; }
         .trash-section { margin-top: 20px; padding-top: 10px; }
         .trash-item { background: #fce4ec; padding: 10px; margin-bottom: 5px; border-left: 5px solid #c62828; display: flex; justify-content: space-between; align-items: center; }
         .trash-actions { display: flex; gap: 10px; }
-        .btn-restore { background: #0288d1; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: 12px; }
-        .btn-empty-trash { background: #5d4037; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 14px; }
+        .btn-restore { background: #0288d1; color: white; border: none; padding: 5px 12px; border-radius: 3px; cursor: pointer; font-size: inherit; }
+        .btn-empty-trash { background: #5d4037; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: inherit; }
 
         @media print { 
             .no-print, .btn-group, #history, .row-controls-left, .btn-danger-all, .trash-section, .btn-empty-trash { display: none !important; }
@@ -167,9 +198,9 @@
             <div><b>IFSC:&nbsp;</b> <span contenteditable="true">KACE0000105</span></div>
         </div>
         <div class="total-section">
-            <div>Total: ₹ <span id="subTotal">0.00</span></div>
+            <div>Total: Rs. <span id="subTotal">0.00</span></div>
             <div>Round Off: <span id="roundOff">0.00</span></div>
-            <div class="grand-total">Grand Total: ₹ <span id="grandTotal">0.00</span></div>
+            <div class="grand-total">Grand Total: Rs. <span id="grandTotal">0.00</span></div>
         </div>
     </div>
 
@@ -186,43 +217,43 @@
     <div class="history-section">
         <h3>📜 Saved History (Sorted by Bill No.)</h3>
         <div id="historyList"><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(12)" style="flex-grow:1; cursor:pointer;"><b>#145</b> - SMC GPS Pathiar (₹375.00)</div>
+                <div onclick="loadBill(12)" style="flex-grow:1; cursor:pointer;"><b>#145</b> - SMC GPS Pathiar (Rs.375.00)</div>
                 <button onclick="moveToTrash(12)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(11)" style="flex-grow:1; cursor:pointer;"><b>#144</b> - GPS Lakha Mandal (₹375.00)</div>
+                <div onclick="loadBill(11)" style="flex-grow:1; cursor:pointer;"><b>#144</b> - GPS Lakha Mandal (Rs.375.00)</div>
                 <button onclick="moveToTrash(11)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(10)" style="flex-grow:1; cursor:pointer;"><b>#143</b> - SMC GPS Sukrehar (₹375.00)</div>
+                <div onclick="loadBill(10)" style="flex-grow:1; cursor:pointer;"><b>#143</b> - SMC GPS Sukrehar (Rs.375.00)</div>
                 <button onclick="moveToTrash(10)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(9)" style="flex-grow:1; cursor:pointer;"><b>#142</b> - SMC GPS Sukrehar (₹27.00)</div>
+                <div onclick="loadBill(9)" style="flex-grow:1; cursor:pointer;"><b>#142</b> - SMC GPS Sukrehar (Rs.27.00)</div>
                 <button onclick="moveToTrash(9)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(8)" style="flex-grow:1; cursor:pointer;"><b>#141</b> - SMC GPS Chambi (₹192.00)</div>
+                <div onclick="loadBill(8)" style="flex-grow:1; cursor:pointer;"><b>#141</b> - SMC GPS Chambi (Rs.192.00)</div>
                 <button onclick="moveToTrash(8)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(7)" style="flex-grow:1; cursor:pointer;"><b>#140</b> - SMC GPS Kasba Pathiar (₹528.00)</div>
+                <div onclick="loadBill(7)" style="flex-grow:1; cursor:pointer;"><b>#140</b> - SMC GPS Kasba Pathiar (Rs.528.00)</div>
                 <button onclick="moveToTrash(7)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(6)" style="flex-grow:1; cursor:pointer;"><b>#139</b> - SMC GPS Khatehr U (₹222.00)</div>
+                <div onclick="loadBill(6)" style="flex-grow:1; cursor:pointer;"><b>#139</b> - SMC GPS Khatehr U (Rs.222.00)</div>
                 <button onclick="moveToTrash(6)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(5)" style="flex-grow:1; cursor:pointer;"><b>#138</b> - SMC GPS Dadh (₹390.00)</div>
+                <div onclick="loadBill(5)" style="flex-grow:1; cursor:pointer;"><b>#138</b> - SMC GPS Dadh (Rs.390.00)</div>
                 <button onclick="moveToTrash(5)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(4)" style="flex-grow:1; cursor:pointer;"><b>#137</b> - SMC GPS Kasba Pathiar (₹474.00)</div>
+                <div onclick="loadBill(4)" style="flex-grow:1; cursor:pointer;"><b>#137</b> - SMC GPS Kasba Pathiar (Rs.474.00)</div>
                 <button onclick="moveToTrash(4)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(3)" style="flex-grow:1; cursor:pointer;"><b>#136</b> - SMC GPS Lakha Mandal (₹234.00)</div>
+                <div onclick="loadBill(3)" style="flex-grow:1; cursor:pointer;"><b>#136</b> - SMC GPS Lakha Mandal (Rs.234.00)</div>
                 <button onclick="moveToTrash(3)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(2)" style="flex-grow:1; cursor:pointer;"><b>#135</b> - SMC GPS Sukrehar (₹270.00)</div>
+                <div onclick="loadBill(2)" style="flex-grow:1; cursor:pointer;"><b>#135</b> - SMC GPS Sukrehar (Rs.270.00)</div>
                 <button onclick="moveToTrash(2)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(1)" style="flex-grow:1; cursor:pointer;"><b>#134</b> - SMC GPS Khatehr U (₹222.00)</div>
+                <div onclick="loadBill(1)" style="flex-grow:1; cursor:pointer;"><b>#134</b> - SMC GPS Khatehr U (Rs.222.00)</div>
                 <button onclick="moveToTrash(1)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div><div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(0)" style="flex-grow:1; cursor:pointer;"><b>#133</b> - SMC GPS Chambi (₹192.00)</div>
+                <div onclick="loadBill(0)" style="flex-grow:1; cursor:pointer;"><b>#133</b> - SMC GPS Chambi (Rs.192.00)</div>
                 <button onclick="moveToTrash(0)" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
             </div></div>
         <button class="btn-danger-all" onclick="deleteAllHistory()">⚠️ Move All to Trash</button>
@@ -232,6 +263,7 @@
         <h3>🗑️ Trash Bin (Deleted Bills)</h3>
         <div id="trashList"></div>
         <button class="btn-empty-trash" id="emptyTrashBtn" onclick="emptyTrashOnly()" style="display: none;">🧹 Empty Trash Bin</button>
+        <button class="btn-restore" id="restoreAllBtn" onclick="restoreAllTrash()" style="display: none; width: 100%; margin-top: 10px; padding: 12px; font-weight: bold;">🔄 Restore All to History</button>
     </div>
 </div>
 
@@ -266,29 +298,35 @@
     function sortMasterData() { masterData.sort((a, b) => parseInt(a.no) - parseInt(b.no)); }
 
     function updateHistoryUI() {
-        let list = document.getElementById('historyList');
-        list.innerHTML = "";
-        let trashList = document.getElementById('trashList');
-        trashList.innerHTML = "";
-        masterData.slice().reverse().forEach((b) => {
-            let realIndex = masterData.findIndex(item => item.id === b.id);
-            list.innerHTML += `<div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
-                <div onclick="loadBill(${realIndex})" style="flex-grow:1; cursor:pointer;"><b>#${b.no}</b> - ${b.name} (₹${b.total})</div>
-                <button onclick="moveToTrash(${realIndex})" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;">Delete</button>
-            </div>`;
-        });
-        trashData.slice().reverse().forEach((b, index) => {
-            let revIndex = trashData.length - 1 - index;
-            trashList.innerHTML += `<div class="trash-item">
-                <div style="flex-grow:1;"><b>#${b.no}</b> - ${b.name} (₹${b.total})</div>
-                <div class="trash-actions">
-                    <button class="btn-restore" onclick="restoreFromTrash(${revIndex})">Restore</button>
-                    <button style="background:#333; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer;" onclick="permDelete(${revIndex})">Delete Forever</button>
-                </div>
-            </div>`;
-        });
-        document.getElementById('emptyTrashBtn').style.display = trashData.length > 0 ? 'block' : 'none';
-    }
+    let list = document.getElementById('historyList');
+    list.innerHTML = "";
+    let trashList = document.getElementById('trashList');
+    trashList.innerHTML = "";
+    
+    masterData.slice().reverse().forEach((b) => {
+        let realIndex = masterData.findIndex(item => item.id === b.id);
+        list.innerHTML += `<div style="background:white; padding:10px; margin-bottom:5px; border-left:5px solid #4527a0; display:flex; justify-content:space-between; align-items:center;">
+            <div onclick="loadBill(${realIndex})" style="flex-grow:1; cursor:pointer;"><b>#${b.no}</b> - ${b.name} (Rs. ${b.total})</div>
+            <button onclick="moveToTrash(${realIndex})" style="background:#ff5252; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;">Delete</button>
+        </div>`;
+    });
+
+    trashData.slice().reverse().forEach((b, index) => {
+        let revIndex = trashData.length - 1 - index;
+        trashList.innerHTML += `<div class="trash-item">
+            <div style="flex-grow:1;"><b>#${b.no}</b> - ${b.name} (Rs. ${b.total})</div>
+            <div class="trash-actions">
+                <button class="btn-restore" style="font-size:inherit;" onclick="restoreFromTrash(${revIndex})">Restore</button>
+                <button style="background:#333; color:white; border:none; padding:5px 12px; border-radius:3px; cursor:pointer; font-size:inherit;" onclick="permDelete(${revIndex})">Delete Forever</button>
+            </div>
+        </div>`;
+    });
+
+    const hasTrash = trashData.length > 0;
+    document.getElementById('emptyTrashBtn').style.display = hasTrash ? 'block' : 'none';
+    document.getElementById('restoreAllBtn').style.display = hasTrash ? 'block' : 'none';
+}
+
 
     function moveToTrash(i) { trashData.push(masterData[i]); masterData.splice(i, 1); saveAll(); }
     function restoreFromTrash(i) { masterData.push(trashData[i]); trashData.splice(i, 1); sortMasterData(); saveAll(); }
@@ -316,7 +354,17 @@
     if(items.length === 0) return alert("Add items first");
 
     let currentBillNo = document.getElementById('billNo').value.trim();
+    
+    // 1. Check if exists in Trash
+    let existsInTrash = trashData.some(b => b.no === currentBillNo);
+    if (existsInTrash) {
+        alert("⚠️ Bill No. " + currentBillNo + " already exists in TRASH!\nPlease restore it or use a different Bill No.");
+        return; 
+    }
+
+    // 2. Check if exists in History (Update logic)
     let existingIndex = masterData.findIndex(b => b.no === currentBillNo);
+    
     let billObj = { 
         id: Date.now(), 
         no: currentBillNo, 
@@ -328,10 +376,10 @@
     };
 
     if (existingIndex !== -1) { 
-        if(confirm("Update Bill No. " + currentBillNo + "?")) {
+        if(confirm("Bill No. " + currentBillNo + " already exists in History. Do you want to UPDATE it?")) {
             masterData[existingIndex] = billObj;
         } else {
-            return; // अगर अपडेट कैंसिल किया तो आगे न बढ़ें
+            return; 
         }
     } else { 
         masterData.push(billObj); 
@@ -339,11 +387,10 @@
 
     sortMasterData();
     saveAll();
-    alert("Saved!");
-    
-    // सेव होने के बाद ऑटोमैटिक नया बिल लोड करना
+    alert("Saved Successfully!");
     resetForm();
 }
+
 
 
     function loadBill(index) {
@@ -389,11 +436,24 @@
     }
 
     function getUpdatedHTML() { 
-        let fullHTML = document.documentElement.outerHTML;
-        let updated = fullHTML.replace(/let masterData = \[.*?\];/, `let masterData = ${JSON.stringify(masterData)};`);
-        updated = updated.replace(/let trashData = \[.*?\];/, `let trashData = ${JSON.stringify(trashData)};`);
-        return updated;
-    }
+    // Type kiye gaye mobile number ko HTML attribute mein pakka (sync) karein
+    const mobInput = document.getElementById('shopMobile');
+    if(mobInput) mobInput.setAttribute('value', mobInput.value);
+
+    // Bill Date aur Bill No ko bhi sync karein taaki backup fresh rahe
+    const dateInput = document.getElementById('billDate');
+    if(dateInput) dateInput.setAttribute('value', dateInput.value);
+    
+    const noInput = document.getElementById('billNo');
+    if(noInput) noInput.setAttribute('value', noInput.value);
+
+    let fullHTML = document.documentElement.outerHTML;
+    let updated = fullHTML.replace(/let masterData = \[.*?\];/, `let masterData = ${JSON.stringify(masterData)};`);
+    updated = updated.replace(/let trashData = \[.*?\];/, `let trashData = ${JSON.stringify(trashData)};`);
+    
+    return updated;
+}
+
 
     function getFileName() {
         let d = new Date();
@@ -432,7 +492,14 @@
 
     function removeLastRow() { if(document.getElementById('itemsTable').rows.length > 1) { document.getElementById('itemsTable').deleteRow(-1); calculate(); } }
     function resetForm() { document.getElementById('custName').value = ""; document.getElementById('itemsTable').innerHTML = ""; addNewRow(); calculate(); setNextBillNo(); }
-    function setNextBillNo() { let max = Math.max(132, ...masterData.map(b => parseInt(b.no) || 0)); document.getElementById('billNo').value = max + 1; adjustWidth(document.getElementById('billNo')); }
+    function setNextBillNo() { 
+    // Agar history khali hai toh 0 se shuru karega (+1 hokar 1 banega)
+    // Warna history mein se sabse bada number dhoondhega
+    let max = masterData.length > 0 ? Math.max(...masterData.map(b => parseInt(b.no) || 0)) : 0; 
+    
+    document.getElementById('billNo').value = max + 1; 
+    adjustWidth(document.getElementById('billNo')); 
+}
     function adjustWidth(el) { el.style.width = (el.value.length + 1.5) + "ch"; }
     function autoSlash(el) {
     // कर्सर की वर्तमान स्थिति (position) को सेव करें
@@ -482,6 +549,17 @@
         } 
     }
     document.querySelector('.shop-name').addEventListener('input', syncSignature);
+
+function restoreAllTrash() {
+    if (trashData.length === 0) return;
+    if (confirm("Restore all bills from trash to history?")) {
+        masterData = [...masterData, ...trashData];
+        trashData = [];
+        sortMasterData();
+        saveAll();
+    }
+}
+
 </script>
 
 
