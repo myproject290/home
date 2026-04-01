@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Annual Result | GPS Sukrehar</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #7c3aed;
+            --success: #059669;
+            --text-dark: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #ffffff;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            padding: 0;
+        }
+
+        .container {
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            position: relative;
+            margin-top: 50px;
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 8px;
+            background: linear-gradient(to right, #f43f5e, #fbbf24, #10b981, #3b82f6);
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+            background: linear-gradient(to right, #4f46e5, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        /* School Name - Bada Font */
+        h2 {
+            font-size: 1.6rem; /* Size badha diya hai */
+            margin-bottom: 10px;
+            font-weight: 800;
+            line-height: 1.2;
+            color: #0369a1; 
+        }
+
+        .address-line {
+            display: block;
+            font-size: 0.9rem;
+            color: #d97706;
+            font-weight: 600;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #334155;
+            font-size: 14px;
+        }
+
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            color: var(--text-dark);
+            background-color: #f8fafc;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select:focus {
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        }
+
+        #resultArea {
+            margin-top: 30px;
+            padding: 25px;
+            background: #f1f5f9;
+            border-radius: 15px;
+            display: none;
+            border: 1px solid var(--border-color);
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .result-text {
+            font-size: 18px;
+            color: var(--text-dark);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .download-btn {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(to right, #10b981, #059669);
+            color: white;
+            padding: 14px 28px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.2);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3);
+        }
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #94a3b8;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Annual Result</h1>
+    <h2>GPS Sukrehar</h2>
+    <span class="address-line">Education Block Nagrota Bagwan, Distt. Kangra (HP)</span>
+    
+    <div class="form-group">
+        <label>   (Select Class)</label>
+        <select id="classSelect" onchange="updateNames()">
+            <option value="">-- Choose Class --</option>
+            <option value="1">Class 1</option>
+            <option value="2">Class 2</option>
+            <option value="4">Class 4</option>
+            <option value="5">Class 5</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>   (Select Name)</label>
+        <select id="nameSelect" onchange="autoShowResult()">
+            <option value="">-- Select Class First --</option>
+        </select>
+    </div>
+
+    <div id="resultArea"></div>
+
+    <footer>© 2026 GPS Sukrehar | Digital Portal</footer>
+</div>
+
+<script>
+    const studentData = [
+        {class: "2", name: "Advik", id: "1sKr-lbrQn_MrgpwcFZrA-ykMUKb-Jwui"},
+        {class: "4", name: "Akshita", id: "1tz9jRHNTUIHyUo7Rh5xKx2tESMLxU9xx"},
+        {class: "4", name: "Anshit", id: "1GOmUFIaygGIoCVxuKsi5r6pUeQghjgBp"},
+        {class: "4", name: "Ishani", id: "15G72td06VuNT6J4kCLQX5i3XHobmpYSx"},
+        {class: "2", name: "Ishi", id: "1hDVX7qbUitYkk3mt-sE3vxcCbyOUvEm4"},
+        {class: "2", name: "Mahi", id: "1BOXwWz7rHfVfN0befVShb0NLnTLTtdTv"},
+        {class: "1", name: "Ranjna", id: "16i4IF9YJ5xBsBcvJ8hGtW2j9T7J0l1z_"},
+        {class: "4", name: "Sanjana", id: "1Vort_UiWIzrfjE49EAhBtmnx4Ta7G5k8"},
+        {class: "2", name: "Shiva", id: "1LyKcRkl8so7ihDZco11svpI8p9hEG7Lj"},
+        {class: "2", name: "Sriya", id: "1YHOb1SWAO_SZxtIYVZzqjjO4-kizT-Gb"},
+        {class: "2", name: "Vansh", id: "1nGNRdltO-e0O97wpkyXEAJLRwCxWW0QQ"},
+        {class: "5", name: "Siya", id: "1FDWJiUxlXcYSZia8z5drRK-f-PlL9iyE"},
+        {class: "5", name: "Tanvi", id: "1b5C4pu6iY7RgYm7hucwzRC6_h1Ajyno6"}
+    ];
+
+    function updateNames() {
+        const classVal = document.getElementById('classSelect').value;
+        const nameDropdown = document.getElementById('nameSelect');
+        const resArea = document.getElementById('resultArea');
+        
+        nameDropdown.innerHTML = '<option value="">-- Choose Name --</option>';
+        resArea.style.display = "none";
+        
+        if(classVal) {
+            const filtered = studentData.filter(s => s.class === classVal);
+            if(filtered.length === 0) {
+                alert("Invalid Input! Is class ka data abhi upload nahi hua hai.");
+            } else {
+                filtered.forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.id;
+                    opt.textContent = s.name;
+                    nameDropdown.appendChild(opt);
+                });
+            }
+        }
+    }
+
+    function autoShowResult() {
+        const classVal = document.getElementById('classSelect').value;
+        const nameId = document.getElementById('nameSelect').value;
+        const resArea = document.getElementById('resultArea');
+
+        if (!nameId || !classVal) {
+            resArea.style.display = "none";
+            return;
+        }
+
+        const student = studentData.find(s => s.id === nameId);
+        
+        if(student) {
+            const dLink = `https://drive.google.com/uc?export=download&id=${student.id}`;
+            resArea.style.display = "block";
+            resArea.innerHTML = `
+                <span class="result-text">Result ready for: <br>${student.name}, Class ${student.class}</span>
+                <a href="${dLink}" class="download-btn" target="_blank"> Download Report Card</a>
+            `;
+        }
+    }
+</script>
+
+</body>
+</html>
