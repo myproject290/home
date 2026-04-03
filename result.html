@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Result Portal</title>
+    <title>Result Portal - 2026</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2275%22 fill=%22white%22 font-family=%22Verdana, sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>R</text></svg>">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
         h2 { color: #2c3e50; margin-bottom: 25px; font-size: 1.4rem; }
         input { width: 90%; padding: 12px; border: 2px solid #3498db; border-radius: 8px; font-size: 16px; outline: none; margin-bottom: 5px; }
+        input:focus { border-color: #2ecc71; }
         #errorMsg { color: #e74c3c; font-size: 14px; margin-top: 10px; font-weight: bold; display: none; text-align: center; }
         #result { display: none; margin-top: 25px; background: #fafafa; padding: 15px; border-radius: 10px; border-top: 4px solid #3498db; }
         .age-header { background: #e67e22; color: white; padding: 10px; border-radius: 8px; font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; display: block; }
@@ -22,7 +23,7 @@
 
 <div class="card">
     <h2>Dr. B.R. Ambedkar Annual Scholarship Examination Result-2026</h2>
-    <input type="text" id="rollNo" placeholder="रोल नंबर टाइप करें..." oninput="liveSearch()">
+    <input type="text" id="rollNo" placeholder="अपना रोल नंबर यहाँ लिखें..." oninput="liveSearch()">
     
     <div id="errorMsg">माफ़ करें, यह रोल नंबर रिकॉर्ड में नहीं है।</div>
 
@@ -36,18 +37,31 @@
 </div>
 
 <script>
+    // मूल लिंक
     const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv&sheet=Sheet2";
     let cachedData = null;
 
     async function loadSheetData() {
         try {
-            const resp = await fetch(sheetLink);
+            // "Cache Buster" जोड़ना: हर बार एक नया टाइमस्टैम्प लिंक में जुड़ता है 
+            // जिससे ब्राउज़र पुराना डेटा दिखाने के बजाय सर्वर से नया डेटा लेता है।
+            const timestamp = new Date().getTime();
+            const freshLink = `${sheetLink}&cacheBust=${timestamp}`;
+            
+            const resp = await fetch(freshLink);
             const csvData = await resp.text();
-            cachedData = csvData.split('\n').map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
+            
+            // CSV को Array में बदलना
+            cachedData = csvData.split('\n').map(r => 
+                r.split(',').map(c => c.replace(/"/g, '').trim())
+            );
+            console.log("Fresh data loaded from Google Sheets");
         } catch (err) {
-            console.error("Data load error");
+            console.error("Data load error:", err);
         }
     }
+
+    // पेज खुलते ही डेटा लोड करें
     loadSheetData();
 
     function liveSearch() {
@@ -63,13 +77,12 @@
 
         if (!cachedData) return;
 
-        // User input se zeros hatana
+        // इनपुट से जीरो हटाना (e.g. 001 को 1 बनाना)
         const cleanInput = parseInt(rawInput, 10).toString();
 
-        // Sheet data mein search karte waqt bhi zeros hatana
         const student = cachedData.find(row => {
             if (!row[0]) return false;
-            // Sheet ke roll no (row[0]) ko bhi integer mein convert karke match karein
+            // शीट के रोल नंबर से भी जीरो हटाकर तुलना करना
             return parseInt(row[0], 10).toString() === cleanInput;
         });
 
