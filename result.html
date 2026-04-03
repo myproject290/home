@@ -8,17 +8,28 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        h2 { color: #2c3e50; margin-bottom: 25px; }
+        h2 { color: #2c3e50; margin-bottom: 25px; font-size: 1.4rem; }
         input { width: 90%; padding: 12px; border: 2px solid #3498db; border-radius: 8px; font-size: 16px; outline: none; margin-bottom: 5px; }
         
         #errorMsg { color: #e74c3c; font-size: 14px; margin-top: 10px; font-weight: bold; display: none; text-align: center; }
         
         #result { display: none; margin-top: 25px; background: #fafafa; padding: 15px; border-radius: 10px; border-top: 4px solid #3498db; }
         
-        /* पुराने लेबल्स स्टाइल को वापस लाया गया, लेकिन आउटपुट लेफ्ट अलाइन है */
+        /* Age Group Special Style */
+        .age-header { 
+            background: #e67e22; /* Vibrant Orange */
+            color: white; 
+            padding: 10px; 
+            border-radius: 8px; 
+            font-size: 1.3rem; 
+            font-weight: bold; 
+            margin-bottom: 15px;
+            display: block;
+        }
+
         .row { display: flex; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
-        .label { font-weight: bold; color: #7f8c8d; width: 120px; flex-shrink: 0; } /* लेबल की चौड़ाई फिक्स की ताकि आउटपुट एक सीध में रहें */
-        .val { color: #2c3e50; font-weight: 500; flex-grow: 1; text-align: left; }
+        .label { font-weight: bold; color: #7f8c8d; width: 130px; flex-shrink: 0; font-size: 0.9rem; }
+        .val { color: #2c3e50; font-weight: 500; flex-grow: 1; text-align: left; font-size: 0.95rem; }
     </style>
 </head>
 <body>
@@ -30,6 +41,8 @@
     <div id="errorMsg">माफ़ करें, यह रोल नंबर रिकॉर्ड में नहीं है।</div>
 
     <div id="result">
+        <div id="rAge" class="age-header"></div>
+
         <div class="row"><span class="label">नाम:</span> <span id="rName" class="val"></span></div>
         <div class="row"><span class="label">पिता का नाम:</span> <span id="rFather" class="val"></span></div>
         <div class="row"><span class="label">प्राप्तांक:</span> <span id="rMarks" class="val"></span></div>
@@ -38,7 +51,7 @@
 </div>
 
 <script>
-    const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv";
+    const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv&sheet=Sheet2";
     let cachedData = null;
 
     async function loadSheetData() {
@@ -68,10 +81,12 @@
         const student = cachedData.find(row => row[0] === input);
 
         if (student) {
-            document.getElementById('rName').innerText = student[1] || "---";
-            document.getElementById('rFather').innerText = student[2] || "---";
-            document.getElementById('rMarks').innerText = student[3] || "0";
-            document.getElementById('rPos').innerText = student[4] || "---";
+            // Updating the fields
+            document.getElementById('rAge').innerText    = student[5] ? "आयु वर्ग: " + student[5] : "---"; 
+            document.getElementById('rName').innerText   = student[1] || "---"; 
+            document.getElementById('rFather').innerText = student[2] || "---"; 
+            document.getElementById('rMarks').innerText  = student[6] || "0";   
+            document.getElementById('rPos').innerText    = student[7] || "---"; 
             
             errorDiv.style.display = "none";
             resDiv.style.display = "block";
