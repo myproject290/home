@@ -17,6 +17,9 @@
         .row { display: flex; padding: 10px 0; border-bottom: 1px solid #eee; text-align: left; }
         .label { font-weight: bold; color: #7f8c8d; width: 130px; flex-shrink: 0; font-size: 0.9rem; }
         .val { color: #2c3e50; font-weight: 500; flex-grow: 1; text-align: left; font-size: 0.95rem; }
+        
+        /* New style for Absent text */
+        .absent-text { color: #e74c3c !important; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -61,6 +64,7 @@
         const rawInput = document.getElementById('rollNo').value.trim();
         const resDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
+        const rMarks = document.getElementById('rMarks');
 
         if (!rawInput) {
             resDiv.style.display = "none";
@@ -70,7 +74,6 @@
 
         if (!cachedData) return;
 
-        // Match numeric values (so '1' matches '001')
         const inputNum = parseInt(rawInput, 10);
 
         const student = cachedData.find(row => {
@@ -84,19 +87,19 @@
 
             let displayMarks, displayRank;
 
-            // --- TRIPLE CHECK LOGIC ---
-            // 1. If column explicitly says "Absent"
-            // 2. OR if column is empty but student exists
-            // 3. OR if Rank is set to "Absent" or "Not Applicable" in sheet
+            // Reset red color class by default
+            rMarks.classList.remove('absent-text');
+
             if (marksVal.toLowerCase() === "absent" || marksVal === "" || rankVal.toLowerCase() === "absent") {
                 displayMarks = "Absent";
                 displayRank = "Not Applicable";
+                // Apply red color class
+                rMarks.classList.add('absent-text');
             } else {
                 displayMarks = marksVal;
                 displayRank = rankVal || "---";
             }
 
-            // Update UI
             document.getElementById('rRoll').innerText   = student[0] || "---"; 
             document.getElementById('rAge').innerText    = student[5] ? "आयु वर्ग: " + student[5] : "---"; 
             document.getElementById('rName').innerText   = student[1] || "---"; 
