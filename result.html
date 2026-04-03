@@ -29,6 +29,7 @@
 
     <div id="result">
         <div id="rAge" class="age-header"></div>
+        <div class="row"><span class="label">रोल नंबर:</span> <span id="rRoll" class="val"></span></div>
         <div class="row"><span class="label">नाम:</span> <span id="rName" class="val"></span></div>
         <div class="row"><span class="label">पिता का नाम:</span> <span id="rFather" class="val"></span></div>
         <div class="row"><span class="label">प्राप्तांक:</span> <span id="rMarks" class="val"></span></div>
@@ -37,31 +38,23 @@
 </div>
 
 <script>
-    // मूल लिंक
     const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv&sheet=Sheet2";
     let cachedData = null;
 
     async function loadSheetData() {
         try {
-            // "Cache Buster" जोड़ना: हर बार एक नया टाइमस्टैम्प लिंक में जुड़ता है 
-            // जिससे ब्राउज़र पुराना डेटा दिखाने के बजाय सर्वर से नया डेटा लेता है।
             const timestamp = new Date().getTime();
             const freshLink = `${sheetLink}&cacheBust=${timestamp}`;
-            
             const resp = await fetch(freshLink);
             const csvData = await resp.text();
-            
-            // CSV को Array में बदलना
             cachedData = csvData.split('\n').map(r => 
                 r.split(',').map(c => c.replace(/"/g, '').trim())
             );
-            console.log("Fresh data loaded from Google Sheets");
         } catch (err) {
             console.error("Data load error:", err);
         }
     }
 
-    // पेज खुलते ही डेटा लोड करें
     loadSheetData();
 
     function liveSearch() {
@@ -77,16 +70,16 @@
 
         if (!cachedData) return;
 
-        // इनपुट से जीरो हटाना (e.g. 001 को 1 बनाना)
         const cleanInput = parseInt(rawInput, 10).toString();
 
         const student = cachedData.find(row => {
             if (!row[0]) return false;
-            // शीट के रोल नंबर से भी जीरो हटाकर तुलना करना
             return parseInt(row[0], 10).toString() === cleanInput;
         });
 
         if (student) {
+            // रोल नंबर अपडेट करने वाली लाइन
+            document.getElementById('rRoll').innerText   = student[0] || "---"; 
             document.getElementById('rAge').innerText    = student[5] ? "आयु वर्ग: " + student[5] : "---"; 
             document.getElementById('rName').innerText   = student[1] || "---"; 
             document.getElementById('rFather').innerText = student[2] || "---"; 
