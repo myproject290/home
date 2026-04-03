@@ -15,9 +15,8 @@
         
         #result { display: none; margin-top: 25px; background: #fafafa; padding: 15px; border-radius: 10px; border-top: 4px solid #3498db; }
         
-        /* Age Group Special Style */
         .age-header { 
-            background: #e67e22; /* Vibrant Orange */
+            background: #e67e22; 
             color: white; 
             padding: 10px; 
             border-radius: 8px; 
@@ -42,7 +41,6 @@
 
     <div id="result">
         <div id="rAge" class="age-header"></div>
-
         <div class="row"><span class="label">नाम:</span> <span id="rName" class="val"></span></div>
         <div class="row"><span class="label">पिता का नाम:</span> <span id="rFather" class="val"></span></div>
         <div class="row"><span class="label">प्राप्तांक:</span> <span id="rMarks" class="val"></span></div>
@@ -54,34 +52,41 @@
     const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv&sheet=Sheet2";
     let cachedData = null;
 
+    // Data Load Function
     async function loadSheetData() {
         try {
             const resp = await fetch(sheetLink);
             const csvData = await resp.text();
+            // CSV parsing logic
             cachedData = csvData.split('\n').map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
         } catch (err) {
-            console.error("Data load error");
+            console.error("Data load error", err);
         }
     }
     loadSheetData();
 
     function liveSearch() {
-        const input = document.getElementById('rollNo').value.trim();
+        const rawInput = document.getElementById('rollNo').value.trim();
         const resDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
 
-        if (!input) {
+        // Input empty hai toh result chhupao
+        if (!rawInput) {
             resDiv.style.display = "none";
             errorDiv.style.display = "none";
             return;
         }
 
-        if (!cachedData) return;
+        // Convert input (like 001 to 1) for matching
+        const searchInput = parseInt(rawInput, 10).toString();
 
-        const student = cachedData.find(row => row[0] === input);
+        if (!cachedData || searchInput === "NaN") return;
+
+        // Sheet data mein search karein (Column 0 is Roll No)
+        const student = cachedData.find(row => row[0] === searchInput);
 
         if (student) {
-            // Updating the fields
+            // Data fill karein
             document.getElementById('rAge').innerText    = student[5] ? "आयु वर्ग: " + student[5] : "---"; 
             document.getElementById('rName').innerText   = student[1] || "---"; 
             document.getElementById('rFather').innerText = student[2] || "---"; 
@@ -91,6 +96,7 @@
             errorDiv.style.display = "none";
             resDiv.style.display = "block";
         } else {
+            // Agar match nahi mila
             resDiv.style.display = "none";
             errorDiv.style.display = "block";
         }
