@@ -35,7 +35,7 @@
             margin-bottom: 15px; 
             box-sizing: border-box;
         }
-        input:focus { border-color: #2ecc71; }
+        input:focus { border-color: #2ecc71; box-shadow: 0 0 8px rgba(46, 204, 113, 0.2); }
 
         .btn-group {
             display: flex;
@@ -74,7 +74,7 @@
 <div class="card">
     <h2>Dr. B.R. Ambedkar Annual Scholarship Examination Result-2026</h2>
     
-    <input type="text" id="rollNo" placeholder="अपना रोल नंबर यहाँ लिखें...">
+    <input type="text" id="rollNo" placeholder="अपना रोल नंबर यहाँ लिखें..." autofocus>
     
     <div class="btn-group">
         <button class="btn-search" onclick="getResult()">Get Result</button>
@@ -97,14 +97,17 @@
     const sheetLink = "https://docs.google.com/spreadsheets/d/1EdPnAbPHI8GD5-28u2mbb-OnsYZN5O2-guBSGljBRHQ/gviz/tq?tqx=out:csv&sheet=Sheet2";
     let cachedData = null;
 
-    // Load data from Google Sheets immediately
+    // Focus input on load
+    window.onload = () => {
+        document.getElementById('rollNo').focus();
+    };
+
     async function loadSheetData() {
         try {
             const timestamp = new Date().getTime();
             const freshLink = `${sheetLink}&cacheBust=${timestamp}`;
             const resp = await fetch(freshLink);
             const csvData = await resp.text();
-            // Simple CSV parser
             cachedData = csvData.split('\n').map(r => 
                 r.split(',').map(c => c.replace(/"/g, '').trim())
             );
@@ -127,16 +130,12 @@
         }
 
         if (!cachedData) {
-            alert("डेटा अभी लोड हो रहा है, कृपया एक सेकंड रुकें।");
+            alert("डेटा अभी लोड हो रहा है, कृपया प्रतीक्षा करें।");
             return;
         }
 
         const inputNum = parseInt(rawInput, 10);
-
-        const student = cachedData.find(row => {
-            if (!row[0]) return false;
-            return parseInt(row[0], 10) === inputNum;
-        });
+        const student = cachedData.find(row => row[0] && parseInt(row[0], 10) === inputNum);
 
         if (student) {
             let marksVal = student[6] ? student[6].toString().trim() : "";
@@ -173,7 +172,6 @@
         document.getElementById('rollNo').focus();
     }
 
-    // Allow pressing "Enter" key to search
     document.getElementById('rollNo').addEventListener('keypress', function (e) {
         if (e.key === 'Enter') {
             getResult();
