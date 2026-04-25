@@ -4,14 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Result Portal 2026</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2225%22 fill=%22%23007bff%22/><text x=%2250%22 y=%2255%22 font-size=%2275%22 fill=%22white%22 font-family=%22Verdana, sans-serif%22 font-weight=%22900%22 text-anchor=%22middle%22 dominant-baseline=%22central%22>R</text></svg>">
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; display: flex; justify-content: center; padding: 20px; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center; }
-        h2 { color: #2c3e50; margin-bottom: 25px; font-size: 1.4rem; line-height: 1.4; }
+        h2 { color: #2c3e50; margin-bottom: 25px; font-size: 1.4rem; }
         input { width: 100%; padding: 12px; border: 2px solid #3498db; border-radius: 8px; font-size: 16px; outline: none; margin-bottom: 15px; box-sizing: border-box; }
+        input:disabled { background-color: #f0f0f0; color: #999; }
         .btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
         button { flex: 1; padding: 12px; border: none; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:disabled { background-color: #bdc3c7 !important; cursor: not-allowed; }
         .btn-search { background-color: #3498db; color: white; }
         .btn-clear { background-color: #bdc3c7; color: #2c3e50; }
         #errorMsg { color: #e74c3c; font-size: 14px; margin-top: 10px; font-weight: bold; display: none; }
@@ -21,17 +22,15 @@
         .label { font-weight: bold; color: #7f8c8d; width: 110px; flex-shrink: 0; font-size: 0.9rem; }
         .val { color: #2c3e50; font-weight: 500; flex-grow: 1; font-size: 0.95rem; }
         .rank-highlight { color: #2980b9; font-weight: bold; font-size: 1.1rem; }
-        .out-of-text { color: #7f8c8d; font-size: 0.9rem; font-weight: normal; }
-        .absent-text { color: #e74c3c !important; font-weight: bold; }
     </style>
 </head>
 <body>
 
 <div class="card">
     <h2>Dr. B.R. Ambedkar Annual Scholarship Examination Result-2026</h2>
-    <input type="text" id="rollNo" placeholder="रोल नंबर दर्ज करें...">
+    <input type="text" id="rollNo" placeholder="लोड हो रहा है..." disabled oninput="enableButton()">
     <div class="btn-group">
-        <button class="btn-search" onclick="getResult()">Get Result</button>
+        <button id="searchBtn" class="btn-search" onclick="getResult()">Get Result</button>
         <button class="btn-clear" onclick="clearResult()">Clear</button>
     </div>
     <div id="errorMsg">रिकॉर्ड नहीं मिला। कृपया सही रोल नंबर डालें।</div>
@@ -41,12 +40,7 @@
         <div class="row"><span class="label">नाम:</span> <span id="rName" class="val"></span></div>
         <div class="row"><span class="label">पिता का नाम:</span> <span id="rFather" class="val"></span></div>
         <div class="row"><span class="label">प्राप्तांक:</span> <span id="rMarks" class="val"></span></div>
-        <div class="row">
-            <span class="label">स्थान (Rank):</span> 
-            <span class="val">
-                <span id="rPos" class="rank-highlight"></span>
-            </span>
-        </div>
+        <div class="row"><span class="label">स्थान (Rank):</span> <span class="val"><span id="rPos" class="rank-highlight"></span></span></div>
     </div>
 </div>
 
@@ -56,68 +50,46 @@
 
     async function loadSheetData() {
         try {
-            const cacheBuster = "&cb=" + new Date().getTime();
-            const resp = await fetch(baseSheetLink + cacheBuster);
+            const resp = await fetch(baseSheetLink + "&cb=" + new Date().getTime());
             const csvData = await resp.text();
-            
-            cachedData = csvData.split('\n').map(r => 
-                r.split(',').map(c => c.replace(/"/g, '').trim())
-            );
-            console.log("Data Loaded Successfully");
+            cachedData = csvData.split('\n').map(r => r.split(',').map(c => c.replace(/"/g, '').trim()));
+            const input = document.getElementById('rollNo');
+            input.disabled = false;
+            input.placeholder = "रोल नंबर दर्ज करें...";
         } catch (err) {
-            console.error("Error loading data:", err);
+            document.getElementById('rollNo').placeholder = "एरर!";
         }
     }
 
-    loadSheetData();
+    // नया फंक्शन जो टाइप करते ही बटन एक्टिव कर देगा
+    function enableButton() {
+        document.getElementById('searchBtn').disabled = false;
+    }
 
     function getResult() {
+        const btn = document.getElementById('searchBtn');
         const rawInput = document.getElementById('rollNo').value.trim();
         const resDiv = document.getElementById('result');
         const errorDiv = document.getElementById('errorMsg');
 
-        if (!rawInput) return;
-        if (!cachedData) { alert("डेटा लोड हो रहा है..."); return; }
+        if (!rawInput || !cachedData) return;
+
+        // बटन को डिसेबल (ग्रे) कर दिया
+        btn.disabled = true;
 
         const inputNum = parseInt(rawInput, 10);
         const student = cachedData.find(row => parseInt(row[0], 10) === inputNum);
 
         if (student) {
-            const currentAgeGroup = student[5] ? student[5].trim() : "";
-            let marksVal = student[6] ? student[6].toString().trim() : "";
-            let rankVal = student[7] ? student[7].toString().trim() : "";
-            
-            // आयु वर्ग के अनुसार छात्रों की कुल संख्या गिनना
-            const totalInGroup = cachedData.filter(row => {
-                const roll = parseInt(row[0], 10);
-                const ageGroup = row[5] ? row[5].trim() : "";
-                // केवल उसी आयु वर्ग के वैलिड छात्रों को गिनें
-                return !isNaN(roll) && roll > 0 && ageGroup === currentAgeGroup && row[1] && row[1].trim() !== "";
-            }).length;
-
-            document.getElementById('rRoll').innerText   = student[0]; 
-            document.getElementById('rName').innerText   = student[1]; 
+            document.getElementById('rRoll').innerText = student[0];
+            document.getElementById('rName').innerText = student[1];
             document.getElementById('rFather').innerText = student[2];
-            document.getElementById('rAge').innerText    = "आयु वर्ग: " + (currentAgeGroup || "---");
-
-            if (marksVal.toLowerCase() === "absent" || marksVal === "") {
-                document.getElementById('rMarks').innerText = "Absent";
-                document.getElementById('rMarks').className = "val absent-text";
-                document.getElementById('rPos').innerText = "Not Applicable";
-            } else {
-                document.getElementById('rMarks').innerText = marksVal;
-                document.getElementById('rMarks').className = "val";
-                
-                // Rank formatting: "8 out of 90" (अगर ग्रुप 14+ है) या "8 out of 80" (अगर ग्रुप Under 14 है)
-                if (rankVal && !isNaN(parseInt(rankVal, 10))) {
-                    document.getElementById('rPos').innerHTML = `${rankVal} <span class="out-of-text">out of ${totalInGroup}</span>`;
-                } else {
-                    document.getElementById('rPos').innerText = rankVal || "---";
-                }
-            }
+            document.getElementById('rAge').innerText = "आयु वर्ग: " + (student[5] || "---");
+            document.getElementById('rMarks').innerText = student[6] || "---";
+            document.getElementById('rPos').innerText = student[7] || "---";
             
-            errorDiv.style.display = "none";
             resDiv.style.display = "block";
+            errorDiv.style.display = "none";
         } else {
             resDiv.style.display = "none";
             errorDiv.style.display = "block";
@@ -128,10 +100,11 @@
         document.getElementById('rollNo').value = "";
         document.getElementById('result').style.display = "none";
         document.getElementById('errorMsg').style.display = "none";
+        document.getElementById('searchBtn').disabled = false; // क्लियर करते ही बटन एक्टिव
         document.getElementById('rollNo').focus();
     }
 
-    document.getElementById('rollNo').addEventListener('keypress', (e) => { if (e.key === 'Enter') getResult(); });
+    loadSheetData();
 </script>
 </body>
 </html>
