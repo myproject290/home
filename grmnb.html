@@ -5,13 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Community Contribution Record</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
     <style>
         body { background-color: #f4f7f9; font-family: 'Segoe UI', sans-serif; }
         .header { background: #1a237e; color: white; padding: 40px 0; text-align: center; margin-bottom: 20px; border-bottom: 5px solid #fdbb2d; }
         .stats-card { background: white; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 30px; text-align: center; border-top: 4px solid #1b5e20; }
         .total-amount { font-size: 2.2rem; font-weight: 800; color: #1b5e20; }
-        .search-area { max-width: 600px; margin: 0 auto 30px; }
+        
+        /* सर्च और रिफ्रेश एरिया */
+        .search-area { max-width: 600px; margin: 0 auto 30px; display: flex; gap: 10px; }
+        .btn-refresh { border-radius: 10px; padding: 0 20px; background: #1a237e; color: white; transition: 0.3s; border: none; }
+        .btn-refresh:hover { background: #0d1442; color: white; }
+        .btn-refresh:active { transform: scale(0.95); }
+        
+        /* रोटेशन एनीमेशन */
+        .spinning { animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
         .donor-card { border: none; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: 0.3s; background: white; }
         .donor-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
         .amount { font-size: 1.6rem; font-weight: bold; color: #1b5e20; margin: 10px 0; }
@@ -22,7 +33,6 @@
         .remarks-header { font-size: 0.75rem; text-transform: uppercase; color: #9e9e9e; font-weight: bold; letter-spacing: 1px; margin-bottom: 5px; }
         .remarks-text { font-style: italic; color: #424242; font-size: 0.95rem; line-height: 1.4; }
         
-        /* ऑटो-रिफ्रेश इंडिकेटर */
         #refreshStatus { 
             position: fixed; bottom: 20px; right: 20px; 
             background: rgba(0,0,0,0.8); color: white; 
@@ -54,13 +64,16 @@
         </div>
     </div>
 
-    <div class="search-area">
+    <div class="search-area px-3">
         <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm border-0" placeholder="Search by Name or Village..." onkeyup="filterData()">
+        <button class="btn btn-refresh shadow-sm" onclick="manualRefresh()" title="Refresh Data">
+            <i id="refreshIcon" class="fas fa-sync-alt"></i>
+        </button>
     </div>
 
     <div id="loader" class="text-center my-5">
         <div class="spinner-border text-primary" role="status"></div>
-        <p class="mt-2 text-muted">Initial data fetching...</p>
+        <p class="mt-2 text-muted">Fetching data...</p>
     </div>
 
     <div class="row" id="displayArea"></div>
@@ -71,48 +84,53 @@
 
     let listData = [];
 
-    // --- डेटा लोड करने का मुख्य फंक्शन ---
+    // --- रिफ्रेश बटन के लिए फंक्शन ---
+    function manualRefresh() {
+        const icon = document.getElementById('refreshIcon');
+        icon.classList.add('spinning'); // आइकन घुमाना शुरू करें
+        loadData(true);
+    }
+
     function loadData(isAutoRefresh = false) {
         if (isAutoRefresh) {
             document.getElementById('refreshStatus').style.display = 'block';
         }
 
-        // Cache busting: हर बार ताज़ा डेटा के लिए टाइमस्टैम्प जोड़ना
         const csvUrl = baseCsvUrl + '&cacheBust=' + new Date().getTime();
 
         Papa.parse(csvUrl, {
             download: true,
             complete: function(results) {
-                // A3 से डेटा (slice 2) और जहाँ नाम (B) मौजूद हो
                 listData = results.data.slice(2).filter(row => row[1] && row[1].trim() !== ""); 
                 
                 calculateTotal(listData);
                 renderItems(listData);
                 
                 document.getElementById('loader').style.display = 'none';
+                
+                // एनीमेशन और स्टेटस हटाना
                 setTimeout(() => {
                     document.getElementById('refreshStatus').style.display = 'none';
-                }, 1000);
+                    document.getElementById('refreshIcon').classList.remove('spinning');
+                }, 800);
             },
             error: function() {
-                console.error("Data could not be loaded.");
-                document.getElementById('refreshStatus').innerHTML = "Update failed. Retrying...";
+                alert("Data update failed. Please check your internet.");
+                document.getElementById('refreshIcon').classList.remove('spinning');
             }
         });
     }
 
-    // --- कुल राशि का हिसाब ---
     function calculateTotal(data) {
         let total = 0;
         data.forEach(row => {
-            let amt = parseFloat(row[3]); // Column D
+            let amt = parseFloat(row[3]); 
             if (!isNaN(amt)) total += amt;
         });
         document.getElementById('totalSumDisplay').innerText = "₹" + total.toLocaleString('en-IN');
         document.getElementById('memberCount').innerText = data.length;
     }
 
-    // --- लिस्ट दिखाने का फंक्शन ---
     function renderItems(data) {
         const area = document.getElementById('displayArea');
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
@@ -126,10 +144,9 @@
             const date = row[5] || "N/A";
             const remarks = row[6] || "---";
 
-            // सर्च फ़िल्टर
             if (JSON.stringify(row).toLowerCase().includes(searchTerm)) {
                 const cardHtml = `
-                    <div class="col-md-6 col-lg-4 mb-4 item-container">
+                    <div class="col-md-6 col-lg-4 mb-4">
                         <div class="card donor-card h-100 p-4">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h4 class="text-dark mb-0 fw-bold">${name}</h4>
@@ -143,7 +160,7 @@
                                     <div class="info-value"><strong>${month}</strong></div>
                                 </div>
                                 <div class="col-6 text-end">
-                                    <div class="info-label">Date of Transaction</div>
+                                    <div class="info-label">Date</div>
                                     <div class="info-value">${date}</div>
                                 </div>
                             </div>
@@ -163,11 +180,8 @@
         renderItems(listData);
     }
 
-    // --- इनिशियलाइजेशन ---
     window.onload = function() {
         loadData();
-
-        // हर 2 मिनट (120,000 मिलीसेकंड) में ऑटो-रिफ्रेश
         setInterval(function() {
             loadData(true);
         }, 120000); 
