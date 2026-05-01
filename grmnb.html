@@ -70,7 +70,7 @@
                         <input type="number" name="amount" class="form-control" placeholder="000" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label fw-bold">Date</label>
+                        <label class="form-label fw-bold">Date of transaction</label>
                         <input type="date" name="date" class="form-control" id="todayDate">
                     </div>
                 </div>
@@ -98,7 +98,12 @@
                 </div>
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold">Remarks</label>
+                    <label class="form-label fw-bold">Mobile no.</label>
+                    <input type="tel" name="mobile" class="form-control" placeholder="10 digit mobile number" pattern="[0-9]{10}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Remarks (if any)</label>
                     <input type="text" name="remarks" class="form-control" placeholder="Optional notes">
                 </div>
 
@@ -123,7 +128,6 @@
         const now = new Date();
         document.getElementById('todayDate').valueAsDate = now;
 
-        // Sabhi months ko uncheck karne ke liye:
         document.querySelectorAll('input[name="month"]').forEach(cb => {
             cb.checked = false;
         });
