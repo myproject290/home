@@ -17,8 +17,15 @@
         h2 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             font-size: 26px;
+        }
+        .statement-duration {
+            text-align: center;
+            color: #555;
+            font-size: 15px;
+            margin-bottom: 20px;
+            font-weight: bold;
         }
         .table-container {
             width: 100%;
@@ -250,6 +257,11 @@
                 padding: 0 !important;
                 width: 100% !important;
             }
+            .statement-duration {
+                color: #000 !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
             .table-scroll-container {
                 overflow-x: visible !important;
             }
@@ -345,6 +357,7 @@
 
 <div class="table-container">
     <h2>Due-Drawn Statement</h2>
+    <div id="statementDuration" class="statement-duration"></div>
 
     <div class="controls-container no-print">
         <div class="control-group">
@@ -470,6 +483,40 @@
 
 <script>
     const monthsList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    const daRates = [
+        { y: 2016, m: 6, rate: 2 },
+        { y: 2017, m: 0, rate: 4 },
+        { y: 2017, m: 6, rate: 5 },
+        { y: 2018, m: 0, rate: 7 },
+        { y: 2018, m: 6, rate: 9 },
+        { y: 2019, m: 0, rate: 12 },
+        { y: 2019, m: 6, rate: 17 },
+        { y: 2021, m: 6, rate: 31 },
+        { y: 2022, m: 0, rate: 34 },
+        { y: 2022, m: 6, rate: 38 },
+        { y: 2023, m: 0, rate: 42 },
+        { y: 2023, m: 6, rate: 46 },
+        { y: 2024, m: 0, rate: 50 },
+        { y: 2024, m: 6, rate: 53 },
+        { y: 2025, m: 0, rate: 55 },
+        { y: 2025, m: 6, rate: 58 },
+        { y: 2026, m: 0, rate: 60 }
+    ];
+
+    function getApplicableDa(m, y) {
+        let targetTotalMonths = y * 12 + m;
+        let applicableRate = 2;
+        for (let item of daRates) {
+            let itemTotalMonths = item.y * 12 + item.m;
+            if (targetTotalMonths >= itemTotalMonths) {
+                applicableRate = item.rate;
+            } else {
+                break;
+            }
+        }
+        return applicableRate;
+    }
 
     function generateMonthOptions(selectedM) {
         let options = '';
@@ -626,9 +673,11 @@
         
         let currentDueBP = 0;
         let currentDrawnBP = 0;
-        let currentDueDaPct = 2;
         
         let lastIncYear = (incrementMonth !== -1 && startM < incrementMonth) ? startY - 1 : startY;
+
+        let currentDueDaPct = getApplicableDa(startM, startY);
+        let manualOverrideActive = false;
 
         rows.forEach((tr, idx) => {
             let totalMonths = startM + idx;
@@ -690,21 +739,48 @@
                 }
             }
 
+            let defaultDa = getApplicableDa(mIdx, yVal);
+
             if (tr.dataset.manualDa === "true") {
                 let val = parseFloat(dueDaPctInput.value);
                 if (!isNaN(val)) {
                     currentDueDaPct = val;
+                    manualOverrideActive = true;
                 }
             } else {
-                dueDaPctInput.value = currentDueDaPct;
+                if (!manualOverrideActive) {
+                    currentDueDaPct = defaultDa;
+                }
             }
 
+            dueDaPctInput.value = currentDueDaPct;
             drawnPctInput.value = dueDaPctInput.value;
 
             calculateRowMath(tr);
         });
 
+        updateDurationDisplay();
         updateGrandTotal();
+    }
+
+    function updateDurationDisplay() {
+        const rows = document.querySelectorAll('#tableBody tr');
+        const durationEl = document.getElementById('statementDuration');
+        if (!durationEl || rows.length === 0) return;
+
+        const firstRow = rows[0];
+        const lastRow = rows[rows.length - 1];
+
+        const firstMonth = firstRow.querySelector('.month-label')?.textContent || '';
+        const firstYear = firstRow.querySelector('.year-label')?.textContent || '';
+        const lastMonth = lastRow.querySelector('.month-label')?.textContent || '';
+        const lastYear = lastRow.querySelector('.year-label')?.textContent || '';
+
+        if (firstMonth && firstYear && lastMonth && lastYear) {
+            durationEl.textContent = `(${firstMonth} ${firstYear} to ${lastMonth} ${lastYear})`;
+        } else {
+            durationEl.textContent = '';
+        }
     }
 
     function calculateRow(element) {
