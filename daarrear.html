@@ -59,9 +59,12 @@
             margin-bottom: 0.375rem;
         }
 
-        header p {
-            color: #64748b;
+        #headerPeriod {
+            color: #475569;
             font-size: 0.95rem;
+            margin-top: 0.3rem;
+            font-weight: 600;
+            display: none;
         }
 
         .title-print {
@@ -118,7 +121,6 @@
             border-color: var(--primary-color);
         }
 
-        /* Side-by-side Dropdown Group */
         .acp-select-group {
             display: flex;
             gap: 0.5rem;
@@ -383,8 +385,11 @@
                 display: inline !important;
             }
 
-            header p {
-                display: none !important;
+            #headerPeriod {
+                display: block !important;
+                font-size: 13px !important;
+                color: #334155 !important;
+                margin-top: 2px !important;
             }
 
             .card:first-of-type {
@@ -511,7 +516,7 @@
             <span class="title-web">DA Arrear Calculator</span>
             <span class="title-print">DA Arrear Calculation Statement</span>
         </h1>
-        <p>Real-time month-wise Dearness Allowance arrears calculation</p>
+        <p id="headerPeriod"></p>
     </header>
 
     <div class="card">
@@ -693,6 +698,33 @@
         row.remove();
         updateRowNumbers();
         recalculateTableFromStart();
+    }
+
+    function updateHeaderPeriod() {
+        const rows = document.querySelectorAll('#breakdownTableBody tr');
+        const periodEl = document.getElementById('headerPeriod');
+        if (!periodEl) return;
+
+        if (rows.length > 0) {
+            const firstRow = rows[0];
+            const lastRow = rows[rows.length - 1];
+
+            const firstMonthNum = parseInt(firstRow.querySelector('.row-month-select').value) || 1;
+            const firstYearVal = firstRow.querySelector('.row-year-input').value;
+            
+            const lastMonthNum = parseInt(lastRow.querySelector('.row-month-select').value) || 1;
+            const lastYearVal = lastRow.querySelector('.row-year-input').value;
+
+            const firstDateObj = new Date(parseInt(firstYearVal), firstMonthNum - 1, 1);
+            const lastDateObj = new Date(parseInt(lastYearVal), lastMonthNum - 1, 1);
+
+            const fromFormatted = firstDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+            const toFormatted = lastDateObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+            periodEl.textContent = `(${fromFormatted} to ${toFormatted})`;
+        } else {
+            periodEl.textContent = '';
+        }
     }
 
     function printReport() {
@@ -930,6 +962,7 @@
             document.getElementById('totalMonths').value = '0 Months';
             document.getElementById('summaryGrid').style.display = 'none';
             document.getElementById('tableCard').style.display = 'none';
+            document.getElementById('headerPeriod').textContent = '';
             return;
         }
 
@@ -940,6 +973,7 @@
             document.getElementById('totalMonths').value = 'Invalid Period';
             document.getElementById('summaryGrid').style.display = 'none';
             document.getElementById('tableCard').style.display = 'none';
+            document.getElementById('headerPeriod').textContent = '';
             return;
         }
 
@@ -1020,9 +1054,10 @@
         document.getElementById('tableCard').style.display = 'block';
 
         updateTotals();
+        updateHeaderPeriod();
     }
 
-        function addCustomRows() {
+    function addCustomRows() {
         const countInput = document.getElementById('addRowInput');
         const countToAdd = parseInt(countInput.value, 10);
         
@@ -1092,14 +1127,12 @@
             attachRowEventListeners(row, rowIndex);
         }
 
-        // Input field value ko reset karke dobara default 1 karna
         countInput.value = "1";
         addRowPreviousVal = "1";
 
         updateRowNumbers();
         recalculateTableFromStart();
     }
-
 
     function attachRowEventListeners(row, initialIndex) {
         const rowInputs = row.querySelectorAll('.table-input');
@@ -1171,7 +1204,10 @@
 
     function recalculateTableFromStart() {
         const rows = Array.from(document.querySelectorAll('#breakdownTableBody tr'));
-        if (rows.length === 0) return;
+        if (rows.length === 0) {
+            updateHeaderPeriod();
+            return;
+        }
 
         const incMonth = document.getElementById('incrementMonth').value;
         const noOfAcp = parseInt(document.getElementById('noOfAcp').value) || 0;
@@ -1223,6 +1259,7 @@
         });
 
         updateTotals();
+        updateHeaderPeriod();
     }
 
     function updateRowCalculations(row) {
@@ -1287,26 +1324,24 @@
     }
 
     function resetCalculator() {
-    document.getElementById('employeeType').value = 'OPS';
-    document.getElementById('gpfNps').value = 10;
-    document.getElementById('incrementMonth').value = '10';
-    document.getElementById('noOfAcp').value = '0';
-    renderAcpInputs();
-    document.getElementById('previousDa').value = 0;
-    document.getElementById('revisedDa').value = 0;
+        document.getElementById('employeeType').value = 'OPS';
+        document.getElementById('gpfNps').value = 10;
+        document.getElementById('incrementMonth').value = '10';
+        document.getElementById('noOfAcp').value = '0';
+        renderAcpInputs();
+        document.getElementById('previousDa').value = 0;
+        document.getElementById('revisedDa').value = 0;
 
-    // Yaha par bhi new defaults set kar dein:
-    document.getElementById('fromMonth').value = '7';
-    document.getElementById('fromYear').value = '2022';
-    document.getElementById('toMonth').value = '6';
-    document.getElementById('toYear').value = '2023';
+        document.getElementById('fromMonth').value = '7';
+        document.getElementById('fromYear').value = '2022';
+        document.getElementById('toMonth').value = '6';
+        document.getElementById('toYear').value = '2023';
 
-    document.getElementById('basicPay').value = 0;
-    document.getElementById('addRowInput').value = 1;
-    toggleCpfVisibility();
-    calculateArrears();
-}
-
+        document.getElementById('basicPay').value = 0;
+        document.getElementById('addRowInput').value = 1;
+        toggleCpfVisibility();
+        calculateArrears();
+    }
 
     ['previousDa', 'revisedDa', 'basicPay', 'gpfNps'].forEach(id => {
         const el = document.getElementById(id);
